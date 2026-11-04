@@ -687,7 +687,7 @@
       }
     }
 
-    // Submit Order Directly to Admin Telegram
+    // Submit Order Directly to Admin Telegram with Action Buttons
     async function submitOrder() {
       const amt = parseFloat(document.getElementById('usdtAmount').value);
       const account = document.getElementById('accountNumber').value.trim();
@@ -714,27 +714,43 @@
       const BOT_TOKEN = "8613267131:AAGj_WEu6KPChdeGGQvsKmX-7E21vLc_Dpo";
       const ADMIN_CHAT_ID = "6928943908";
 
+      // የደንበኛውን Telegram ID ማግኘት
+      const customerId = tg?.initDataUnsafe?.user?.id || "unknown";
+      const customerUser = tg?.initDataUnsafe?.user?.username ? `@${tg.initDataUnsafe.user.username}` : "የለውም";
+
       const adminCaption = 
         `🚨 <b>አዲስ የ P2P የሽያጭ ትዕዛዝ ደርሷል!</b>\n` +
         `━━━━━━━━━━━━━━━━━━━━\n` +
+        `👤 <b>ደንበኛ:</b> ${name} (${customerUser})\n` +
+        `🆔 <b>User ID:</b> <code>${customerId}</code>\n` +
         `💵 <b>መጠን:</b> ${amt} USDT\n` +
         `📈 <b>ተመን:</b> 1 USDT = ${rate} ETB\n` +
         `💰 <b>የሚከፈለው:</b> ${totalETB.toLocaleString()} ETB\n` +
         `🌐 <b>ኔትወርክ:</b> ${addresses[selectedNet].name}\n` +
         `🏦 <b>መቀበያ ባንክ:</b> ${method}\n` +
         `📱 <b>አካውንት:</b> <code>${account}</code>\n` +
-        `👤 <b>ስም:</b> ${name}\n` +
         `━━━━━━━━━━━━━━━━━━━━`;
+
+      // ለአድሚን የሚታዩት አዝራሮች
+      const adminKeyboard = {
+        inline_keyboard: [
+          [
+            { text: "✅ ትዕዛዝ አጽድቅ", callback_data: `approve_${customerId}_${amt}_${totalETB}` },
+            { text: "❌ ትዕዛዝ ውድቅ አርግ", callback_data: `reject_${customerId}_${amt}` }
+          ]
+        ]
+      };
 
       let sentSuccess = false;
 
-      // 1. መጀመሪያ ፎቶ ካለ በ sendPhoto መላክ
+      // 1. ፎቶውን ከአዝራሮቹ ጋር በ sendPhoto መላክ
       if (fileInput.files && fileInput.files.length > 0) {
         try {
           const formData = new FormData();
           formData.append("chat_id", ADMIN_CHAT_ID);
           formData.append("caption", adminCaption);
           formData.append("parse_mode", "HTML");
+          formData.append("reply_markup", JSON.stringify(adminKeyboard));
           formData.append("photo", fileInput.files[0]);
 
           const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
@@ -742,17 +758,13 @@
             body: formData
           });
           const resData = await res.json();
-          if (resData.ok) {
-            sentSuccess = true;
-          } else {
-            console.warn("sendPhoto response error:", resData);
-          }
+          if (resData.ok) sentSuccess = true;
         } catch (e) {
-          console.warn("sendPhoto fetch error:", e);
+          console.warn("sendPhoto error:", e);
         }
       }
 
-      // 2. ፎቶው እምቢ ካለ ወይም ካልተመረጠ ጽሁፉን በ sendMessage መላክ
+      // 2. ፎቶው ካልተመረጠ ወይም ካልሰራ በ sendMessage መላክ
       if (!sentSuccess) {
         try {
           const res2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -760,18 +772,15 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chat_id: ADMIN_CHAT_ID,
-              text: adminCaption + (fileInput.files.length > 0 ? `\n⚠️ <i>(ማስታወሻ: ፎቶው አልተያያዘም፤ ደረሰኙን ደንበኛውን በቻት ይጠይቁ)</i>` : ""),
-              parse_mode: "HTML"
+              text: adminCaption,
+              parse_mode: "HTML",
+              reply_markup: adminKeyboard
             })
           });
           const res2Data = await res2.json();
-          if (res2Data.ok) {
-            sentSuccess = true;
-          } else {
-            alert("⚠️ ቴሌግራም መልእክት አላስገባም: " + res2Data.description);
-          }
+          if (res2Data.ok) sentSuccess = true;
         } catch (e) {
-          alert("⚠️ ኔትወርክ ተቋርጧል፡ መልእክቱ አልደረሰም!");
+          console.error("sendMessage error:", e);
         }
       }
 
