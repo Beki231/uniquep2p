@@ -261,6 +261,41 @@
       gap: 6px;
     }
 
+    /* File Upload Box */
+    .file-upload-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .file-upload-box input[type="file"] {
+      display: none;
+    }
+
+    .file-upload-btn {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .file-name-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     /* Rate Card */
     .rate-card {
       background: rgba(0, 210, 106, 0.08);
@@ -300,7 +335,7 @@
       justify-content: center;
       gap: 8px;
       box-shadow: 0 4px 14px rgba(0, 210, 106, 0.3);
-      margin-top: 10px;
+      margin-top: 14px;
     }
 
     /* Table Styles */
@@ -418,16 +453,16 @@
         <div class="form-group">
           <label class="form-label">የክሪፕቶ ኔትወርክ ይምረጡ</label>
           <div class="networks-grid">
-            <button type="button" class="network-btn active" onclick="selectNetwork('binance')">
+            <button type="button" class="network-btn active" onclick="selectNetwork('binance', this)">
               <i class="fa-solid fa-qrcode"></i> Binance Pay
             </button>
-            <button type="button" class="network-btn" onclick="selectNetwork('bep20')">
+            <button type="button" class="network-btn" onclick="selectNetwork('bep20', this)">
               <i class="fa-solid fa-network-wired"></i> BEP-20 (BSC)
             </button>
-            <button type="button" class="network-btn" onclick="selectNetwork('ton')">
+            <button type="button" class="network-btn" onclick="selectNetwork('ton', this)">
               <i class="fa-solid fa-gem"></i> TON Network
             </button>
-            <button type="button" class="network-btn" onclick="selectNetwork('ltc')">
+            <button type="button" class="network-btn" onclick="selectNetwork('ltc', this)">
               <i class="fa-solid fa-coins"></i> Litecoin (LTC)
             </button>
           </div>
@@ -459,6 +494,16 @@
         <div class="form-group">
           <label class="form-label">የተጠቃሚው ሙሉ ስም</label>
           <input type="text" id="accountName" class="form-input" placeholder="ለምሳሌ: Abebe Kebede">
+        </div>
+
+        <!-- Screenshot Upload Box -->
+        <div class="form-group">
+          <label class="form-label">የላኩበት ደረሰኝ (Transaction Screenshot)</label>
+          <label class="file-upload-box" for="screenshotFile">
+            <input type="file" id="screenshotFile" accept="image/*" onchange="previewFileName()">
+            <span class="file-upload-btn"><i class="fa-solid fa-image"></i> ፎቶ ምረጥ</span>
+            <span class="file-name-label" id="fileNameLabel">ምንም ፎቶ አልተመረጠም</span>
+          </label>
         </div>
 
         <button type="button" class="submit-btn" onclick="submitOrder()">
@@ -566,19 +611,37 @@
 
     let selectedNet = "binance";
 
-    function selectNetwork(netKey) {
+    function selectNetwork(netKey, btnElement) {
       selectedNet = netKey;
       document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
       document.getElementById('networkTitle').innerText = addresses[netKey].name;
       document.getElementById('cryptoAddress').innerText = addresses[netKey].val;
     }
 
     function copyCryptoAddress() {
       const addr = document.getElementById('cryptoAddress').innerText;
-      navigator.clipboard.writeText(addr).then(() => {
-        alert("✅ አድራሻው ኮፒ ተደርጓል!");
-      });
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).then(() => {
+          showNotification("✅ አድራሻው ኮፒ ተደርጓል!");
+        });
+      } else {
+        showNotification("✅ አድራሻ: " + addr);
+      }
+    }
+
+    function previewFileName() {
+      const fileInput = document.getElementById('screenshotFile');
+      const label = document.getElementById('fileNameLabel');
+      if (fileInput.files && fileInput.files.length > 0) {
+        label.innerText = "📁 " + fileInput.files[0].name;
+        label.style.color = "var(--accent-green)";
+      } else {
+        label.innerText = "ምንም ፎቶ አልተመረጠም";
+        label.style.color = "var(--text-muted)";
+      }
     }
 
     // Rate Calculation
@@ -607,7 +670,15 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
-      el.classList.add('active');
+      if (el) el.classList.add('active');
+    }
+
+    function showNotification(msg) {
+      if (tg && tg.showAlert) {
+        tg.showAlert(msg);
+      } else {
+        alert(msg);
+      }
     }
 
     // Submit Order Back to Bot
@@ -616,13 +687,18 @@
       const account = document.getElementById('accountNumber').value.trim();
       const name = document.getElementById('accountName').value.trim();
       const method = document.getElementById('payoutMethod').value;
+      const fileInput = document.getElementById('screenshotFile');
 
       if (!amt || amt < 0.5) {
-        alert("⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!");
+        showNotification("⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!");
         return;
       }
       if (!account || !name) {
-        alert("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");
+        showNotification("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");
+        return;
+      }
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showNotification("⚠️ እባክዎ የላኩበትን ደረሰኝ (Screenshot) ይምረጡ!");
         return;
       }
 
@@ -637,16 +713,37 @@
         network: addresses[selectedNet].name,
         payout_method: method,
         account_number: account,
-        account_name: name
+        account_name: name,
+        screenshot_name: fileInput.files[0].name
       };
 
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify(orderData));
+      // 1. sendData መላክ (Inline Keyboard ከሆነ ይሰራል)
+      let sentToBot = false;
+      try {
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify(orderData));
+          sentToBot = true;
+        }
+      } catch (err) {
+        console.warn("sendData not supported in this view", err);
+      }
+
+      // 2. በ Menu Button ሲከፈት እንዳይቆም ለተጠቃሚው ማረጋገጫ መስጠት
+      const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nክፍያዎ ተረጋግጦ ወዲያውኑ ገቢ ይደረጋል!`;
+
+      if (tg && tg.showPopup) {
+        tg.showPopup({
+          title: "🎉 ትዕዛዝዎ ተልኳል!",
+          message: successMsg,
+          buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]
+        }, function() {
+          if (tg.close) tg.close();
+        });
       } else {
-        alert(`✅ ትዕዛዝዎ ተመዝግቧል!\nመጠን፦ ${amt} USDT\nየሚደርስዎት፦ ${totalETB} ETB\nአካውንት፦ ${account} (${name})`);
+        alert(successMsg);
+        if (tg && tg.close) tg.close();
       }
     }
   </script>
 </body>
 </html>
-
