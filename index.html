@@ -704,10 +704,6 @@
         showNotification("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");
         return;
       }
-      if (!fileInput.files || fileInput.files.length === 0) {
-        showNotification("⚠️ እባክዎ የላኩበትን ደረሰኝ (Screenshot) ይምረጡ!");
-        return;
-      }
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';
@@ -715,9 +711,6 @@
       const rate = getRate(amt);
       const totalETB = amt * rate;
 
-      // ==========================================
-      // 🔑 የቦትህ TOKEN እና የአድሚን CHAT ID
-      // ==========================================
       const BOT_TOKEN = "8613267131:AAGj_WEu6KPChdeGGQvsKmX-7E21vLc_Dpo";
       const ADMIN_CHAT_ID = "6928943908";
 
@@ -733,37 +726,72 @@
         `👤 <b>ስም:</b> ${name}\n` +
         `━━━━━━━━━━━━━━━━━━━━`;
 
-      const formData = new FormData();
-      formData.append("chat_id", ADMIN_CHAT_ID);
-      formData.append("caption", adminCaption);
-      formData.append("parse_mode", "HTML");
-      formData.append("photo", fileInput.files[0]);
+      let sentSuccess = false;
 
-      try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-          method: "POST",
-          body: formData
-        });
-      } catch (err) {
-        console.error("Error sending order to admin:", err);
+      // 1. መጀመሪያ ፎቶ ካለ በ sendPhoto መላክ
+      if (fileInput.files && fileInput.files.length > 0) {
+        try {
+          const formData = new FormData();
+          formData.append("chat_id", ADMIN_CHAT_ID);
+          formData.append("caption", adminCaption);
+          formData.append("parse_mode", "HTML");
+          formData.append("photo", fileInput.files[0]);
+
+          const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            method: "POST",
+            body: formData
+          });
+          const resData = await res.json();
+          if (resData.ok) {
+            sentSuccess = true;
+          } else {
+            console.warn("sendPhoto response error:", resData);
+          }
+        } catch (e) {
+          console.warn("sendPhoto fetch error:", e);
+        }
+      }
+
+      // 2. ፎቶው እምቢ ካለ ወይም ካልተመረጠ ጽሁፉን በ sendMessage መላክ
+      if (!sentSuccess) {
+        try {
+          const res2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: ADMIN_CHAT_ID,
+              text: adminCaption + (fileInput.files.length > 0 ? `\n⚠️ <i>(ማስታወሻ: ፎቶው አልተያያዘም፤ ደረሰኙን ደንበኛውን በቻት ይጠይቁ)</i>` : ""),
+              parse_mode: "HTML"
+            })
+          });
+          const res2Data = await res2.json();
+          if (res2Data.ok) {
+            sentSuccess = true;
+          } else {
+            alert("⚠️ ቴሌግራም መልእክት አላስገባም: " + res2Data.description);
+          }
+        } catch (e) {
+          alert("⚠️ ኔትወርክ ተቋርጧል፡ መልእክቱ አልደረሰም!");
+        }
       }
 
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
 
-      const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nትዕዛዝዎ ወደ አድሚን ተልኳል፤ ክፍያው ተረጋግጦ ወዲያውኑ ገቢ ይደረጋል!`;
-
-      if (tg && tg.showPopup) {
-        tg.showPopup({
-          title: "🎉 ትዕዛዝዎ ተልኳል!",
-          message: successMsg,
-          buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]
-        }, function() {
-          if (tg.close) tg.close();
-        });
-      } else {
-        alert(successMsg);
-        if (tg && tg.close) tg.close();
+      if (sentSuccess) {
+        const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nትዕዛዝዎ ወደ አድሚን ተልኳል፤ ክፍያው ተረጋግጦ ወዲያውኑ ገቢ ይደረጋል!`;
+        if (tg && tg.showPopup) {
+          tg.showPopup({
+            title: "🎉 ትዕዛዝዎ ተልኳል!",
+            message: successMsg,
+            buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]
+          }, function() {
+            if (tg.close) tg.close();
+          });
+        } else {
+          alert(successMsg);
+          if (tg && tg.close) tg.close();
+        }
       }
     }
   </script>
