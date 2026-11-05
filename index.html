@@ -674,8 +674,8 @@ header {
       }  
     }  
   
-    // Submit Order Directly via Telegram Share Link (No Bot Token & No WebApp keyboard constraint)
-    function submitOrder() {  
+    // Submit Order Directly via Bots.Business Backend Webhook
+    async function submitOrder() {  
       const amt = parseFloat(document.getElementById('usdtAmount').value);  
       const account = document.getElementById('accountNumber').value.trim();  
       const name = document.getElementById('accountName').value.trim();  
@@ -692,33 +692,53 @@ header {
       }  
   
       submitBtn.disabled = true;  
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመክፈት ላይ...';  
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';  
   
       const rate = getRate(amt);  
       const totalETB = amt * rate;  
-      const netName = addresses[selectedNet].name;
+  
+      const payload = {
+        secret: "UniqueP2P_Secret_Key_2026",
+        customerId: tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "unknown",
+        customerUser: tg?.initDataUnsafe?.user?.username ? "@" + tg.initDataUnsafe.user.username : "የለውም",
+        name: name,
+        amount: amt,
+        rate: rate,
+        totalETB: totalETB,
+        network: addresses[selectedNet].name,
+        bank: method,
+        account: account
+      };
 
-      const orderMsg = 
-        `ትዕዛዝ ማረጋገጫ፦\n` +
-        `መጠን: ${amt} USDT\n` +
-        `ተመን: 1 USDT = ${rate} ETB\n` +
-        `የሚከፈለው: ${totalETB} ETB\n` +
-        `ኔትወርክ: ${netName}\n` +
-        `ባንክ: ${method}\n` +
-        `አካውንት: ${account}\n` +
-        `ስም: ${name}`;
+      const WEBHOOK_URL = "https://api.bots.business/v1/bots/3007578/new-webhook?command=api_order";
 
-      const shareUrl = "https://t.me/share/url?url=" + encodeURIComponent(orderMsg);
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-        window.Telegram.WebApp.openTelegramLink(shareUrl);
-        window.Telegram.WebApp.close();
-      } else {
-        window.open(shareUrl, "_blank");
+        const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nእባክዎ ገጹን ዘግተው የከፈሉበትን ደረሰኝ (Screenshot) በቦቱ ቻት ላይ ይላኩ!`;
+
+        if (tg && tg.showPopup) {
+          tg.showPopup({
+            title: "🎉 ትዕዛዝዎ ተልኳል!",
+            message: successMsg,
+            buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]
+          }, function() {
+            if (tg.close) tg.close();
+          });
+        } else {
+          alert(successMsg);
+          if (tg && tg.close) tg.close();
+        }
+      } catch (err) {
+        showNotification("❌ በመላክ ላይ ችግር ተፈጥሯል፣ እባክዎ በድጋሚ ይሞክሩ!");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
       }
-
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
     }  
   </script> 
 </body>  
