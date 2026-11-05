@@ -28,6 +28,14 @@ const addresses = {
   ltc: "Litecoin"
 };
 
+// ተለዋዋጭ የምንዛሬ ተመኖች (Dynamic Rates)
+let exchangeRates = {
+  tier1: 178, // 0.5 - 0.9 USDT
+  tier2: 180, // 1 - 10 USDT
+  tier3: 182, // 11 - 30 USDT
+  tier4: 185  // 31+ USDT
+};
+
 const orders = new Map();
 
 async function telegram(method, body) {
@@ -75,7 +83,6 @@ async function sendWelcomeBanner(userId) {
   };
 
   try {
-    // በፎቶ መላክ
     await telegram("sendPhoto", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -88,7 +95,6 @@ async function sendWelcomeBanner(userId) {
       })
     });
   } catch (e) {
-    // ፎቶው ካልሰራ በጽሑፍ ብቻ ይልካል
     await telegram("sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -142,11 +148,11 @@ function verifyInitData(initData) {
 }
 
 function getRate(amount) {
-  if (amount >= 0.5 && amount < 1) return 178;
-  if (amount >= 1 && amount <= 10) return 180;
-  if (amount > 10 && amount <= 30) return 182;
-  if (amount > 30) return 185;
-  return 0;
+  if (amount >= 0.5 && amount < 1) return exchangeRates.tier1;
+  if (amount >= 1 && amount <= 10) return exchangeRates.tier2;
+  if (amount > 10 && amount <= 30) return exchangeRates.tier3;
+  if (amount > 30) return exchangeRates.tier4;
+  return exchangeRates.tier2;
 }
 
 function escapeHTML(value) {
@@ -158,6 +164,14 @@ function escapeHTML(value) {
     "'": "&#39;"
   })[char]);
 }
+
+// ለ Mini App የቀጥታ የምንዛሬ ዋጋዎችን የሚሰጥ API
+app.get("/api/rates", (req, res) => {
+  res.json({
+    success: true,
+    rates: exchangeRates
+  });
+});
 
 app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
   try {
@@ -267,8 +281,64 @@ app.post("/telegram-webhook", async (req, res) => {
 
   res.sendStatus(200);
 
-  // 1. Force Join ወይም /start ሜሴጅ ሲመጣ
   const msg = req.body.message;
+
+  // 1. አድሚን የምንዛሬ ዋጋ ለመቀየር የሚጽፋቸው ትዕዛዞች (/setrate ወይም /setrates)
+  if (msg && msg.text && String(msg.from.id) === String(ADMIN_CHAT_ID)) {
+    const text = msg.text.trim();
+
+    // ነጠላ ዋና ተመን መቀየሪያ (ለምሳሌ፦ /setrate 182)
+    if (text.startsWith("/setrate ")) {
+      const parts = text.split(" ");
+      const newRate = Number(parts[1]);
+      if (newRate && newRate > 0) {
+        exchangeRates.tier1 = newRate - 2;
+        exchangeRates.tier2 = newRate;
+        exchangeRates.tier3 = newRate + 2;
+        exchangeRates.tier4 = newRate + 5;
+
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: `✅ <b>የምንዛሬ ተመን ተቀይሯል!</b>\n\n` +
+                  `▫️ 0.5 - 0.9 USDT: <b>${exchangeRates.tier1} ETB</b>\n` +
+                  `▫️ 1.0 - 10 USDT: <b>${exchangeRates.tier2} ETB</b> (ዋና)\n` +
+                  `▫️ 11 - 30 USDT: <b>${exchangeRates.tier3} ETB</b>\n` +
+                  `▫️ 31+ USDT: <b>${exchangeRates.tier4} ETB</b>\n\n` +
+                  `⚡ Mini App ውስጥ በቅጽበት ተዘምኗል።`,
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      }
+    }
+
+    // ሁሉንም 4ቱን ደረጃዎች መለወጫ (ለምሳሌ፦ /setrates 178 180 182 185)
+    if (text.startsWith("/setrates ")) {
+      const [_, t1, t2, t3, t4] = text.split(" ").map(Number);
+      if (t1 && t2 && t3 && t4) {
+        exchangeRates = { tier1: t1, tier2: t2, tier3: t3, tier4: t4 };
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: `✅ <b>ሁሉም 4ቱም የምንዛሬ ተመኖች ተቀይረዋል!</b>\n\n` +
+                  `▫️ 0.5 - 0.9 USDT: <b>${t1} ETB</b>\n` +
+                  `▫️ 1.0 - 10 USDT: <b>${t2} ETB</b>\n` +
+                  `▫️ 11 - 30 USDT: <b>${t3} ETB</b>\n` +
+                  `▫️ 31+ USDT: <b>${t4} ETB</b>`,
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      }
+    }
+  }
+
+  // 2. Force Join ወይም /start ሜሴጅ ሲመጣ
   if (msg && msg.text && msg.text.startsWith("/start")) {
     const userId = msg.from.id;
     const isMember = await checkMembership(userId);
@@ -292,17 +362,15 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // አባል ከሆነ ልክ የድሮውን ፎርማት ይልክለታል
     await sendWelcomeBanner(userId);
     return;
   }
 
-  // 2. Callback Query ሲነካ
+  // 3. Callback Query ሲነካ
   const callback = req.body.callback_query;
   if (!callback) return;
 
   try {
-    // ተጠቃሚው 'ተቀላቅያለሁ' ሲል ማረጋገጥ
     if (callback.data === "check_join") {
       const isMember = await checkMembership(callback.from.id);
       if (isMember) {
@@ -311,7 +379,6 @@ app.post("/telegram-webhook", async (req, res) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ callback_query_id: callback.id })
         });
-        // ቻናሉን ከተቀላቀለ ሙሉውን ያማረ ባነር ይልክለታል
         await sendWelcomeBanner(callback.from.id);
       } else {
         await telegram("answerCallbackQuery", {
