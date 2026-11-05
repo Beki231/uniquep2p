@@ -68,6 +68,7 @@
       font-weight: 900;  
       font-size: 18px;  
       color: #fff;  
+      box-shadow: 0 4px 12px rgba(255, 183, 3, 0.25);
     }  
 
     .brand-name {  
@@ -106,6 +107,7 @@
       margin-bottom: 16px;  
       position: relative;  
       overflow: hidden;  
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }  
 
     .banner-card::after {  
@@ -146,7 +148,7 @@
     }  
 
     @keyframes fadeIn {  
-      from { opacity: 0; transform: translateY(4px); }  
+      from { opacity: 0; transform: translateY(6px); }  
       to { opacity: 1; transform: translateY(0); }  
     }  
 
@@ -157,6 +159,8 @@
       border-radius: 16px;  
       padding: 18px;  
       margin-bottom: 16px;  
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     }  
 
     .form-group {  
@@ -186,12 +190,12 @@
       color: var(--text-main);  
       font-size: 15px;  
       outline: none;  
-      transition: all 0.2s;  
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);  
     }  
 
     .form-input:focus {  
       border-color: var(--accent-green);  
-      box-shadow: 0 0 0 2px rgba(0, 210, 106, 0.2);  
+      box-shadow: 0 0 0 3px rgba(0, 210, 106, 0.2);  
     }  
 
     .input-suffix {  
@@ -221,18 +225,23 @@
       font-size: 13px;  
       font-weight: 600;  
       cursor: pointer;  
-      transition: all 0.2s;  
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);  
     }  
+
+    .network-btn:active {
+      transform: scale(0.97);
+    }
 
     .network-btn.active {  
       border-color: var(--accent-green);  
       background: rgba(0, 210, 106, 0.12);  
       color: #fff;  
+      box-shadow: 0 0 10px rgba(0, 210, 106, 0.15);
     }  
 
     /* Crypto Address Box */  
     .address-box {  
-      background: rgba(0, 0, 0, 0.3);  
+      background: rgba(0, 0, 0, 0.35);  
       border: 1px dashed rgba(255, 255, 255, 0.15);  
       border-radius: 12px;  
       padding: 12px;  
@@ -258,7 +267,12 @@
       display: inline-flex;  
       align-items: center;  
       gap: 6px;  
+      transition: all 0.2s;
     }  
+
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
 
     /* File Upload Box */  
     .file-upload-box {  
@@ -270,7 +284,12 @@
       align-items: center;  
       gap: 10px;  
       cursor: pointer;  
+      transition: border-color 0.2s;
     }  
+
+    .file-upload-box:hover {
+      border-color: var(--accent-green);
+    }
 
     .file-upload-box input[type="file"] {  
       display: none;  
@@ -316,6 +335,7 @@
       font-size: 17px;  
       font-weight: 800;  
       color: var(--accent-green);  
+      transition: all 0.2s;
     }  
 
     /* Big Submit Button */  
@@ -335,8 +355,12 @@
       gap: 8px;  
       box-shadow: 0 4px 14px rgba(0, 210, 106, 0.3);  
       margin-top: 14px;  
-      transition: opacity 0.2s;  
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);  
     }  
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
 
     .submit-btn:disabled {  
       opacity: 0.6;  
@@ -389,6 +413,7 @@
       font-weight: 600;  
       cursor: pointer;  
       flex: 1;  
+      transition: color 0.2s;
     }  
 
     .nav-item i {  
@@ -548,10 +573,10 @@
             </tr>  
           </thead>  
           <tbody>  
-            <tr><td>0.5 - 0.9 USDT</td><td style="color: var(--accent-green); font-weight: 700;">178 ETB</td></tr>  
-            <tr><td>1.0 - 10 USDT</td><td style="color: var(--accent-green); font-weight: 700;">180 ETB</td></tr>  
-            <tr><td>11 - 30 USDT</td><td style="color: var(--accent-green); font-weight: 700;">182 ETB</td></tr>  
-            <tr><td>31 USDT በላይ</td><td style="color: var(--accent-green); font-weight: 700;">185 ETB</td></tr>  
+            <tr><td>0.5 - 0.9 USDT</td><td style="color: var(--accent-green); font-weight: 700;" id="tableRateTier1">178 ETB</td></tr>  
+            <tr><td>1.0 - 10 USDT</td><td style="color: var(--accent-green); font-weight: 700;" id="tableRateTier2">180 ETB</td></tr>  
+            <tr><td>11 - 30 USDT</td><td style="color: var(--accent-green); font-weight: 700;" id="tableRateTier3">182 ETB</td></tr>  
+            <tr><td>31 USDT በላይ</td><td style="color: var(--accent-green); font-weight: 700;" id="tableRateTier4">185 ETB</td></tr>  
           </tbody>  
         </table>  
       </div>  
@@ -614,8 +639,50 @@
     };  
   
     let selectedNet = "binance";  
+    const SERVER_URL = "https://uniquep2p.onrender.com";
+
+    // ነባሪ የምንዛሬ ዋጋዎች (ሰርቨሩ እስኪመልስ)
+    let dynamicRates = {
+      tier1: 178,
+      tier2: 180,
+      tier3: 182,
+      tier4: 185
+    };
+
+    // ከሰርቨር የቀጥታ የምንዛሬ ዋጋዎችን መጫኛ ፈንክሽን
+    async function fetchLiveRates() {
+      try {
+        const response = await fetch(`${SERVER_URL}/api/rates`);
+        const data = await response.json();
+        if (data.success && data.rates) {
+          dynamicRates = data.rates;
+          
+          // የ Rates ገጽ ሰንጠረዥን ማደስ
+          document.getElementById('tableRateTier1').innerText = `${dynamicRates.tier1} ETB`;
+          document.getElementById('tableRateTier2').innerText = `${dynamicRates.tier2} ETB`;
+          document.getElementById('tableRateTier3').innerText = `${dynamicRates.tier3} ETB`;
+          document.getElementById('tableRateTier4').innerText = `${dynamicRates.tier4} ETB`;
+
+          // የ Sell ገጽ ተመን ማሳያውን ማደስ
+          document.getElementById('appliedRateLabel').innerText = `1 USDT = ${dynamicRates.tier2} ETB`;
+          calculateETB();
+        }
+      } catch (err) {
+        console.log("ተመን ከሰርቨር መጫን አልተቻለም፣ ነባሪውን እንጠቀማለን።");
+      }
+    }
   
+    function triggerHaptic(type = 'light') {
+      if (tg && tg.HapticFeedback) {
+        if (type === 'light') tg.HapticFeedback.impactOccurred('light');
+        if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
+        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+        if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
+      }
+    }
+
     function selectNetwork(netKey, btnElement) {  
+      triggerHaptic('light');
       selectedNet = netKey;  
       document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('active'));  
       if (btnElement) {  
@@ -626,6 +693,7 @@
     }  
   
     function copyCryptoAddress() {  
+      triggerHaptic('medium');
       const addr = document.getElementById('cryptoAddress').innerText;  
       if (navigator.clipboard && navigator.clipboard.writeText) {  
         navigator.clipboard.writeText(addr).then(() => {  
@@ -640,6 +708,7 @@
       const fileInput = document.getElementById('screenshotFile');  
       const label = document.getElementById('fileNameLabel');  
       if (fileInput.files && fileInput.files.length > 0) {  
+        triggerHaptic('light');
         label.innerText = "📁 " + fileInput.files[0].name;  
         label.style.color = "var(--accent-green)";  
       } else {  
@@ -648,19 +717,20 @@
       }  
     }  
   
-    // Rate Calculation  
+    // ከሰርቨሩ በመጣው ተመን ማስላት
     function getRate(amt) {  
-      if (amt >= 0.5 && amt < 1.0) return 178;  
-      if (amt >= 1.0 && amt <= 10.0) return 180;  
-      if (amt >= 11.0 && amt <= 30.0) return 182;  
-      if (amt >= 31.0) return 185;  
-      return 180;  
+      if (amt >= 0.5 && amt < 1.0) return dynamicRates.tier1;  
+      if (amt >= 1.0 && amt <= 10.0) return dynamicRates.tier2;  
+      if (amt >= 11.0 && amt <= 30.0) return dynamicRates.tier3;  
+      if (amt >= 31.0) return dynamicRates.tier4;  
+      return dynamicRates.tier2;  
     }  
   
     function calculateETB() {  
       const amt = parseFloat(document.getElementById('usdtAmount').value) || 0;  
       if (amt <= 0) {  
         document.getElementById('totalETBDisplay').innerText = "0.00 ETB";  
+        document.getElementById('appliedRateLabel').innerText = `1 USDT = ${dynamicRates.tier2} ETB`;
         return;  
       }  
       const rate = getRate(amt);  
@@ -671,6 +741,7 @@
   
     // Navigation Switcher  
     function switchTab(tabId, el) {  
+      triggerHaptic('light');
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));  
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));  
       document.getElementById('tab-' + tabId).classList.add('active');  
@@ -696,14 +767,17 @@
       const submitBtn = document.getElementById("submitBtn");  
   
       if (!Number.isFinite(amt) || amt < 0.5) {  
+        triggerHaptic('error');
         showNotification("⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!");  
         return;  
       }  
       if (!account || !name) {  
+        triggerHaptic('error');
         showNotification("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");  
         return;  
       }  
       if (!file) {  
+        triggerHaptic('error');
         showNotification("⚠️ እባክዎ የላኩበትን ደረሰኝ (Screenshot) ይምረጡ!");  
         return;  
       }  
@@ -713,6 +787,7 @@
         return;  
       }  
   
+      triggerHaptic('medium');
       submitBtn.disabled = true;  
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';  
   
@@ -726,10 +801,7 @@
         formData.append("network", selectedNet);  
         formData.append("screenshot", file);  
   
-        // የተስተካከለው የ Render ሰርቨር አድራሻ  
-        const SERVER_URL = "https://uniquep2p.onrender.com/api/orders";  
-  
-        const response = await fetch(SERVER_URL, {  
+        const response = await fetch(`${SERVER_URL}/api/orders`, {  
           method: "POST",  
           body: formData  
         });  
@@ -740,6 +812,7 @@
           throw new Error(result.message || "ትዕዛዙ አልተላከም።");  
         }  
   
+        triggerHaptic('success');
         const rate = getRate(amt);  
         const totalETB = amt * rate;  
         const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ ለአድሚን ተልኳል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ ደረሰኙን አረጋግጦ ክፍያውን ወዲያውኑ ገቢ ያደርጋል!`;  
@@ -766,12 +839,16 @@
         calculateETB();  
   
       } catch (error) {  
+        triggerHaptic('error');
         showNotification("❌ " + error.message);  
       } finally {  
         submitBtn.disabled = false;  
         submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';  
       }  
     }  
+
+    // ገጹ ሲከፈት የቀጥታ ተመን ይጫናል
+    fetchLiveRates();
   </script>  
 </body>  
 </html>
