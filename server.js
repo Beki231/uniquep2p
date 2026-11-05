@@ -18,7 +18,6 @@ const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 const BOT_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const CHANNEL_ID = "@Unique_techs";
 
-// የ Welcome ፎቶው ሊንክ
 const BANNER_IMAGE_URL = "https://raw.githubusercontent.com/beki231/uniquep2p/main/welcome.jpg"; 
 
 const addresses = {
@@ -28,15 +27,16 @@ const addresses = {
   ltc: "Litecoin"
 };
 
-// ተለዋዋጭ የምንዛሬ ተመኖች (Dynamic Rates)
 let exchangeRates = {
-  tier1: 178, // 0.5 - 0.9 USDT
-  tier2: 180, // 1 - 10 USDT
-  tier3: 182, // 11 - 30 USDT
-  tier4: 185  // 31+ USDT
+  tier1: 178,
+  tier2: 180,
+  tier3: 182,
+  tier4: 185
 };
 
 const orders = new Map();
+// አድሚን ደረሰኝ እስኪልክ የሚጠብቅበት ጊዜያዊ state
+let pendingReceiptOrder = null;
 
 async function telegram(method, body) {
   const response = await fetch(`${BOT_API}/${method}`, body);
@@ -49,7 +49,6 @@ async function telegram(method, body) {
   return result.result;
 }
 
-// ቻናል መቀላቀላቸውን ማረጋገጫ ፈንክሽን
 async function checkMembership(userId) {
   try {
     const res = await telegram("getChatMember", {
@@ -64,7 +63,6 @@ async function checkMembership(userId) {
   }
 }
 
-// የ Welcome Caption እና Buttons መላኪያ (ከነ Cache-Buster ?v=3 ሊንኩ)
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
     `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
@@ -165,7 +163,6 @@ function escapeHTML(value) {
   })[char]);
 }
 
-// ለ Mini App የቀጥታ የምንዛሬ ዋጋዎችን የሚሰጥ API
 app.get("/api/rates", (req, res) => {
   res.json({
     success: true,
@@ -214,6 +211,8 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
       userId: user.id,
       amount,
       total,
+      account,
+      method,
       status: "pending"
     });
 
@@ -232,16 +231,15 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
       `🆔 <b>Order:</b> <code>${orderId}</code>`;
 
     const keyboard = {
-      inline_keyboard: [[
-        {
-          text: "✅ Approve",
-          callback_data: `approve:${orderId}`
-        },
-        {
-          text: "❌ Decline",
-          callback_data: `decline:${orderId}`
-        }
-      ]]
+      inline_keyboard: [
+        [
+          { text: "📸 ደረሰኝ ልከህ አጽድቅ", callback_data: `receipt:${orderId}` },
+          { text: "✅ ፈጣን Approve", callback_data: `quick_approve:${orderId}` }
+        ],
+        [
+          { text: "❌ Decline", callback_data: `decline:${orderId}` }
+        ]
+      ]
     };
 
     const form = new FormData();
@@ -283,11 +281,61 @@ app.post("/telegram-webhook", async (req, res) => {
 
   const msg = req.body.message;
 
-  // 1. አድሚን የምንዛሬ ዋጋ ለመቀየር የሚጽፋቸው ትዕዛዞች (/setrate ወይም /setrates)
+  // አድሚን ደረሰኝ ፎቶ ሲልክ ተቀብሎ ለተጠቃሚው ማስተላለፍ
+  if (msg && String(msg.from.id) === String(ADMIN_CHAT_ID) && pendingReceiptOrder) {
+    if (msg.photo && msg.photo.length > 0) {
+      const order = orders.get(pendingReceiptOrder);
+      if (order && order.status === "pending") {
+        order.status = "approved";
+        
+        const photoId = msg.photo[msg.photo.length - 1].file_id;
+        const userMsg = 
+          `✅ <b>የትዕዛዝ ማረጋገጫ እና ደረሰኝ፦</b>\n\n` +
+          `የ <b>${order.amount} USDT</b> ሽያጭ ትዕዛዝዎ ጸድቋል!\n` +
+          `💰 <b>${order.total.toLocaleString()} ETB</b> ወደ ${order.method} አካውንትዎ ገቢ ተደርጓል።\n\n` +
+          `👆 <i>የተከፈለበት ደረሰኝ ከላይ ተያይዟል። ከ Unique P2P ጋር ስለሰሩ እናመሰግናለን! 🙏</i>`;
+
+        await telegram("sendPhoto", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: order.userId,
+            photo: photoId,
+            caption: userMsg,
+            parse_mode: "HTML"
+          })
+        });
+
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: `✅ ደረሰኙ በተሳካ ሁኔታ ለተጠቃሚው ተልኳል! ትዕዛዙ ጸድቋል።`
+          })
+        });
+
+        pendingReceiptOrder = null;
+        return;
+      }
+    } else if (msg.text === "/cancel") {
+      pendingReceiptOrder = null;
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: ADMIN_CHAT_ID,
+          text: `❌ የደረሰኝ መላክ ሂደት ተሰርዟል።`
+        })
+      });
+      return;
+    }
+  }
+
+  // የምንዛሬ ተመን መቀየሪያ
   if (msg && msg.text && String(msg.from.id) === String(ADMIN_CHAT_ID)) {
     const text = msg.text.trim();
 
-    // ነጠላ ዋና ተመን መቀየሪያ (ለምሳሌ፦ /setrate 182)
     if (text.startsWith("/setrate ")) {
       const parts = text.split(" ");
       const newRate = Number(parts[1]);
@@ -315,7 +363,6 @@ app.post("/telegram-webhook", async (req, res) => {
       }
     }
 
-    // ሁሉንም 4ቱን ደረጃዎች መለወጫ (ለምሳሌ፦ /setrates 178 180 182 185)
     if (text.startsWith("/setrates ")) {
       const [_, t1, t2, t3, t4] = text.split(" ").map(Number);
       if (t1 && t2 && t3 && t4) {
@@ -338,7 +385,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 2. Force Join ወይም /start ሜሴጅ ሲመጣ
+  // Force Join ወይም /start ሜሴጅ ሲመጣ
   if (msg && msg.text && msg.text.startsWith("/start")) {
     const userId = msg.from.id;
     const isMember = await checkMembership(userId);
@@ -366,7 +413,7 @@ app.post("/telegram-webhook", async (req, res) => {
     return;
   }
 
-  // 3. Callback Query ሲነካ
+  // Callback Query
   const callback = req.body.callback_query;
   if (!callback) return;
 
@@ -394,7 +441,6 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // የአድሚን Approve/Decline ተግባር
     if (String(callback.from.id) !== String(ADMIN_CHAT_ID)) {
       await telegram("answerCallbackQuery", {
         method: "POST",
@@ -422,42 +468,107 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    if (!["approve", "decline"].includes(action)) return;
+    // 1. ደረሰኝ ልከህ አጽድቅ
+    if (action === "receipt") {
+      pendingReceiptOrder = orderId;
+      await telegram("answerCallbackQuery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ callback_query_id: callback.id })
+      });
 
-    order.status = action === "approve" ? "approved" : "declined";
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: ADMIN_CHAT_ID,
+          text: `📸 <b>እባክዎ አሁን የከፈሉበትን የደረሰኝ ፎቶ (ቴሌብር/CBE Screenshot) ይላኩ፦</b>\n\n(ለመሰረዝ <code>/cancel</code> ብለው መጻፍ ይችላሉ)`
+        })
+      });
 
-    const message = action === "approve"
-      ? `✅ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየ ${order.amount} USDT ሽያጭ ትዕዛዝዎ ጸድቋል! ${order.total.toLocaleString()} ETB ወደ አካውንትዎ ገቢ ተደርጓል። እናመሰግናለን! 🙏`
-      : `❌ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየትዕዛዝ ጥያቄዎ ውድቅ ተደርጓል። እባክዎ ለተጨማሪ መረጃ አድሚኑን ያነጋግሩ (@Aropc)።`;
+      await telegram("editMessageReplyMarkup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: callback.message.chat.id,
+          message_id: callback.message.message_id,
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
+      return;
+    }
 
-    await telegram("sendMessage", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: order.userId,
-        text: message,
-        parse_mode: "HTML"
-      })
-    });
+    // 2. ፈጣን Approve
+    if (action === "quick_approve") {
+      order.status = "approved";
+      const message = `✅ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየ ${order.amount} USDT ሽያጭ ትዕዛዝዎ ጸድቋል! ${order.total.toLocaleString()} ETB ወደ አካውንትዎ ገቢ ተደርጓል። እናመሰግናለን! 🙏`;
 
-    await telegram("editMessageReplyMarkup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: callback.message.chat.id,
-        message_id: callback.message.message_id,
-        reply_markup: { inline_keyboard: [] }
-      })
-    });
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: order.userId,
+          text: message,
+          parse_mode: "HTML"
+        })
+      });
 
-    await telegram("answerCallbackQuery", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        callback_query_id: callback.id,
-        text: action === "approve" ? "Approved" : "Declined"
-      })
-    });
+      await telegram("editMessageReplyMarkup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: callback.message.chat.id,
+          message_id: callback.message.message_id,
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
+
+      await telegram("answerCallbackQuery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          callback_query_id: callback.id,
+          text: "Quick Approved!"
+        })
+      });
+      return;
+    }
+
+    // 3. Decline
+    if (action === "decline") {
+      order.status = "declined";
+      const message = `❌ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየትዕዛዝ ጥያቄዎ ውድቅ ተደርጓል። እባክዎ ለተጨማሪ መረጃ አድሚኑን ያነጋግሩ (@Aropc)።`;
+
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: order.userId,
+          text: message,
+          parse_mode: "HTML"
+        })
+      });
+
+      await telegram("editMessageReplyMarkup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: callback.message.chat.id,
+          message_id: callback.message.message_id,
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
+
+      await telegram("answerCallbackQuery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          callback_query_id: callback.id,
+          text: "Declined"
+        })
+      });
+      return;
+    }
 
   } catch (error) {
     console.error("Callback error:", error.message);
