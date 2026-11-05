@@ -16,7 +16,10 @@ const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 const BOT_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
-const CHANNEL_ID = "@Unique_techs"; // Force Join የሚደረግበት ቻናል
+const CHANNEL_ID = "@Unique_techs";
+
+// የ Welcome ፎቶው ሊንክ
+const BANNER_IMAGE_URL = "https://raw.githubusercontent.com/beki231/uniquep2p/main/welcome.jpg"; 
 
 const addresses = {
   binance: "Binance Pay UID",
@@ -50,6 +53,52 @@ async function checkMembership(userId) {
   } catch (err) {
     console.error("Membership check error:", err.message);
     return false;
+  }
+}
+
+// ልክ እንደ መጀመሪያው ያማረው የ Welcome Caption እና Buttons መላኪያ
+async function sendWelcomeBanner(userId) {
+  const welcomeCaption = 
+    `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `🔐 <b>ደህንነቱ የተጠበቀ እና ⚡ እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> 💯\n\n` +
+    `👇 <b>ንግድ ለመጀመር ከስር ያለውን Mini App ይክፈቱ፦</b>`;
+
+  const welcomeKeyboard = {
+    inline_keyboard: [
+      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/" } }],
+      [
+        { text: "👨‍💻 አድሚን (@Aropc)", url: "https://t.me/Aropc" },
+        { text: "📢 ቻናል", url: "https://t.me/Unique_techs" }
+      ]
+    ]
+  };
+
+  try {
+    // በፎቶ መላክ
+    await telegram("sendPhoto", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: userId,
+        photo: BANNER_IMAGE_URL,
+        caption: welcomeCaption,
+        parse_mode: "HTML",
+        reply_markup: welcomeKeyboard
+      })
+    });
+  } catch (e) {
+    // ፎቶው ካልሰራ በጽሑፍ ብቻ ይልካል
+    await telegram("sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: userId,
+        text: welcomeCaption,
+        parse_mode: "HTML",
+        reply_markup: welcomeKeyboard
+      })
+    });
   }
 }
 
@@ -230,12 +279,12 @@ app.post("/telegram-webhook", async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: userId,
-          text: "👋 <b>እንኳን ወደ Unique P2P Store በደህና መጡ!</b>\n\n⚠️ ቦቱን ለመጠቀም መጀመሪያ ይፋዊ ቻናላችንን ይቀላቀሉ።",
+          text: "👋 <b>እባክዎ መጀመሪያ ቻናላችንን ይቀላቀሉ!</b>\n\nከዚያም ከስር ያለውን <b>«✅ ተቀላቅያለሁ»</b> የሚለውን ይጫኑ፦",
           parse_mode: "HTML",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "📢 ቻናሉን ተቀላቀል", url: "https://t.me/Unique_techs" }],
-              [{ text: "✅ ተቀላቅያለሁ (Check)", callback_data: "check_join" }]
+              [{ text: "📢 ቻናል ተቀላቀል", url: "https://t.me/Unique_techs" }],
+              [{ text: "✅ ተቀላቅያለሁ", callback_data: "check_join" }]
             ]
           }
         })
@@ -243,24 +292,12 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    await telegram("sendMessage", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: userId,
-        text: "👋 <b>እንኳን ወደ Unique P2P Store በደህና መጡ!</b>\n\nUSDT ለመሸጥና ፈጣን ክፍያ በቴሌብር ወይም በባንክ ለመቀበል ከስር ያለውን ቁልፍ ይጫኑ፦",
-        parse_mode: "HTML",
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "🚀 Open Unique P2P", web_app: { url: "https://beki231.github.io/uniquep2p/" } }]
-          ]
-        }
-      })
-    });
+    // አባል ከሆነ ልክ የድሮውን ፎርማት ይልክለታል
+    await sendWelcomeBanner(userId);
     return;
   }
 
-  // 2. Callback Query (Approve/Decline ወይም Check Join) ሲነካ
+  // 2. Callback Query ሲነካ
   const callback = req.body.callback_query;
   if (!callback) return;
 
@@ -269,25 +306,13 @@ app.post("/telegram-webhook", async (req, res) => {
     if (callback.data === "check_join") {
       const isMember = await checkMembership(callback.from.id);
       if (isMember) {
-        await telegram("sendMessage", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: callback.from.id,
-            text: "✅ <b>እንኳን ደህና መጡ!</b> ቻናሉን በትክክል ተቀላቅለዋል። አሁን መገበያየት ይችላሉ፦",
-            parse_mode: "HTML",
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "🚀 Open Unique P2P", web_app: { url: "https://beki231.github.io/uniquep2p/" } }]
-              ]
-            }
-          })
-        });
         await telegram("answerCallbackQuery", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ callback_query_id: callback.id })
         });
+        // ቻናሉን ከተቀላቀለ ሙሉውን ያማረ ባነር ይልክለታል
+        await sendWelcomeBanner(callback.from.id);
       } else {
         await telegram("answerCallbackQuery", {
           method: "POST",
