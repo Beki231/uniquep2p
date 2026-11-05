@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Unique P2P Store 🇪🇹</title>
-  <!-- Telegram WebApp Script -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -38,7 +36,6 @@
       padding-bottom: 75px;
     }
 
-    /* Header */
     header {
       background: rgba(11, 15, 25, 0.95);
       backdrop-filter: blur(12px);
@@ -89,7 +86,6 @@
       border: 1px solid rgba(0, 210, 106, 0.2);
     }
 
-    /* Container */
     .container {
       padding: 16px;
       flex: 1;
@@ -98,7 +94,6 @@
       width: 100%;
     }
 
-    /* Banner Card */
     .banner-card {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
       border: 1px solid rgba(255, 183, 3, 0.3);
@@ -107,17 +102,6 @@
       margin-bottom: 16px;
       position: relative;
       overflow: hidden;
-    }
-
-    .banner-card::after {
-      content: '';
-      position: absolute;
-      top: -30%;
-      right: -20%;
-      width: 150px;
-      height: 150px;
-      background: radial-gradient(circle, rgba(255, 183, 3, 0.15) 0%, transparent 70%);
-      pointer-events: none;
     }
 
     .banner-title {
@@ -136,7 +120,6 @@
       line-height: 1.4;
     }
 
-    /* Tab Contents */
     .tab-content {
       display: none;
       animation: fadeIn 0.25s ease-out;
@@ -151,7 +134,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Form Styles */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -203,7 +185,6 @@
       font-size: 14px;
     }
 
-    /* Networks Grid */
     .networks-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -231,7 +212,6 @@
       color: #fff;
     }
 
-    /* Crypto Address Box */
     .address-box {
       background: rgba(0, 0, 0, 0.3);
       border: 1px dashed rgba(255, 255, 255, 0.15);
@@ -261,42 +241,6 @@
       gap: 6px;
     }
 
-    /* File Upload Box */
-    .file-upload-box {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px dashed rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    .file-upload-box input[type="file"] {
-      display: none;
-    }
-
-    .file-upload-btn {
-      background: rgba(56, 189, 248, 0.15);
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 8px;
-      padding: 7px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .file-name-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    /* Rate Card */
     .rate-card {
       background: rgba(0, 210, 106, 0.08);
       border: 1px solid rgba(0, 210, 106, 0.25);
@@ -319,7 +263,6 @@
       color: var(--accent-green);
     }
 
-    /* Big Submit Button */
     .submit-btn {
       width: 100%;
       background: linear-gradient(135deg, #00d26a, #059669);
@@ -344,7 +287,6 @@
       cursor: not-allowed;
     }
 
-    /* Table Styles */
     .rate-table {
       width: 100%;
       border-collapse: collapse;
@@ -363,7 +305,6 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    /* Bottom Navigation Bar */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -400,7 +341,6 @@
       color: var(--accent-green);
     }
 
-    /* Disclaimer */
     .disclaimer {
       font-size: 11px;
       color: #64748b;
@@ -412,7 +352,6 @@
 </head>
 <body>
 
-  <!-- Top Header -->
   <header>
     <div class="brand">
       <div class="brand-logo">U</div>
@@ -425,7 +364,6 @@
   </header>
 
   <div class="container">
-    <!-- Banner -->
     <div class="banner-card">
       <div class="banner-title">
         <i class="fa-solid fa-bolt"></i> ፈጣን እና ደህንነቱ የተጠበቀ P2P
@@ -435,7 +373,7 @@
       </div>
     </div>
 
-    <!-- TAB 1: SELL USDT (መሸጥ) -->
+    <!-- TAB 1: SELL USDT -->
     <div id="tab-sell" class="tab-content active">
       <div class="card">
         <div class="form-group">
@@ -446,7 +384,6 @@
           </div>
         </div>
 
-        <!-- Calculated Live Rate Display -->
         <div class="rate-card">
           <div>
             <div class="rate-label">የምንዛሬ ተመን (Rate)</div>
@@ -455,7 +392,6 @@
           <div class="rate-val" id="totalETBDisplay">0.00 ETB</div>
         </div>
 
-        <!-- Network Selection -->
         <div class="form-group">
           <label class="form-label">የክሪፕቶ ኔትወርክ ይምረጡ</label>
           <div class="networks-grid">
@@ -473,7 +409,6 @@
             </button>
           </div>
 
-          <!-- Dynamic Crypto Address Box -->
           <div class="address-box">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;" id="networkTitle">Binance Pay UID</div>
             <div class="address-value" id="cryptoAddress">1182277662</div>
@@ -483,7 +418,6 @@
           </div>
         </div>
 
-        <!-- Payment Method -->
         <div class="form-group">
           <label class="form-label">ብር መቀበያ ባንክ</label>
           <select id="payoutMethod" class="form-input">
@@ -502,16 +436,6 @@
           <input type="text" id="accountName" class="form-input" placeholder="ለምሳሌ: Abebe Kebede">
         </div>
 
-        <!-- Screenshot Upload Box -->
-        <div class="form-group">
-          <label class="form-label">የላኩበት ደረሰኝ (Transaction Screenshot)</label>
-          <label class="file-upload-box" for="screenshotFile">
-            <input type="file" id="screenshotFile" accept="image/*" onchange="previewFileName()">
-            <span class="file-upload-btn"><i class="fa-solid fa-image"></i> ፎቶ ምረጥ</span>
-            <span class="file-name-label" id="fileNameLabel">ምንም ፎቶ አልተመረጠም</span>
-          </label>
-        </div>
-
         <button type="button" class="submit-btn" id="submitBtn" onclick="submitOrder()">
           <i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ
         </button>
@@ -522,7 +446,7 @@
       </div>
     </div>
 
-    <!-- TAB 2: BUY USDT (መግዛት) -->
+    <!-- TAB 2: BUY USDT -->
     <div id="tab-buy" class="tab-content">
       <div class="card" style="text-align: center; padding: 40px 20px;">
         <i class="fa-solid fa-store" style="font-size: 42px; color: var(--accent-gold); margin-bottom: 12px;"></i>
@@ -536,7 +460,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: RATES (የዛሬ ዋጋ) -->
+    <!-- TAB 3: RATES -->
     <div id="tab-rates" class="tab-content">
       <div class="card">
         <h3 style="font-size: 15px; margin-bottom: 14px; color: var(--accent-gold);">
@@ -559,7 +483,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: SUPPORT (ድጋፍ) -->
+    <!-- TAB 4: SUPPORT -->
     <div id="tab-support" class="tab-content">
       <div class="card">
         <h3 style="font-size: 15px; margin-bottom: 12px;">የደንበኞች ድጋፍ መስጫ</h3>
@@ -576,7 +500,6 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
   <div class="bottom-nav">
     <button class="nav-item active" onclick="switchTab('sell', this)">
       <i class="fa-solid fa-arrow-down"></i>
@@ -597,7 +520,6 @@
   </div>
 
   <script>
-    // Telegram WebApp Init
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
@@ -607,7 +529,6 @@
       }
     }
 
-    // Crypto Addresses Config
     const addresses = {
       binance: { name: "Binance Pay UID", val: "1182277662" },
       bep20: { name: "BEP-20 (BSC) Address", val: "0xdc6bffaecee233cb3a1b41513349fd4cf842a486" },
@@ -620,9 +541,7 @@
     function selectNetwork(netKey, btnElement) {
       selectedNet = netKey;
       document.querySelectorAll('.network-btn').forEach(b => b.classList.remove('active'));
-      if (btnElement) {
-        btnElement.classList.add('active');
-      }
+      if (btnElement) btnElement.classList.add('active');
       document.getElementById('networkTitle').innerText = addresses[netKey].name;
       document.getElementById('cryptoAddress').innerText = addresses[netKey].val;
     }
@@ -630,27 +549,12 @@
     function copyCryptoAddress() {
       const addr = document.getElementById('cryptoAddress').innerText;
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(addr).then(() => {
-          showNotification("✅ አድራሻው ኮፒ ተደርጓል!");
-        });
+        navigator.clipboard.writeText(addr).then(() => showNotification("✅ አድራሻው ኮፒ ተደርጓል!"));
       } else {
         showNotification("✅ አድራሻ: " + addr);
       }
     }
 
-    function previewFileName() {
-      const fileInput = document.getElementById('screenshotFile');
-      const label = document.getElementById('fileNameLabel');
-      if (fileInput.files && fileInput.files.length > 0) {
-        label.innerText = "📁 " + fileInput.files[0].name;
-        label.style.color = "var(--accent-green)";
-      } else {
-        label.innerText = "ምንም ፎቶ አልተመረጠም";
-        label.style.color = "var(--text-muted)";
-      }
-    }
-
-    // Rate Calculation
     function getRate(amt) {
       if (amt >= 0.5 && amt < 1.0) return 178;
       if (amt >= 1.0 && amt <= 10.0) return 180;
@@ -671,7 +575,6 @@
       document.getElementById('totalETBDisplay').innerText = total.toLocaleString() + " ETB";
     }
 
-    // Navigation Switcher
     function switchTab(tabId, el) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -687,13 +590,11 @@
       }
     }
 
-    // Submit Order Directly to Admin Telegram with Action Buttons
     async function submitOrder() {
       const amt = parseFloat(document.getElementById('usdtAmount').value);
       const account = document.getElementById('accountNumber').value.trim();
       const name = document.getElementById('accountName').value.trim();
       const method = document.getElementById('payoutMethod').value;
-      const fileInput = document.getElementById('screenshotFile');
       const submitBtn = document.getElementById('submitBtn');
 
       if (!amt || amt < 0.5) {
@@ -714,104 +615,63 @@
       const BOT_TOKEN = "8613267131:AAGj_WEu6KPChdeGGQvsKmX-7E21vLc_Dpo";
       const ADMIN_CHAT_ID = "6928943908";
 
-      // የደንበኛውን Telegram ID ማግኘት
-      const customerId = tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "unknown";
-      const customerUser = tg?.initDataUnsafe?.user?.username ? `@${tg.initDataUnsafe.user.username}` : "የለውም";
+      let customerId = "";
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+        customerId = String(tg.initDataUnsafe.user.id);
+      }
 
-      const adminCaption = 
+      let customerUser = "የለውም";
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
+        customerUser = "@" + tg.initDataUnsafe.user.username;
+      }
+
+      const adminText = 
         `🚨 <b>አዲስ የ P2P የሽያጭ ትዕዛዝ ደርሷል!</b>\n` +
         `━━━━━━━━━━━━━━━━━━━━\n` +
         `👤 <b>ደንበኛ:</b> ${name} (${customerUser})\n` +
-        `🆔 <b>User ID:</b> <code>${customerId}</code>\n` +
-        `💵 <b>መጠን:</b> ${amt} USDT\n` +
+        `🆔 <b>User ID:</b> <code>${customerId || "ያልታወቀ"}</code>\n` +
+        `💵 <b>መጠን:</b> <code>${amt} USDT</code>\n` +
         `📈 <b>ተመን:</b> 1 USDT = ${rate} ETB\n` +
-        `💰 <b>የሚከፈለው:</b> ${totalETB.toLocaleString()} ETB\n` +
+        `💰 <b>የሚከፈለው:</b> <code>${totalETB.toLocaleString()} ETB</code>\n` +
         `🌐 <b>ኔትወርክ:</b> ${addresses[selectedNet].name}\n` +
         `🏦 <b>መቀበያ ባንክ:</b> ${method}\n` +
         `📱 <b>አካውንት:</b> <code>${account}</code>\n` +
         `━━━━━━━━━━━━━━━━━━━━`;
 
-      // ለ Bots.Business የሚስማማ የአዝራር አወቃቀር
       const adminKeyboard = {
         inline_keyboard: [
           [
-            { 
-              text: "✅ አጽድቅ (Approve)", 
-              callback_data: `/approve ${customerId} ${amt} ${totalETB}` 
-            },
-            { 
-              text: "❌ ውድቅ አድርግ (Reject)", 
-              callback_data: `/reject ${customerId} ${amt}` 
-            }
+            { text: "✅ አጽድቅ (Approve)", callback_data: `/approve ${customerId} ${amt} ${totalETB}` },
+            { text: "❌ ውድቅ አድርግ (Reject)", callback_data: `/reject ${customerId} ${amt}` }
           ]
         ]
       };
 
-      let sentSuccess = false;
+      try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: adminText,
+            parse_mode: "HTML",
+            reply_markup: adminKeyboard
+          })
+        });
 
-      // 1. ፎቶውን ከአዝራሮቹ ጋር ለአድሚን በ sendPhoto መላክ
-      if (fileInput.files && fileInput.files.length > 0) {
-        try {
-          const formData = new FormData();
-          formData.append("chat_id", ADMIN_CHAT_ID);
-          formData.append("caption", adminCaption);
-          formData.append("parse_mode", "HTML");
-          formData.append("reply_markup", JSON.stringify(adminKeyboard));
-          formData.append("photo", fileInput.files[0]);
-
-          const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-            method: "POST",
-            body: formData
-          });
-          const resData = await res.json();
-          if (resData.ok) sentSuccess = true;
-        } catch (e) {
-          console.warn("sendPhoto error:", e);
-        }
-      }
-
-      // 2. ፎቶ ካልመረጠ በ sendMessage መላክ
-      if (!sentSuccess) {
-        try {
-          const res2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: ADMIN_CHAT_ID,
-              text: adminCaption,
-              parse_mode: "HTML",
-              reply_markup: adminKeyboard
-            })
-          });
-          const res2Data = await res2.json();
-          if (res2Data.ok) sentSuccess = true;
-        } catch (e) {
-          console.error("sendMessage error:", e);
-        }
-      }
-
-      // 3. ለደንበኛውም የትዕዛዝ ማረጋገጫ በቦቱ በኩል መላክ
-      if (customerId !== "unknown") {
-        try {
+        if (customerId) {
           await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chat_id: customerId,
-              text: `✅ <b>የትዕዛዝ ጥያቄዎ በተሳካ ሁኔታ ተልኳል!</b>\n\n💵 <b>መጠን፦</b> ${amt} USDT\n💰 <b>የሚከፈለው፦</b> ${totalETB.toLocaleString()} ETB\n📱 <b>አካውንት፦</b> ${account} (${name})\n\nትዕዛዝዎ በአድሚን እየተጣራ ነው። ሲጠናቀቅ ማረጋገጫ ይላክልዎታል። 🙏`,
+              text: `✅ <b>የትዕዛዝ ጥያቄዎ ደርሷል!</b>\n\n💵 <b>መጠን:</b> ${amt} USDT\n💰 <b>የሚከፈለው:</b> ${totalETB.toLocaleString()} ETB\n📱 <b>አካውንት:</b> ${account} (${name})\n\nእባክዎ ክፍያውን ፈጽመው የከፈሉበትን <b>ደረሰኝ (ስክሪንሾት)</b> እዚህ ቻት ላይ አሁን ይላኩልን! 🙏`,
               parse_mode: "HTML"
             })
           });
-        } catch (err) {
-          console.warn("Customer alert error:", err);
         }
-      }
 
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
-
-      if (sentSuccess) {
-        const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nክፍያው ተረጋግጦ ወዲያውኑ ገቢ ይደረጋል!`;
+        const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nእባክዎ ገጹን ዘግተው የከፈሉበትን ደረሰኝ በቦቱ ቻት ላይ ይላኩ!`;
         if (tg && tg.showPopup) {
           tg.showPopup({
             title: "🎉 ትዕዛዝዎ ተልኳል!",
@@ -824,6 +684,11 @@
           alert(successMsg);
           if (tg && tg.close) tg.close();
         }
+      } catch (e) {
+        showNotification("❌ በመላክ ላይ ችግር ተፈጥሯል፣ እባክዎ በድጋሚ ይሞክሩ!");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
       }
     }
   </script>
