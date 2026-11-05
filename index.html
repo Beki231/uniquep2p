@@ -420,22 +420,22 @@
       box-shadow: 0 0 8px rgba(255, 183, 3, 0.25);  
     }  
 
-    /* SUPPORT PAGE & COMPACT BUTTONS: Grid Action Buttons */  
+    /* SUPPORT PAGE: Grid Action Buttons */  
     .support-grid {  
       display: grid;  
       grid-template-columns: 1fr 1fr;  
-      gap: 10px;  
-      margin-bottom: 14px;  
+      gap: 12px;  
+      margin-bottom: 16px;  
     }  
 
     .btn-support-admin {  
       background: #2563eb;  
       color: #ffffff;  
-      padding: 13px 10px;  
+      padding: 15px 12px;  
       border-radius: 14px;  
       text-decoration: none;  
       font-weight: 800;  
-      font-size: 13px;  
+      font-size: 14px;  
       display: flex;  
       align-items: center;  
       justify-content: center;  
@@ -447,11 +447,11 @@
     .btn-support-channel {  
       background: #16a34a;  
       color: #ffffff;  
-      padding: 13px 10px;  
+      padding: 15px 12px;  
       border-radius: 14px;  
       text-decoration: none;  
       font-weight: 800;  
-      font-size: 13px;  
+      font-size: 14px;  
       display: flex;  
       align-items: center;  
       justify-content: center;  
@@ -468,8 +468,8 @@
     .proof-card {  
       background: rgba(10, 15, 30, 0.85);  
       border: 1px solid rgba(56, 189, 248, 0.25);  
-      border-radius: 14px;  
-      padding: 14px;  
+      border-radius: 15px;  
+      padding: 17px 16px;  
       text-decoration: none;  
       display: block;  
       color: #fff;  
@@ -606,10 +606,10 @@
           </div>  
         </div>  
 
-        <!-- Payment Method -->  
+        <!-- Payment Method with Dynamic Placeholder Trigger -->  
         <div class="form-group">  
           <label class="form-label">ብር መቀበያ ዘዴ</label>  
-          <select id="payoutMethod" class="form-input">  
+          <select id="payoutMethod" class="form-input" onchange="updateAccountPlaceholder()">  
             <option value="Telebirr">📱 ቴሌብር (Telebirr)</option>  
             <option value="CBE">🏦 የኢትዮጵያ ንግድ ባንክ (CBE)</option>  
           </select>  
@@ -648,26 +648,18 @@
     <!-- TAB 2: BUY USDT (መግዛት) -->  
     <div id="tab-buy" class="tab-content">  
       <div class="card" style="text-align: center; padding: 30px 16px;">  
-        
-        <div style="margin-bottom: 12px;">
+        <div style="margin-bottom: 12px;">  
           <i class="fa-solid fa-store" style="font-size: 36px; color: var(--accent-gold);"></i>  
-        </div>
-
+        </div>  
         <h3 style="font-size: 16px; margin-bottom: 6px; font-weight: 800;">USDT የመግዛት አገልግሎት</h3>  
-        
         <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px; font-weight: 500;">  
           በቅርቡ ስራ ይጀምራል! ለአሁኑ በቀጥታ ከአድሚን መግዛት ይችላሉ፦  
         </p>  
-
         <a href="https://t.me/Aropc" target="_blank" class="submit-btn" style="text-decoration: none; padding: 12px 18px; font-size: 14px;">  
           <i class="fa-solid fa-headset" style="font-size: 15px;"></i> አድሚን ያነጋግሩ (@Aropc)  
         </a>  
-
       </div>  
     </div>  
-
-
-    
 
     <!-- TAB 3: RATES (የዛሬ ዋጋ + ቀጥታ ሽያጭ አዝራር) -->  
     <div id="tab-rates" class="tab-content">  
@@ -718,23 +710,23 @@
       </div>  
     </div>  
 
-        <!-- TAB 4: SUPPORT (ድጋፍ) - SCALED & BALANCED -->  
+    <!-- TAB 4: SUPPORT (ድጋፍ) -->  
     <div id="tab-support" class="tab-content">  
       <div class="card" style="padding: 22px 16px;">  
         <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px;">  
           <i class="fa-solid fa-headset" style="color: var(--accent-cyan);"></i> የደንበኞች ድጋፍ መስጫ  
         </h3>  
 
-        <div class="support-grid" style="gap: 12px; margin-bottom: 16px;">  
-          <a href="https://t.me/Aropc" target="_blank" class="btn-support-admin" style="padding: 15px 12px; font-size: 14px; border-radius: 14px;">  
-            <i class="fa-solid fa-headphones" style="font-size: 16px;"></i> Support (Admin)  
+        <div class="support-grid">  
+          <a href="https://t.me/Aropc" target="_blank" class="btn-support-admin">  
+            <i class="fa-solid fa-headphones"></i> Support (Admin)  
           </a>  
-          <a href="https://t.me/Unique_techs" target="_blank" class="btn-support-channel" style="padding: 15px 12px; font-size: 14px; border-radius: 14px;">  
-            <i class="fa-solid fa-bullhorn" style="font-size: 16px;"></i> Community  
+          <a href="https://t.me/Unique_techs" target="_blank" class="btn-support-channel">  
+            <i class="fa-solid fa-bullhorn"></i> Community  
           </a>  
         </div>  
 
-        <a href="https://t.me/Ut_proof" target="_blank" class="proof-card" style="padding: 17px 16px; border-radius: 15px;">  
+        <a href="https://t.me/Ut_proof" target="_blank" class="proof-card">  
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">  
             <span style="font-size: 14px; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">  
               <i class="fa-solid fa-share-nodes"></i> የክፍያዎች ማረጋገጫ (Proof Channel)  
@@ -747,6 +739,7 @@
         </a>  
       </div>  
     </div>  
+  </div>  
 
   <!-- Bottom Navigation -->  
   <div class="bottom-nav">  
@@ -774,7 +767,9 @@
       tg.ready();  
       tg.expand();  
       if (tg.initDataUnsafe?.user) {  
-        document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name || "User";  
+        const u = tg.initDataUnsafe.user;
+        const displayName = u.first_name || (u.username ? `@${u.username}` : "User");
+        document.getElementById('userName').innerText = displayName;  
       }  
     }  
   
@@ -824,6 +819,17 @@
       document.getElementById('networkTitle').innerText = addresses[netKey].name;  
       document.getElementById('cryptoAddress').innerText = addresses[netKey].val;  
     }  
+
+    // Dynamic Placeholder Switcher for CBE and Telebirr
+    function updateAccountPlaceholder() {
+      const method = document.getElementById("payoutMethod").value;
+      const accInput = document.getElementById("accountNumber");
+      if (method === "CBE") {
+        accInput.placeholder = "ለምሳሌ: 1000123456789";
+      } else {
+        accInput.placeholder = "ለምሳሌ: 0912345678";
+      }
+    }
   
     function copyCryptoAddress() {  
       triggerHaptic('medium');  
@@ -871,7 +877,6 @@
       document.getElementById('totalETBDisplay').innerText = total.toLocaleString() + " ETB";  
     }  
 
-    // Rates ገጽ ላይ ያለውን አዝራር ሲጫኑ ወደ Sell ገጽ መሸጋገር
     function goToSellTab() {  
       triggerHaptic('medium');  
       const sellNavBtn = document.querySelectorAll('.nav-item')[0];  
@@ -913,6 +918,25 @@
         showNotification("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");  
         return;  
       }  
+
+      // Account Format Validation (Telebirr & CBE)
+      const cleanAcc = account.replace(/\s+/g, '');
+      if (method === "Telebirr") {
+        const teleRegex = /^(09|07)\d{8}$/;
+        if (!teleRegex.test(cleanAcc)) {
+          triggerHaptic('error');
+          showNotification("⚠️ የቴሌብር ቁጥር ትክክል አይደለም! (በ09 ወይም በ07 የሚጀምር 10 ድጅት መሆን አለበት)");
+          return;
+        }
+      } else if (method === "CBE") {
+        const cbeRegex = /^\d{13}$/;
+        if (!cbeRegex.test(cleanAcc)) {
+          triggerHaptic('error');
+          showNotification("⚠️ የንግድ ባንክ (CBE) አካውንት 13 ድጅት መሆን አለበት!");
+          return;
+        }
+      }
+
       if (!file) {  
         triggerHaptic('error');  
         showNotification("⚠️ እባክዎ የላኩበትን ደረሰኝ (Screenshot) ይምረጡ!");  
@@ -932,7 +956,7 @@
         const formData = new FormData();  
         formData.append("initData", tg.initData);  
         formData.append("amount", String(amt));  
-        formData.append("account", account);  
+        formData.append("account", cleanAcc);  
         formData.append("name", name);  
         formData.append("method", method);  
         formData.append("network", selectedNet);  
