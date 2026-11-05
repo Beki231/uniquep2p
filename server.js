@@ -16,6 +16,7 @@ const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 const BOT_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
+const CHANNEL_ID = "@Unique_techs"; // Force Join የሚደረግበት ቻናል
 
 const addresses = {
   binance: "Binance Pay UID",
@@ -35,6 +36,21 @@ async function telegram(method, body) {
   }
 
   return result.result;
+}
+
+// ቻናል መቀላቀላቸውን ማረጋገጫ ፈንክሽን
+async function checkMembership(userId) {
+  try {
+    const res = await telegram("getChatMember", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: CHANNEL_ID, user_id: userId })
+    });
+    return ["creator", "administrator", "member"].includes(res.status);
+  } catch (err) {
+    console.error("Membership check error:", err.message);
+    return false;
+  }
 }
 
 function verifyInitData(initData) {
@@ -202,10 +218,91 @@ app.post("/telegram-webhook", async (req, res) => {
 
   res.sendStatus(200);
 
+  // 1. Force Join ወይም /start ሜሴጅ ሲመጣ
+  const msg = req.body.message;
+  if (msg && msg.text && msg.text.startsWith("/start")) {
+    const userId = msg.from.id;
+    const isMember = await checkMembership(userId);
+
+    if (!isMember) {
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: "👋 <b>እንኳን ወደ Unique P2P Store በደህና መጡ!</b>\n\n⚠️ ቦቱን ለመጠቀም መጀመሪያ ይፋዊ ቻናላችንን ይቀላቀሉ።",
+          parse_mode: "HTML",
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "📢 ቻናሉን ተቀላቀል", url: "https://t.me/Unique_techs" }],
+              [{ text: "✅ ተቀላቅያለሁ (Check)", callback_data: "check_join" }]
+            ]
+          }
+        })
+      });
+      return;
+    }
+
+    await telegram("sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: userId,
+        text: "👋 <b>እንኳን ወደ Unique P2P Store በደህና መጡ!</b>\n\nUSDT ለመሸጥና ፈጣን ክፍያ በቴሌብር ወይም በባንክ ለመቀበል ከስር ያለውን ቁልፍ ይጫኑ፦",
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🚀 Open Unique P2P", web_app: { url: "https://beki231.github.io/uniquep2p/" } }]
+          ]
+        }
+      })
+    });
+    return;
+  }
+
+  // 2. Callback Query (Approve/Decline ወይም Check Join) ሲነካ
   const callback = req.body.callback_query;
   if (!callback) return;
 
   try {
+    // ተጠቃሚው 'ተቀላቅያለሁ' ሲል ማረጋገጥ
+    if (callback.data === "check_join") {
+      const isMember = await checkMembership(callback.from.id);
+      if (isMember) {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: callback.from.id,
+            text: "✅ <b>እንኳን ደህና መጡ!</b> ቻናሉን በትክክል ተቀላቅለዋል። አሁን መገበያየት ይችላሉ፦",
+            parse_mode: "HTML",
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: "🚀 Open Unique P2P", web_app: { url: "https://beki231.github.io/uniquep2p/" } }]
+              ]
+            }
+          })
+        });
+        await telegram("answerCallbackQuery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ callback_query_id: callback.id })
+        });
+      } else {
+        await telegram("answerCallbackQuery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            callback_query_id: callback.id,
+            text: "⚠️ እባክዎ መጀመሪያ ቻናሉን ይቀላቀሉ!",
+            show_alert: true
+          })
+        });
+      }
+      return;
+    }
+
+    // የአድሚን Approve/Decline ተግባር
     if (String(callback.from.id) !== String(ADMIN_CHAT_ID)) {
       await telegram("answerCallbackQuery", {
         method: "POST",
@@ -239,7 +336,7 @@ app.post("/telegram-webhook", async (req, res) => {
 
     const message = action === "approve"
       ? `✅ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየ ${order.amount} USDT ሽያጭ ትዕዛዝዎ ጸድቋል! ${order.total.toLocaleString()} ETB ወደ አካውንትዎ ገቢ ተደርጓል። እናመሰግናለን! 🙏`
-      : `❌ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየትዕዛዝ ጥያቄዎ ውድቅ ተደርጓል። እባክዎ ለተጨማሪ መረጃ አድሚኑን ያነጋግሩ።`;
+      : `❌ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየትዕዛዝ ጥያቄዎ ውድቅ ተደርጓል። እባክዎ ለተጨማሪ መረጃ አድሚኑን ያነጋግሩ (@Aropc)።`;
 
     await telegram("sendMessage", {
       method: "POST",
