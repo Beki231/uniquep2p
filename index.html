@@ -715,7 +715,7 @@
       const ADMIN_CHAT_ID = "6928943908";
 
       // የደንበኛውን Telegram ID ማግኘት
-      const customerId = tg?.initDataUnsafe?.user?.id || "unknown";
+      const customerId = tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "unknown";
       const customerUser = tg?.initDataUnsafe?.user?.username ? `@${tg.initDataUnsafe.user.username}` : "የለውም";
 
       const adminCaption = 
@@ -731,19 +731,25 @@
         `📱 <b>አካውንት:</b> <code>${account}</code>\n` +
         `━━━━━━━━━━━━━━━━━━━━`;
 
-      // ለአድሚን የሚታዩት አዝራሮች
+      // ለ Bots.Business የሚስማማ የአዝራር አወቃቀር
       const adminKeyboard = {
         inline_keyboard: [
           [
-            { text: "✅ ትዕዛዝ አጽድቅ", callback_data: `approve_${customerId}_${amt}_${totalETB}` },
-            { text: "❌ ትዕዛዝ ውድቅ አርግ", callback_data: `reject_${customerId}_${amt}` }
+            { 
+              text: "✅ አጽድቅ (Approve)", 
+              callback_data: `/approve ${customerId} ${amt} ${totalETB}` 
+            },
+            { 
+              text: "❌ ውድቅ አድርግ (Reject)", 
+              callback_data: `/reject ${customerId} ${amt}` 
+            }
           ]
         ]
       };
 
       let sentSuccess = false;
 
-      // 1. ፎቶውን ከአዝራሮቹ ጋር በ sendPhoto መላክ
+      // 1. ፎቶውን ከአዝራሮቹ ጋር ለአድሚን በ sendPhoto መላክ
       if (fileInput.files && fileInput.files.length > 0) {
         try {
           const formData = new FormData();
@@ -764,7 +770,7 @@
         }
       }
 
-      // 2. ፎቶው ካልተመረጠ ወይም ካልሰራ በ sendMessage መላክ
+      // 2. ፎቶ ካልመረጠ በ sendMessage መላክ
       if (!sentSuccess) {
         try {
           const res2 = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -784,11 +790,28 @@
         }
       }
 
+      // 3. ለደንበኛውም የትዕዛዝ ማረጋገጫ በቦቱ በኩል መላክ
+      if (customerId !== "unknown") {
+        try {
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: customerId,
+              text: `✅ <b>የትዕዛዝ ጥያቄዎ በተሳካ ሁኔታ ተልኳል!</b>\n\n💵 <b>መጠን፦</b> ${amt} USDT\n💰 <b>የሚከፈለው፦</b> ${totalETB.toLocaleString()} ETB\n📱 <b>አካውንት፦</b> ${account} (${name})\n\nትዕዛዝዎ በአድሚን እየተጣራ ነው። ሲጠናቀቅ ማረጋገጫ ይላክልዎታል። 🙏`,
+              parse_mode: "HTML"
+            })
+          });
+        } catch (err) {
+          console.warn("Customer alert error:", err);
+        }
+      }
+
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
 
       if (sentSuccess) {
-        const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nትዕዛዝዎ ወደ አድሚን ተልኳል፤ ክፍያው ተረጋግጦ ወዲያውኑ ገቢ ይደረጋል!`;
+        const successMsg = `✅ ትዕዛዝዎ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nክፍያው ተረጋግጦ ወዲያውኑ ገቢ ይደረጋል!`;
         if (tg && tg.showPopup) {
           tg.showPopup({
             title: "🎉 ትዕዛዝዎ ተልኳል!",
