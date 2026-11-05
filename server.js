@@ -64,7 +64,7 @@ async function checkMembership(userId) {
   }
 }
 
-// ልክ እንደ መጀመሪያው ያማረው የ Welcome Caption እና Buttons መላኪያ
+// የ Welcome Caption እና Buttons መላኪያ (ከነ Cache-Buster ?v=3 ሊንኩ)
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
     `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
@@ -74,7 +74,7 @@ async function sendWelcomeBanner(userId) {
 
   const welcomeKeyboard = {
     inline_keyboard: [
-      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/" } }],
+      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=3" } }],
       [
         { text: "👨‍💻 አድሚን (@Aropc)", url: "https://t.me/Aropc" },
         { text: "📢 ቻናል", url: "https://t.me/Unique_techs" }
