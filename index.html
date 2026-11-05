@@ -147,27 +147,6 @@
       font-weight: 500;
     }  
 
-    /* Trust Proof Bar */
-    .proof-banner-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(90deg, rgba(0, 242, 121, 0.12), rgba(56, 189, 248, 0.12));
-      border: 1px dashed rgba(0, 242, 121, 0.4);
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin-bottom: 14px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 12px;
-      font-weight: 700;
-      transition: all 0.2s;
-    }
-
-    .proof-banner-btn:active {
-      transform: scale(0.98);
-    }
-
     /* Tab Contents */  
     .tab-content {  
       display: none;  
@@ -425,22 +404,65 @@
       font-weight: 700;
     }  
 
-    /* Proof Highlight Card in Support Tab */
+    /* SUPPORT PAGE: 2 Grid Action Buttons */
+    .support-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .btn-support-admin {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 13px 10px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-support-channel {
+      background: #16a34a;
+      color: #ffffff;
+      padding: 13px 10px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-support-admin:active, .btn-support-channel:active {
+      transform: scale(0.97);
+    }
+
+    /* Proof Channel Compact Card */
     .proof-card {
-      background: linear-gradient(135deg, rgba(0, 242, 121, 0.15), rgba(6, 182, 212, 0.1));
-      border: 1px solid var(--accent-green);
+      background: rgba(10, 15, 30, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
       border-radius: 14px;
       padding: 14px;
-      margin-bottom: 12px;
       text-decoration: none;
       display: block;
       color: #fff;
-      box-shadow: 0 4px 15px rgba(0, 242, 121, 0.2);
       transition: all 0.2s;
     }
 
     .proof-card:active {
       transform: scale(0.98);
+      border-color: var(--accent-green);
     }
 
     /* Bottom Navigation Bar */  
@@ -519,15 +541,6 @@
         USDT በደቂቃዎች ውስጥ ሽጠው በቴሌብር ወይም በኢትዮጵያ ንግድ ባንክ (CBE) ብር ይቀበሉ!  
       </div>  
     </div>  
-
-    <!-- Proof Channel Quick Bar -->
-    <a href="https://t.me/Ut_proof" target="_blank" class="proof-banner-btn">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <i class="fa-solid fa-circle-check" style="color: var(--accent-green); font-size: 15px;"></i>
-        <span>የተከፈሉ ክፍያዎች ማረጋገጫ (Proof & Reviews)</span>
-      </div>
-      <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--accent-cyan); font-size: 12px;"></i>
-    </a>
 
     <!-- TAB 1: SELL USDT (መሸጥ) -->  
     <div id="tab-sell" class="tab-content active">  
@@ -656,30 +669,30 @@
     <!-- TAB 4: SUPPORT (ድጋፍ) -->  
     <div id="tab-support" class="tab-content">  
       <div class="card">  
-        <h3 style="font-size: 15px; margin-bottom: 12px; font-weight: 800;">የደንበኞች ድጋፍና ማረጋገጫ</h3>  
+        <h3 style="font-size: 15px; margin-bottom: 14px; font-weight: 800;">የደንበኞች ድጋፍ መስጫ</h3>  
 
-        <!-- ይፋዊ የ Proof ቻናል ካርድ -->
+        <!-- በሁለተኛው ፎቶ መሰረት ጎን ለጎን የተደረጉ 2 አዝራሮች -->
+        <div class="support-grid">
+          <a href="https://t.me/Aropc" target="_blank" class="btn-support-admin">
+            <i class="fa-solid fa-headphones"></i> Support (Admin)
+          </a>
+          <a href="https://t.me/Unique_techs" target="_blank" class="btn-support-channel">
+            <i class="fa-solid fa-bullhorn"></i> Community
+          </a>
+        </div>
+
+        <!-- ከስር የተቀመጠ የታመቀ Proof Channel ማሳያ ካርድ -->
         <a href="https://t.me/Ut_proof" target="_blank" class="proof-card">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 14px; font-weight: 800; color: var(--accent-green); display: flex; align-items: center; gap: 6px;">
-              <i class="fa-solid fa-certificate"></i> የክፍያዎች ማረጋገጫ (Vouch Proof)
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <span style="font-size: 13.5px; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 7px;">
+              <i class="fa-solid fa-share-nodes"></i> የክፍያዎች ማረጋገጫ (Proof Channel)
             </span>
-            <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--accent-cyan); font-size: 13px;"></i>
+            <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--accent-cyan); font-size: 12px;"></i>
           </div>
-          <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45;">
-            ለደንበኞቻችን የተከፈሉ እውነተኛ የቴሌብር እና የባንክ ደረሰኞችን በቀጥታ በቻናላችን ላይ ይመልከቱ (@Ut_proof)።
+          <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.4; font-weight: 500;">
+            የተከፈሉ እውነተኛ የቴሌብር እና የባንክ ደረሰኞችን በ @Ut_proof ይመልከቱ።
           </p>
         </a>
-
-        <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.55; margin: 14px 0 10px 0; font-weight: 600;">  
-          ስለ ትዕዛዝዎ ወይም ስለ ግብይት ማንኛውም አይነት ጥያቄ ካለዎት በቀጥታ ያግኙን፦  
-        </p>  
-        <a href="https://t.me/Aropc" target="_blank" class="network-btn" style="text-decoration: none; margin-bottom: 10px;">  
-          <i class="fa-solid fa-user-shield" style="color: #38bdf8;"></i> የቴሌግራም አድሚን (@Aropc)  
-        </a>  
-        <a href="https://t.me/Unique_techs" target="_blank" class="network-btn" style="text-decoration: none;">  
-          <i class="fa-solid fa-bullhorn" style="color: var(--accent-gold);"></i> ይፋዊ ቻናላችን (@Unique_techs)  
-        </a>  
       </div>  
     </div>  
   </div>  
