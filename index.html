@@ -162,7 +162,7 @@
       to { opacity: 1; transform: translateY(0); }  
     }  
 
-    /* Main Form Card */  
+    /* Main Card */  
     .card {  
       background: var(--card-bg);  
       border: 1px solid var(--card-border);  
@@ -393,7 +393,7 @@
     .rate-table th {  
       color: var(--text-muted);  
       text-align: left;  
-      padding: 9px 8px;  
+      padding: 10px 8px;  
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);  
       font-weight: 700;
     }  
@@ -404,7 +404,41 @@
       font-weight: 700;
     }  
 
-    /* SUPPORT PAGE: 2 Grid Action Buttons */
+    /* VIP Best Value Badge */
+    .best-rate-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, rgba(255, 183, 3, 0.2), rgba(255, 51, 102, 0.2));
+      border: 1px solid rgba(255, 183, 3, 0.6);
+      color: var(--accent-gold);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 8px;
+      margin-left: 6px;
+      box-shadow: 0 0 8px rgba(255, 183, 3, 0.25);
+    }
+
+    /* RATES TAB: Live Calculator Box (Styled like Proof Box) */
+    .calc-box {
+      background: rgba(10, 15, 30, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .calc-result-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    /* SUPPORT PAGE: Grid Action Buttons */
     .support-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -643,12 +677,18 @@
       </div>  
     </div>  
 
-    <!-- TAB 3: RATES (የዛሬ ዋጋ) -->  
+    <!-- TAB 3: RATES (የዛሬ ዋጋ + Live Calculator + Quick Sell) -->  
     <div id="tab-rates" class="tab-content">  
       <div class="card">  
-        <h3 style="font-size: 15px; margin-bottom: 14px; color: var(--accent-gold); font-weight: 800;">  
-          <i class="fa-solid fa-chart-line"></i> የዛሬ የ USDT መሸጫ ዋጋዎች  
-        </h3>  
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <h3 style="font-size: 15px; color: var(--accent-gold); font-weight: 800; display: flex; align-items: center; gap: 7px;">  
+            <i class="fa-solid fa-chart-line"></i> የዛሬ የ USDT መሸጫ ዋጋዎች  
+          </h3>  
+          <span style="font-size: 11px; color: var(--accent-green); font-weight: 800; background: rgba(0, 242, 121, 0.1); padding: 3px 8px; border-radius: 10px; border: 1px solid rgba(0, 242, 121, 0.25);">
+            ● LIVE
+          </span>
+        </div>
+
         <table class="rate-table">  
           <thead>  
             <tr>  
@@ -657,12 +697,52 @@
             </tr>  
           </thead>  
           <tbody>  
-            <tr><td>0.5 - 0.9 USDT</td><td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier1">178 ETB</td></tr>  
-            <tr><td>1.0 - 10 USDT</td><td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier2">180 ETB</td></tr>  
-            <tr><td>11 - 30 USDT</td><td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier3">182 ETB</td></tr>  
-            <tr><td>31 USDT በላይ</td><td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier4">185 ETB</td></tr>  
+            <tr>
+              <td>0.5 - 0.9 USDT</td>
+              <td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier1">178 ETB</td>
+            </tr>  
+            <tr>
+              <td>1.0 - 10 USDT</td>
+              <td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier2">180 ETB</td>
+            </tr>  
+            <tr>
+              <td>11 - 30 USDT</td>
+              <td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier3">182 ETB</td>
+            </tr>  
+            <tr>
+              <td>
+                31 USDT በላይ 
+                <span class="best-rate-badge"><i class="fa-solid fa-fire"></i> ምርጥ ተመን</span>
+              </td>
+              <td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier4">185 ETB</td>
+            </tr>  
           </tbody>  
         </table>  
+
+        <!-- የቀጥታ የምንዛሬ ማስያ (Live Calculator Box) -->
+        <div class="calc-box">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 13px; font-weight: 800; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-calculator"></i> የቀጥታ የምንዛሬ አስሊ
+            </span>
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;" id="calcAppliedRate">ተመን: 180 ETB</span>
+          </div>
+
+          <div class="input-wrapper">
+            <input type="number" id="calcInputAmount" class="form-input" placeholder="መጠን ይጻፉ (ለምሳሌ: 25)" step="0.1" oninput="runRatesCalculator()">
+            <span class="input-suffix">USDT</span>
+          </div>
+
+          <div class="calc-result-row">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">የሚቀበሉት ብር፦</span>
+            <span style="font-size: 17px; font-weight: 900; color: var(--accent-green); text-shadow: 0 0 10px rgba(0, 242, 121, 0.35);" id="calcResultDisplay">0.00 ETB</span>
+          </div>
+        </div>
+
+        <!-- ወደ ሽያጭ ገጽ በቀጥታ የሚወስድ አዝራር -->
+        <button type="button" class="submit-btn" onclick="quickTradeFromRates()">
+          <i class="fa-solid fa-bolt"></i> አሁንኑ በዚሁ ተመን ሽጥ
+        </button>
       </div>  
     </div>  
 
@@ -671,7 +751,6 @@
       <div class="card">  
         <h3 style="font-size: 15px; margin-bottom: 14px; font-weight: 800;">የደንበኞች ድጋፍ መስጫ</h3>  
 
-        <!-- በሁለተኛው ፎቶ መሰረት ጎን ለጎን የተደረጉ 2 አዝራሮች -->
         <div class="support-grid">
           <a href="https://t.me/Aropc" target="_blank" class="btn-support-admin">
             <i class="fa-solid fa-headphones"></i> Support (Admin)
@@ -681,7 +760,6 @@
           </a>
         </div>
 
-        <!-- ከስር የተቀመጠ የታመቀ Proof Channel ማሳያ ካርድ -->
         <a href="https://t.me/Ut_proof" target="_blank" class="proof-card">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
             <span style="font-size: 13.5px; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 7px;">
@@ -750,6 +828,7 @@
           document.getElementById('tableRateTier4').innerText = `${dynamicRates.tier4} ETB`;  
           document.getElementById('appliedRateLabel').innerText = `1 USDT = ${dynamicRates.tier2} ETB`;  
           calculateETB();  
+          runRatesCalculator();
         }  
       } catch (err) {  
         console.log("Rates fetch failed, using default.");  
@@ -819,6 +898,34 @@
       document.getElementById('appliedRateLabel').innerText = `1 USDT = ${rate} ETB`;  
       document.getElementById('totalETBDisplay').innerText = total.toLocaleString() + " ETB";  
     }  
+
+    // Live Rates Calculator Function
+    function runRatesCalculator() {
+      const inputEl = document.getElementById('calcInputAmount');
+      if (!inputEl) return;
+      const amt = parseFloat(inputEl.value) || 0;
+      if (amt <= 0) {
+        document.getElementById('calcResultDisplay').innerText = "0.00 ETB";
+        document.getElementById('calcAppliedRate').innerText = `ተመን: ${dynamicRates.tier2} ETB`;
+        return;
+      }
+      const rate = getRate(amt);
+      const total = amt * rate;
+      document.getElementById('calcAppliedRate').innerText = `ተመን: ${rate} ETB`;
+      document.getElementById('calcResultDisplay').innerText = total.toLocaleString() + " ETB";
+    }
+
+    // Quick Trade Button Action: Navigates to Sell Tab with Value Filled
+    function quickTradeFromRates() {
+      triggerHaptic('medium');
+      const calcAmt = document.getElementById('calcInputAmount').value;
+      if (calcAmt && parseFloat(calcAmt) > 0) {
+        document.getElementById('usdtAmount').value = calcAmt;
+        calculateETB();
+      }
+      const sellNavBtn = document.querySelectorAll('.nav-item')[0];
+      switchTab('sell', sellNavBtn);
+    }
   
     function switchTab(tabId, el) {  
       triggerHaptic('light');  
