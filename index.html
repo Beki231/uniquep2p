@@ -708,14 +708,17 @@ header {
         `አካውንት: ${account}\n` +
         `ስም: ${name}`;
 
-      const shareUrl = "https://t.me/UniP2P_bot?text=" + encodeURIComponent(orderMsg);
+      const shareUrl = "https://t.me/share/url?url=" + encodeURIComponent(orderMsg);
 
-      if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(shareUrl);
-        if (tg.close) tg.close();
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink(shareUrl);
+        window.Telegram.WebApp.close();
       } else {
-        window.location.href = shareUrl;
+        window.open(shareUrl, "_blank");
       }
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
     }  
   </script> 
 </body>  
