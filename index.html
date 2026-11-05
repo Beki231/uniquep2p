@@ -1,4 +1,5 @@
-<!DOCTYPE html>  <html lang="am">  
+<!DOCTYPE html>  
+<html lang="am">  
 <head>  
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
@@ -18,396 +19,399 @@
       --accent-blue: #2aabee;  
       --text-main: #f8fafc;  
       --text-muted: #94a3b8;  
-    }  * {  
-  box-sizing: border-box;  
-  margin: 0;  
-  padding: 0;  
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;  
-  -webkit-tap-highlight-color: transparent;  
-}  
+    }  
+    * {  
+      box-sizing: border-box;  
+      margin: 0;  
+      padding: 0;  
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;  
+      -webkit-tap-highlight-color: transparent;  
+    }  
 
-body {  
-  background-color: var(--bg-color);  
-  color: var(--text-main);  
-  min-height: 100vh;  
-  display: flex;  
-  flex-direction: column;  
-  padding-bottom: 75px;  
-}  
+    body {  
+      background-color: var(--bg-color);  
+      color: var(--text-main);  
+      min-height: 100vh;  
+      display: flex;  
+      flex-direction: column;  
+      padding-bottom: 75px;  
+    }  
 
-/* Header */  
-header {  
-  background: rgba(11, 15, 25, 0.95);  
-  backdrop-filter: blur(12px);  
-  border-bottom: 1px solid var(--card-border);  
-  padding: 12px 16px;  
-  position: sticky;  
-  top: 0;  
-  z-index: 100;  
-  display: flex;  
-  align-items: center;  
-  justify-content: space-between;  
-}  
+    /* Header */  
+    header {  
+      background: rgba(11, 15, 25, 0.95);  
+      backdrop-filter: blur(12px);  
+      border-bottom: 1px solid var(--card-border);  
+      padding: 12px 16px;  
+      position: sticky;  
+      top: 0;  
+      z-index: 100;  
+      display: flex;  
+      align-items: center;  
+      justify-content: space-between;  
+    }  
 
-.brand {  
-  display: flex;  
-  align-items: center;  
-  gap: 10px;  
-}  
+    .brand {  
+      display: flex;  
+      align-items: center;  
+      gap: 10px;  
+    }  
 
-.brand-logo {  
-  width: 38px;  
-  height: 38px;  
-  border-radius: 12px;  
-  background: linear-gradient(135deg, #f83245, #ffb703, #00d26a);  
-  display: flex;  
-  align-items: center;  
-  justify-content: center;  
-  font-weight: 900;  
-  font-size: 18px;  
-  color: #fff;  
-}  
+    .brand-logo {  
+      width: 38px;  
+      height: 38px;  
+      border-radius: 12px;  
+      background: linear-gradient(135deg, #f83245, #ffb703, #00d26a);  
+      display: flex;  
+      align-items: center;  
+      justify-content: center;  
+      font-weight: 900;  
+      font-size: 18px;  
+      color: #fff;  
+    }  
 
-.brand-name {  
-  font-size: 16px;  
-  font-weight: 700;  
-  letter-spacing: -0.3px;  
-}  
+    .brand-name {  
+      font-size: 16px;  
+      font-weight: 700;  
+      letter-spacing: -0.3px;  
+    }  
 
-.user-badge {  
-  display: flex;  
-  align-items: center;  
-  gap: 6px;  
-  background: rgba(255, 255, 255, 0.06);  
-  padding: 5px 12px;  
-  border-radius: 20px;  
-  font-size: 12px;  
-  color: var(--accent-green);  
-  border: 1px solid rgba(0, 210, 106, 0.2);  
-}  
+    .user-badge {  
+      display: flex;  
+      align-items: center;  
+      gap: 6px;  
+      background: rgba(255, 255, 255, 0.06);  
+      padding: 5px 12px;  
+      border-radius: 20px;  
+      font-size: 12px;  
+      color: var(--accent-green);  
+      border: 1px solid rgba(0, 210, 106, 0.2);  
+    }  
 
-/* Container */  
-.container {  
-  padding: 16px;  
-  flex: 1;  
-  max-width: 500px;  
-  margin: 0 auto;  
-  width: 100%;  
-}  
+    /* Container */  
+    .container {  
+      padding: 16px;  
+      flex: 1;  
+      max-width: 500px;  
+      margin: 0 auto;  
+      width: 100%;  
+    }  
 
-/* Banner Card */  
-.banner-card {  
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));  
-  border: 1px solid rgba(255, 183, 3, 0.3);  
-  border-radius: 16px;  
-  padding: 16px;  
-  margin-bottom: 16px;  
-  position: relative;  
-  overflow: hidden;  
-}  
+    /* Banner Card */  
+    .banner-card {  
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));  
+      border: 1px solid rgba(255, 183, 3, 0.3);  
+      border-radius: 16px;  
+      padding: 16px;  
+      margin-bottom: 16px;  
+      position: relative;  
+      overflow: hidden;  
+    }  
 
-.banner-card::after {  
-  content: '';  
-  position: absolute;  
-  top: -30%;  
-  right: -20%;  
-  width: 150px;  
-  height: 150px;  
-  background: radial-gradient(circle, rgba(255, 183, 3, 0.15) 0%, transparent 70%);  
-  pointer-events: none;  
-}  
+    .banner-card::after {  
+      content: '';  
+      position: absolute;  
+      top: -30%;  
+      right: -20%;  
+      width: 150px;  
+      height: 150px;  
+      background: radial-gradient(circle, rgba(255, 183, 3, 0.15) 0%, transparent 70%);  
+      pointer-events: none;  
+    }  
 
-.banner-title {  
-  font-size: 15px;  
-  font-weight: 700;  
-  color: var(--accent-gold);  
-  margin-bottom: 4px;  
-  display: flex;  
-  align-items: center;  
-  gap: 6px;  
-}  
+    .banner-title {  
+      font-size: 15px;  
+      font-weight: 700;  
+      color: var(--accent-gold);  
+      margin-bottom: 4px;  
+      display: flex;  
+      align-items: center;  
+      gap: 6px;  
+    }  
 
-.banner-subtitle {  
-  font-size: 12px;  
-  color: var(--text-muted);  
-  line-height: 1.4;  
-}  
+    .banner-subtitle {  
+      font-size: 12px;  
+      color: var(--text-muted);  
+      line-height: 1.4;  
+    }  
 
-/* Tab Contents */  
-.tab-content {  
-  display: none;  
-  animation: fadeIn 0.25s ease-out;  
-}  
+    /* Tab Contents */  
+    .tab-content {  
+      display: none;  
+      animation: fadeIn 0.25s ease-out;  
+    }  
 
-.tab-content.active {  
-  display: block;  
-}  
+    .tab-content.active {  
+      display: block;  
+    }  
 
-@keyframes fadeIn {  
-  from { opacity: 0; transform: translateY(4px); }  
-  to { opacity: 1; transform: translateY(0); }  
-}  
+    @keyframes fadeIn {  
+      from { opacity: 0; transform: translateY(4px); }  
+      to { opacity: 1; transform: translateY(0); }  
+    }  
 
-/* Form Styles */  
-.card {  
-  background: var(--card-bg);  
-  border: 1px solid var(--card-border);  
-  border-radius: 16px;  
-  padding: 18px;  
-  margin-bottom: 16px;  
-}  
+    /* Form Styles */  
+    .card {  
+      background: var(--card-bg);  
+      border: 1px solid var(--card-border);  
+      border-radius: 16px;  
+      padding: 18px;  
+      margin-bottom: 16px;  
+    }  
 
-.form-group {  
-  margin-bottom: 14px;  
-}  
+    .form-group {  
+      margin-bottom: 14px;  
+    }  
 
-.form-label {  
-  display: block;  
-  font-size: 13px;  
-  color: var(--text-muted);  
-  margin-bottom: 6px;  
-  font-weight: 500;  
-}  
+    .form-label {  
+      display: block;  
+      font-size: 13px;  
+      color: var(--text-muted);  
+      margin-bottom: 6px;  
+      font-weight: 500;  
+    }  
 
-.input-wrapper {  
-  position: relative;  
-  display: flex;  
-  align-items: center;  
-}  
+    .input-wrapper {  
+      position: relative;  
+      display: flex;  
+      align-items: center;  
+    }  
 
-.form-input {  
-  width: 100%;  
-  background: rgba(15, 23, 42, 0.8);  
-  border: 1px solid var(--card-border);  
-  border-radius: 12px;  
-  padding: 12px 14px;  
-  color: var(--text-main);  
-  font-size: 15px;  
-  outline: none;  
-  transition: all 0.2s;  
-}  
+    .form-input {  
+      width: 100%;  
+      background: rgba(15, 23, 42, 0.8);  
+      border: 1px solid var(--card-border);  
+      border-radius: 12px;  
+      padding: 12px 14px;  
+      color: var(--text-main);  
+      font-size: 15px;  
+      outline: none;  
+      transition: all 0.2s;  
+    }  
 
-.form-input:focus {  
-  border-color: var(--accent-green);  
-  box-shadow: 0 0 0 2px rgba(0, 210, 106, 0.2);  
-}  
+    .form-input:focus {  
+      border-color: var(--accent-green);  
+      box-shadow: 0 0 0 2px rgba(0, 210, 106, 0.2);  
+    }  
 
-.input-suffix {  
-  position: absolute;  
-  right: 14px;  
-  color: var(--accent-gold);  
-  font-weight: 700;  
-  font-size: 14px;  
-}  
+    .input-suffix {  
+      position: absolute;  
+      right: 14px;  
+      color: var(--accent-gold);  
+      font-weight: 700;  
+      font-size: 14px;  
+    }  
 
-/* Networks Grid */  
-.networks-grid {  
-  display: grid;  
-  grid-template-columns: repeat(2, 1fr);  
-  gap: 8px;  
-}  
+    /* Networks Grid */  
+    .networks-grid {  
+      display: grid;  
+      grid-template-columns: repeat(2, 1fr);  
+      gap: 8px;  
+    }  
 
-.network-btn {  
-  background: rgba(15, 23, 42, 0.7);  
-  border: 1px solid var(--card-border);  
-  border-radius: 12px;  
-  padding: 10px;  
-  display: flex;  
-  align-items: center;  
-  gap: 8px;  
-  color: var(--text-main);  
-  font-size: 13px;  
-  font-weight: 600;  
-  cursor: pointer;  
-  transition: all 0.2s;  
-}  
+    .network-btn {  
+      background: rgba(15, 23, 42, 0.7);  
+      border: 1px solid var(--card-border);  
+      border-radius: 12px;  
+      padding: 10px;  
+      display: flex;  
+      align-items: center;  
+      gap: 8px;  
+      color: var(--text-main);  
+      font-size: 13px;  
+      font-weight: 600;  
+      cursor: pointer;  
+      transition: all 0.2s;  
+    }  
 
-.network-btn.active {  
-  border-color: var(--accent-green);  
-  background: rgba(0, 210, 106, 0.12);  
-  color: #fff;  
-}  
+    .network-btn.active {  
+      border-color: var(--accent-green);  
+      background: rgba(0, 210, 106, 0.12);  
+      color: #fff;  
+    }  
 
-/* Crypto Address Box */  
-.address-box {  
-  background: rgba(0, 0, 0, 0.3);  
-  border: 1px dashed rgba(255, 255, 255, 0.15);  
-  border-radius: 12px;  
-  padding: 12px;  
-  margin-top: 10px;  
-}  
+    /* Crypto Address Box */  
+    .address-box {  
+      background: rgba(0, 0, 0, 0.3);  
+      border: 1px dashed rgba(255, 255, 255, 0.15);  
+      border-radius: 12px;  
+      padding: 12px;  
+      margin-top: 10px;  
+    }  
 
-.address-value {  
-  font-family: monospace;  
-  font-size: 12px;  
-  color: #38bdf8;  
-  word-break: break-all;  
-  margin-bottom: 8px;  
-}  
+    .address-value {  
+      font-family: monospace;  
+      font-size: 12px;  
+      color: #38bdf8;  
+      word-break: break-all;  
+      margin-bottom: 8px;  
+    }  
 
-.copy-btn {  
-  background: rgba(56, 189, 248, 0.15);  
-  border: 1px solid rgba(56, 189, 248, 0.3);  
-  color: #38bdf8;  
-  font-size: 12px;  
-  border-radius: 8px;  
-  padding: 6px 12px;  
-  cursor: pointer;  
-  display: inline-flex;  
-  align-items: center;  
-  gap: 6px;  
-}  
+    .copy-btn {  
+      background: rgba(56, 189, 248, 0.15);  
+      border: 1px solid rgba(56, 189, 248, 0.3);  
+      color: #38bdf8;  
+      font-size: 12px;  
+      border-radius: 8px;  
+      padding: 6px 12px;  
+      cursor: pointer;  
+      display: inline-flex;  
+      align-items: center;  
+      gap: 6px;  
+    }  
 
-/* File Upload Box */  
-.file-upload-box {  
-  background: rgba(15, 23, 42, 0.8);  
-  border: 1px dashed rgba(255, 255, 255, 0.2);  
-  border-radius: 12px;  
-  padding: 12px;  
-  display: flex;  
-  align-items: center;  
-  gap: 10px;  
-  cursor: pointer;  
-}  
+    /* File Upload Box */  
+    .file-upload-box {  
+      background: rgba(15, 23, 42, 0.8);  
+      border: 1px dashed rgba(255, 255, 255, 0.2);  
+      border-radius: 12px;  
+      padding: 12px;  
+      display: flex;  
+      align-items: center;  
+      gap: 10px;  
+      cursor: pointer;  
+    }  
 
-.file-upload-box input[type="file"] {  
-  display: none;  
-}  
+    .file-upload-box input[type="file"] {  
+      display: none;  
+    }  
 
-.file-upload-btn {  
-  background: rgba(56, 189, 248, 0.15);  
-  color: #38bdf8;  
-  border: 1px solid rgba(56, 189, 248, 0.3);  
-  border-radius: 8px;  
-  padding: 7px 14px;  
-  font-size: 12px;  
-  font-weight: 600;  
-  white-space: nowrap;  
-}  
+    .file-upload-btn {  
+      background: rgba(56, 189, 248, 0.15);  
+      color: #38bdf8;  
+      border: 1px solid rgba(56, 189, 248, 0.3);  
+      border-radius: 8px;  
+      padding: 7px 14px;  
+      font-size: 12px;  
+      font-weight: 600;  
+      white-space: nowrap;  
+    }  
 
-.file-name-label {  
-  font-size: 12px;  
-  color: var(--text-muted);  
-  overflow: hidden;  
-  text-overflow: ellipsis;  
-  white-space: nowrap;  
-}  
+    .file-name-label {  
+      font-size: 12px;  
+      color: var(--text-muted);  
+      overflow: hidden;  
+      text-overflow: ellipsis;  
+      white-space: nowrap;  
+    }  
 
-/* Rate Card */  
-.rate-card {  
-  background: rgba(0, 210, 106, 0.08);  
-  border: 1px solid rgba(0, 210, 106, 0.25);  
-  border-radius: 12px;  
-  padding: 12px;  
-  margin-bottom: 14px;  
-  display: flex;  
-  justify-content: space-between;  
-  align-items: center;  
-}  
+    /* Rate Card */  
+    .rate-card {  
+      background: rgba(0, 210, 106, 0.08);  
+      border: 1px solid rgba(0, 210, 106, 0.25);  
+      border-radius: 12px;  
+      padding: 12px;  
+      margin-bottom: 14px;  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+    }  
 
-.rate-label {  
-  font-size: 13px;  
-  color: var(--text-muted);  
-}  
+    .rate-label {  
+      font-size: 13px;  
+      color: var(--text-muted);  
+    }  
 
-.rate-val {  
-  font-size: 17px;  
-  font-weight: 800;  
-  color: var(--accent-green);  
-}  
+    .rate-val {  
+      font-size: 17px;  
+      font-weight: 800;  
+      color: var(--accent-green);  
+    }  
 
-/* Big Submit Button */  
-.submit-btn {  
-  width: 100%;  
-  background: linear-gradient(135deg, #00d26a, #059669);  
-  border: none;  
-  color: white;  
-  font-size: 16px;  
-  font-weight: 700;  
-  padding: 14px;  
-  border-radius: 14px;  
-  cursor: pointer;  
-  display: flex;  
-  align-items: center;  
-  justify-content: center;  
-  gap: 8px;  
-  box-shadow: 0 4px 14px rgba(0, 210, 106, 0.3);  
-  margin-top: 14px;  
-  transition: opacity 0.2s;  
-}  
+    /* Big Submit Button */  
+    .submit-btn {  
+      width: 100%;  
+      background: linear-gradient(135deg, #00d26a, #059669);  
+      border: none;  
+      color: white;  
+      font-size: 16px;  
+      font-weight: 700;  
+      padding: 14px;  
+      border-radius: 14px;  
+      cursor: pointer;  
+      display: flex;  
+      align-items: center;  
+      justify-content: center;  
+      gap: 8px;  
+      box-shadow: 0 4px 14px rgba(0, 210, 106, 0.3);  
+      margin-top: 14px;  
+      transition: opacity 0.2s;  
+    }  
 
-.submit-btn:disabled {  
-  opacity: 0.6;  
-  cursor: not-allowed;  
-}  
+    .submit-btn:disabled {  
+      opacity: 0.6;  
+      cursor: not-allowed;  
+    }  
 
-/* Table Styles */  
-.rate-table {  
-  width: 100%;  
-  border-collapse: collapse;  
-  font-size: 13px;  
-}  
+    /* Table Styles */  
+    .rate-table {  
+      width: 100%;  
+      border-collapse: collapse;  
+      font-size: 13px;  
+    }  
 
-.rate-table th {  
-  color: var(--text-muted);  
-  text-align: left;  
-  padding: 8px;  
-  border-bottom: 1px solid var(--card-border);  
-}  
+    .rate-table th {  
+      color: var(--text-muted);  
+      text-align: left;  
+      padding: 8px;  
+      border-bottom: 1px solid var(--card-border);  
+    }  
 
-.rate-table td {  
-  padding: 10px 8px;  
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);  
-}  
+    .rate-table td {  
+      padding: 10px 8px;  
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);  
+    }  
 
-/* Bottom Navigation Bar */  
-.bottom-nav {  
-  position: fixed;  
-  bottom: 0;  
-  left: 0;  
-  right: 0;  
-  background: rgba(11, 15, 25, 0.95);  
-  backdrop-filter: blur(16px);  
-  border-top: 1px solid var(--card-border);  
-  display: flex;  
-  justify-content: space-around;  
-  padding: 8px 0;  
-  z-index: 100;  
-}  
+    /* Bottom Navigation Bar */  
+    .bottom-nav {  
+      position: fixed;  
+      bottom: 0;  
+      left: 0;  
+      right: 0;  
+      background: rgba(11, 15, 25, 0.95);  
+      backdrop-filter: blur(16px);  
+      border-top: 1px solid var(--card-border);  
+      display: flex;  
+      justify-content: space-around;  
+      padding: 8px 0;  
+      z-index: 100;  
+    }  
 
-.nav-item {  
-  display: flex;  
-  flex-direction: column;  
-  align-items: center;  
-  gap: 4px;  
-  background: none;  
-  border: none;  
-  color: var(--text-muted);  
-  font-size: 11px;  
-  font-weight: 600;  
-  cursor: pointer;  
-  flex: 1;  
-}  
+    .nav-item {  
+      display: flex;  
+      flex-direction: column;  
+      align-items: center;  
+      gap: 4px;  
+      background: none;  
+      border: none;  
+      color: var(--text-muted);  
+      font-size: 11px;  
+      font-weight: 600;  
+      cursor: pointer;  
+      flex: 1;  
+    }  
 
-.nav-item i {  
-  font-size: 18px;  
-}  
+    .nav-item i {  
+      font-size: 18px;  
+    }  
 
-.nav-item.active {  
-  color: var(--accent-green);  
-}  
+    .nav-item.active {  
+      color: var(--accent-green);  
+    }  
 
-/* Disclaimer */  
-.disclaimer {  
-  font-size: 11px;  
-  color: #64748b;  
-  line-height: 1.4;  
-  text-align: center;  
-  margin-top: 12px;  
-}
+    /* Disclaimer */  
+    .disclaimer {  
+      font-size: 11px;  
+      color: #64748b;  
+      line-height: 1.4;  
+      text-align: center;  
+      margin-top: 12px;  
+    }  
   </style>  
 </head>  
-<body>    <!-- Top Header -->    <header>  
+<body>  
+  <!-- Top Header -->  
+  <header>  
     <div class="brand">  
       <div class="brand-logo">U</div>  
       <div class="brand-name">Unique P2P Store 🇪🇹</div>  
@@ -416,7 +420,9 @@ header {
       <i class="fa-solid fa-shield-halved"></i>  
       <span id="userName">User</span>  
     </div>  
-  </header>    <div class="container">  
+  </header>  
+
+  <div class="container">  
     <!-- Banner -->  
     <div class="banner-card">  
       <div class="banner-title">  
@@ -425,147 +431,151 @@ header {
       <div class="banner-subtitle">  
         USDT በደቂቃዎች ውስጥ ሽጠው በቴሌብር ወይም በኢትዮጵያ ንግድ ባንክ (CBE) ብር ይቀበሉ!  
       </div>  
-    </div>  <!-- TAB 1: SELL USDT (መሸጥ) -->  
-<div id="tab-sell" class="tab-content active">  
-  <div class="card">  
-    <div class="form-group">  
-      <label class="form-label">የሚሸጡት USDT መጠን</label>  
-      <div class="input-wrapper">  
-        <input type="number" id="usdtAmount" class="form-input" placeholder="ዝቅተኛው 0.5 USDT" step="0.1" oninput="calculateETB()">  
-        <span class="input-suffix">USDT</span>  
+    </div>  
+
+    <!-- TAB 1: SELL USDT (መሸጥ) -->  
+    <div id="tab-sell" class="tab-content active">  
+      <div class="card">  
+        <div class="form-group">  
+          <label class="form-label">የሚሸጡት USDT መጠን</label>  
+          <div class="input-wrapper">  
+            <input type="number" id="usdtAmount" class="form-input" placeholder="ዝቅተኛው 0.5 USDT" step="0.1" oninput="calculateETB()">  
+            <span class="input-suffix">USDT</span>  
+          </div>  
+        </div>  
+
+        <!-- Calculated Live Rate Display -->  
+        <div class="rate-card">  
+          <div>  
+            <div class="rate-label">የምንዛሬ ተመን (Rate)</div>  
+            <div style="font-size: 12px; color: #94a3b8;" id="appliedRateLabel">1 USDT = 180 ETB</div>  
+          </div>  
+          <div class="rate-val" id="totalETBDisplay">0.00 ETB</div>  
+        </div>  
+
+        <!-- Network Selection -->  
+        <div class="form-group">  
+          <label class="form-label">የክሪፕቶ ኔትወርክ ይምረጡ</label>  
+          <div class="networks-grid">  
+            <button type="button" class="network-btn active" onclick="selectNetwork('binance', this)">  
+              <i class="fa-solid fa-qrcode"></i> Binance Pay  
+            </button>  
+            <button type="button" class="network-btn" onclick="selectNetwork('bep20', this)">  
+              <i class="fa-solid fa-network-wired"></i> BEP-20 (BSC)  
+            </button>  
+            <button type="button" class="network-btn" onclick="selectNetwork('ton', this)">  
+              <i class="fa-solid fa-gem"></i> TON Network  
+            </button>  
+            <button type="button" class="network-btn" onclick="selectNetwork('ltc', this)">  
+              <i class="fa-solid fa-coins"></i> Litecoin (LTC)  
+            </button>  
+          </div>  
+
+          <!-- Dynamic Crypto Address Box -->  
+          <div class="address-box">  
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;" id="networkTitle">Binance Pay UID</div>  
+            <div class="address-value" id="cryptoAddress">1182277662</div>  
+            <button type="button" class="copy-btn" onclick="copyCryptoAddress()">  
+              <i class="fa-regular fa-copy"></i> አድራሻውን ኮፒ አድርግ  
+            </button>  
+          </div>  
+        </div>  
+
+        <!-- Payment Method -->  
+        <div class="form-group">  
+          <label class="form-label">ብር መቀበያ ባንክ</label>  
+          <select id="payoutMethod" class="form-input">  
+            <option value="Telebirr">📱 ቴሌብር (Telebirr)</option>  
+            <option value="CBE">🏦 የኢትዮጵያ ንግድ ባንክ (CBE)</option>  
+          </select>  
+        </div>  
+
+        <div class="form-group">  
+          <label class="form-label">የስልክ / የባንክ አካውንት ቁጥር</label>  
+          <input type="text" id="accountNumber" class="form-input" placeholder="ለምሳሌ: 0912345678">  
+        </div>  
+
+        <div class="form-group">  
+          <label class="form-label">የተጠቃሚው ሙሉ ስም</label>  
+          <input type="text" id="accountName" class="form-input" placeholder="ለምሳሌ: Abebe Kebede">  
+        </div>  
+
+        <!-- Screenshot Upload Box -->  
+        <div class="form-group">  
+          <label class="form-label">የላኩበት ደረሰኝ (Transaction Screenshot)</label>  
+          <label class="file-upload-box" for="screenshotFile">  
+            <input type="file" id="screenshotFile" accept="image/*" onchange="previewFileName()">  
+            <span class="file-upload-btn"><i class="fa-solid fa-image"></i> ፎቶ ምረጥ</span>  
+            <span class="file-name-label" id="fileNameLabel">ምንም ፎቶ አልተመረጠም</span>  
+          </label>  
+        </div>  
+
+        <button type="button" class="submit-btn" id="submitBtn" onclick="submitOrder()">  
+          <i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ  
+        </button>  
+
+        <div class="disclaimer">  
+          🔒 የ Unique P2P አገልግሎት በቴሌግራም ደህንነት ደንብ መሰረት የተጠበቀ ህጋዊ የምንዛሬ መገበያያ ነው።  
+        </div>  
       </div>  
     </div>  
 
-    <!-- Calculated Live Rate Display -->  
-    <div class="rate-card">  
-      <div>  
-        <div class="rate-label">የምንዛሬ ተመን (Rate)</div>  
-        <div style="font-size: 12px; color: #94a3b8;" id="appliedRateLabel">1 USDT = 180 ETB</div>  
-      </div>  
-      <div class="rate-val" id="totalETBDisplay">0.00 ETB</div>  
-    </div>  
-
-    <!-- Network Selection -->  
-    <div class="form-group">  
-      <label class="form-label">የክሪፕቶ ኔትወርክ ይምረጡ</label>  
-      <div class="networks-grid">  
-        <button type="button" class="network-btn active" onclick="selectNetwork('binance', this)">  
-          <i class="fa-solid fa-qrcode"></i> Binance Pay  
-        </button>  
-        <button type="button" class="network-btn" onclick="selectNetwork('bep20', this)">  
-          <i class="fa-solid fa-network-wired"></i> BEP-20 (BSC)  
-        </button>  
-        <button type="button" class="network-btn" onclick="selectNetwork('ton', this)">  
-          <i class="fa-solid fa-gem"></i> TON Network  
-        </button>  
-        <button type="button" class="network-btn" onclick="selectNetwork('ltc', this)">  
-          <i class="fa-solid fa-coins"></i> Litecoin (LTC)  
-        </button>  
-      </div>  
-
-      <!-- Dynamic Crypto Address Box -->  
-      <div class="address-box">  
-        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;" id="networkTitle">Binance Pay UID</div>  
-        <div class="address-value" id="cryptoAddress">1182277662</div>  
-        <button type="button" class="copy-btn" onclick="copyCryptoAddress()">  
-          <i class="fa-regular fa-copy"></i> አድራሻውን ኮፒ አድርግ  
-        </button>  
+    <!-- TAB 2: BUY USDT (መግዛት) -->  
+    <div id="tab-buy" class="tab-content">  
+      <div class="card" style="text-align: center; padding: 40px 20px;">  
+        <i class="fa-solid fa-store" style="font-size: 42px; color: var(--accent-gold); margin-bottom: 12px;"></i>  
+        <h3 style="font-size: 17px; margin-bottom: 8px;">USDT የመግዛት አገልግሎት</h3>  
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">  
+          በቅርቡ በራስ-ሰር ይጀምራል! ለአሁኑ USDT በቀጥታ ከአድሚን መግዛት ይችላሉ፦  
+        </p>  
+        <a href="https://t.me/Aropc" target="_blank" class="submit-btn" style="text-decoration: none;">  
+          <i class="fa-solid fa-headset"></i> አድሚን ያነጋግሩ (@Aropc)  
+        </a>  
       </div>  
     </div>  
 
-    <!-- Payment Method -->  
-    <div class="form-group">  
-      <label class="form-label">ብር መቀበያ ባንክ</label>  
-      <select id="payoutMethod" class="form-input">  
-        <option value="Telebirr">📱 ቴሌብር (Telebirr)</option>  
-        <option value="CBE">🏦 የኢትዮጵያ ንግድ ባንክ (CBE)</option>  
-      </select>  
+    <!-- TAB 3: RATES (የዛሬ ዋጋ) -->  
+    <div id="tab-rates" class="tab-content">  
+      <div class="card">  
+        <h3 style="font-size: 15px; margin-bottom: 14px; color: var(--accent-gold);">  
+          <i class="fa-solid fa-chart-line"></i> የዛሬ የ USDT መሸጫ ዋጋዎች  
+        </h3>  
+        <table class="rate-table">  
+          <thead>  
+            <tr>  
+              <th>መጠን (USDT)</th>  
+              <th>ተመን (Rate)</th>  
+            </tr>  
+          </thead>  
+          <tbody>  
+            <tr><td>0.5 - 0.9 USDT</td><td style="color: var(--accent-green); font-weight: 700;">178 ETB</td></tr>  
+            <tr><td>1.0 - 10 USDT</td><td style="color: var(--accent-green); font-weight: 700;">180 ETB</td></tr>  
+            <tr><td>11 - 30 USDT</td><td style="color: var(--accent-green); font-weight: 700;">182 ETB</td></tr>  
+            <tr><td>31 USDT በላይ</td><td style="color: var(--accent-green); font-weight: 700;">185 ETB</td></tr>  
+          </tbody>  
+        </table>  
+      </div>  
     </div>  
 
-    <div class="form-group">  
-      <label class="form-label">የስልክ / የባንክ አካውንት ቁጥር</label>  
-      <input type="text" id="accountNumber" class="form-input" placeholder="ለምሳሌ: 0912345678">  
-    </div>  
-
-    <div class="form-group">  
-      <label class="form-label">የተጠቃሚው ሙሉ ስም</label>  
-      <input type="text" id="accountName" class="form-input" placeholder="ለምሳሌ: Abebe Kebede">  
-    </div>  
-
-    <!-- Screenshot Upload Box -->  
-    <div class="form-group">  
-      <label class="form-label">የላኩበት ደረሰኝ (Transaction Screenshot)</label>  
-      <label class="file-upload-box" for="screenshotFile">  
-        <input type="file" id="screenshotFile" accept="image/*" onchange="previewFileName()">  
-        <span class="file-upload-btn"><i class="fa-solid fa-image"></i> ፎቶ ምረጥ</span>  
-        <span class="file-name-label" id="fileNameLabel">ምንም ፎቶ አልተመረጠም</span>  
-      </label>  
-    </div>  
-
-    <button type="button" class="submit-btn" id="submitBtn" onclick="submitOrder()">  
-      <i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ  
-    </button>  
-
-    <div class="disclaimer">  
-      🔒 የ Unique P2P አገልግሎት በቴሌግራም ደህንነት ደንብ መሰረት የተጠበቀ ህጋዊ የምንዛሬ መገበያያ ነው።  
+    <!-- TAB 4: SUPPORT (ድጋፍ) -->  
+    <div id="tab-support" class="tab-content">  
+      <div class="card">  
+        <h3 style="font-size: 15px; margin-bottom: 12px;">የደንበኞች ድጋፍ መስጫ</h3>  
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">  
+          ስለ ትዕዛዝዎ ወይም ስለ ግብይት ማንኛውም አይነት ጥያቄ ካለዎት በቀጥታ ያግኙን፦  
+        </p>  
+        <a href="https://t.me/Aropc" target="_blank" class="network-btn" style="text-decoration: none; margin-bottom: 10px;">  
+          <i class="fa-solid fa-user-shield" style="color: #38bdf8;"></i> የቴሌግራም አድሚን (@Aropc)  
+        </a>  
+        <a href="https://t.me/Unique_techs" target="_blank" class="network-btn" style="text-decoration: none;">  
+          <i class="fa-solid fa-bullhorn" style="color: var(--accent-gold);"></i> ይፋዊ ቻናላችን (@Unique_techs)  
+        </a>  
+      </div>  
     </div>  
   </div>  
-</div>  
 
-<!-- TAB 2: BUY USDT (መግዛት) -->  
-<div id="tab-buy" class="tab-content">  
-  <div class="card" style="text-align: center; padding: 40px 20px;">  
-    <i class="fa-solid fa-store" style="font-size: 42px; color: var(--accent-gold); margin-bottom: 12px;"></i>  
-    <h3 style="font-size: 17px; margin-bottom: 8px;">USDT የመግዛት አገልግሎት</h3>  
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">  
-      በቅርቡ በራስ-ሰር ይጀምራል! ለአሁኑ USDT በቀጥታ ከአድሚን መግዛት ይችላሉ፦  
-    </p>  
-    <a href="https://t.me/Aropc" target="_blank" class="submit-btn" style="text-decoration: none;">  
-      <i class="fa-solid fa-headset"></i> አድሚን ያነጋግሩ (@Aropc)  
-    </a>  
-  </div>  
-</div>  
-
-<!-- TAB 3: RATES (የዛሬ ዋጋ) -->  
-<div id="tab-rates" class="tab-content">  
-  <div class="card">  
-    <h3 style="font-size: 15px; margin-bottom: 14px; color: var(--accent-gold);">  
-      <i class="fa-solid fa-chart-line"></i> የዛሬ የ USDT መሸጫ ዋጋዎች  
-    </h3>  
-    <table class="rate-table">  
-      <thead>  
-        <tr>  
-          <th>መጠን (USDT)</th>  
-          <th>ተመን (Rate)</th>  
-        </tr>  
-      </thead>  
-      <tbody>  
-        <tr><td>0.5 - 0.9 USDT</td><td style="color: var(--accent-green); font-weight: 700;">178 ETB</td></tr>  
-        <tr><td>1.0 - 10 USDT</td><td style="color: var(--accent-green); font-weight: 700;">180 ETB</td></tr>  
-        <tr><td>11 - 30 USDT</td><td style="color: var(--accent-green); font-weight: 700;">182 ETB</td></tr>  
-        <tr><td>31 USDT በላይ</td><td style="color: var(--accent-green); font-weight: 700;">185 ETB</td></tr>  
-      </tbody>  
-    </table>  
-  </div>  
-</div>  
-
-<!-- TAB 4: SUPPORT (ድጋፍ) -->  
-<div id="tab-support" class="tab-content">  
-  <div class="card">  
-    <h3 style="font-size: 15px; margin-bottom: 12px;">የደንበኞች ድጋፍ መስጫ</h3>  
-    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">  
-      ስለ ትዕዛዝዎ ወይም ስለ ግብይት ማንኛውም አይነት ጥያቄ ካለዎት በቀጥታ ያግኙን፦  
-    </p>  
-    <a href="https://t.me/Aropc" target="_blank" class="network-btn" style="text-decoration: none; margin-bottom: 10px;">  
-      <i class="fa-solid fa-user-shield" style="color: #38bdf8;"></i> የቴሌግራም አድሚን (@Aropc)  
-    </a>  
-    <a href="https://t.me/Unique_techs" target="_blank" class="network-btn" style="text-decoration: none;">  
-      <i class="fa-solid fa-bullhorn" style="color: var(--accent-gold);"></i> ይፋዊ ቻናላችን (@Unique_techs)  
-    </a>  
-  </div>  
-</div>
-
-  </div>    <!-- Bottom Navigation -->    <div class="bottom-nav">  
+  <!-- Bottom Navigation -->  
+  <div class="bottom-nav">  
     <button class="nav-item active" onclick="switchTab('sell', this)">  
       <i class="fa-solid fa-arrow-down"></i>  
       <span>USDT መሸጥ</span>  
@@ -582,7 +592,9 @@ header {
       <i class="fa-solid fa-circle-question"></i>  
       <span>ድጋፍ</span>  
     </button>  
-  </div>    <script>  
+  </div>  
+
+  <script>  
     // Telegram WebApp Init  
     const tg = window.Telegram?.WebApp;  
     if (tg) {  
@@ -673,15 +685,17 @@ header {
       }  
     }  
   
-    // Submit Order Directly via Bots.Business Backend Webhook
+    // Submit Order Directly to Node.js Backend Server  
     async function submitOrder() {  
-      const amt = parseFloat(document.getElementById('usdtAmount').value);  
-      const account = document.getElementById('accountNumber').value.trim();  
-      const name = document.getElementById('accountName').value.trim();  
-      const method = document.getElementById('payoutMethod').value;  
-      const submitBtn = document.getElementById('submitBtn');  
+      const amt = Number(document.getElementById("usdtAmount").value);  
+      const account = document.getElementById("accountNumber").value.trim();  
+      const name = document.getElementById("accountName").value.trim();  
+      const method = document.getElementById("payoutMethod").value;  
+      const fileInput = document.getElementById("screenshotFile");  
+      const file = fileInput.files ? fileInput.files[0] : null;  
+      const submitBtn = document.getElementById("submitBtn");  
   
-      if (!amt || amt < 0.5) {  
+      if (!Number.isFinite(amt) || amt < 0.5) {  
         showNotification("⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!");  
         return;  
       }  
@@ -689,56 +703,75 @@ header {
         showNotification("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");  
         return;  
       }  
+      if (!file) {  
+        showNotification("⚠️ እባክዎ የላኩበትን ደረሰኝ (Screenshot) ይምረጡ!");  
+        return;  
+      }  
+  
+      if (!tg || !tg.initData) {  
+        showNotification("⚠️ እባክዎ Telegram Mini App ውስጥ ይክፈቱት።");  
+        return;  
+      }  
   
       submitBtn.disabled = true;  
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';  
   
-      const rate = getRate(amt);  
-      const totalETB = amt * rate;  
+      try {  
+        const formData = new FormData();  
+        formData.append("initData", tg.initData);  
+        formData.append("amount", String(amt));  
+        formData.append("account", account);  
+        formData.append("name", name);  
+        formData.append("method", method);  
+        formData.append("network", selectedNet);  
+        formData.append("screenshot", file);  
   
-      const payload = {
-        secret: "UniqueP2P_Secret_Key_2026",
-        customerId: tg?.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : "unknown",
-        customerUser: tg?.initDataUnsafe?.user?.username ? "@" + tg.initDataUnsafe.user.username : "የለውም",
-        name: name,
-        amount: amt,
-        rate: rate,
-        totalETB: totalETB,
-        network: addresses[selectedNet].name,
-        bank: method,
-        account: account
-      };
-
-      const WEBHOOK_URL = "https://api.bots.business/v1/bots/3007578/new-webhook?command=api_order";
-
-      try {
-        await fetch(WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ ተመዝግቧል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\nአካውንት: ${account} (${name})\n\nእባክዎ ገጹን ዘግተው የከፈሉበትን ደረሰኝ (Screenshot) በቦቱ ቻት ላይ ይላኩ!`;
-
-        if (tg && tg.showPopup) {
-          tg.showPopup({
-            title: "🎉 ትዕዛዝዎ ተልኳል!",
-            message: successMsg,
-            buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]
-          }, function() {
-            if (tg.close) tg.close();
-          });
-        } else {
-          alert(successMsg);
-          if (tg && tg.close) tg.close();
-        }
-      } catch (err) {
-        showNotification("❌ በመላክ ላይ ችግር ተፈጥሯል፣ እባክዎ በድጋሚ ይሞክሩ!");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';
-      }
+        // የተስተካከለው የ Render ሰርቨር አድራሻ  
+        const SERVER_URL = "https://uniquep2p.onrender.com/api/orders";  
+  
+        const response = await fetch(SERVER_URL, {  
+          method: "POST",  
+          body: formData  
+        });  
+  
+        const result = await response.json();  
+  
+        if (!response.ok || !result.success) {  
+          throw new Error(result.message || "ትዕዛዙ አልተላከም።");  
+        }  
+  
+        const rate = getRate(amt);  
+        const totalETB = amt * rate;  
+        const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ ለአድሚን ተልኳል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ ደረሰኙን አረጋግጦ ክፍያውን ወዲያውኑ ገቢ ያደርጋል!`;  
+  
+        if (tg.showPopup) {  
+          tg.showPopup({  
+            title: "🎉 ትዕዛዝዎ ተልኳል!",  
+            message: successMsg,  
+            buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]  
+          }, function() {  
+            if (tg.close) tg.close();  
+          });  
+        } else {  
+          showNotification(successMsg);  
+          if (tg.close) tg.close();  
+        }  
+  
+        // ፎርሙን ማጽዳት  
+        document.getElementById("usdtAmount").value = "";  
+        document.getElementById("accountNumber").value = "";  
+        document.getElementById("accountName").value = "";  
+        fileInput.value = "";  
+        previewFileName();  
+        calculateETB();  
+  
+      } catch (error) {  
+        showNotification("❌ " + error.message);  
+      } finally {  
+        submitBtn.disabled = false;  
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';  
+      }  
     }  
-  </script> 
+  </script>  
 </body>  
 </html>
