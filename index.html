@@ -40,12 +40,12 @@
       padding-bottom: 78px;  
     }  
 
-    /* Header */  
+    /* Header - ንጹህ እና ሰፊ */  
     header {  
       background: rgba(6, 9, 19, 0.92);  
       backdrop-filter: blur(14px);  
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);  
-      padding: 10px 14px;  
+      padding: 12px 16px;  
       position: sticky;  
       top: 0;  
       z-index: 100;  
@@ -57,18 +57,18 @@
     .brand {  
       display: flex;  
       align-items: center;  
-      gap: 8px;  
+      gap: 10px;  
     }  
 
     .brand-logo {  
-      width: 34px;  
-      height: 34px;  
-      border-radius: 10px;  
+      width: 36px;  
+      height: 36px;  
+      border-radius: 11px;  
       background: linear-gradient(135deg, #00f279, #2563eb);  
       display: flex;  
       align-items: center;  
       justify-content: center;  
-      font-size: 16px;  
+      font-size: 17px;  
       color: #fff;  
       box-shadow: 0 0 14px rgba(0, 242, 121, 0.35);
       animation: pulseLogo 3s infinite alternate;
@@ -80,7 +80,7 @@
     }
 
     .brand-name {  
-      font-size: 14.5px;  
+      font-size: 15.5px;  
       font-weight: 800;  
       letter-spacing: -0.3px;  
       color: #ffffff;
@@ -90,26 +90,21 @@
     }  
 
     .flag-icon {
-      width: 18px;
-      height: 13px;
+      width: 20px;
+      height: 14px;
       border-radius: 2px;
       object-fit: cover;
       box-shadow: 0 0 4px rgba(0,0,0,0.4);
     }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    /* የስራ ሰዓት ሁኔታ ባጅ በቀኝ ጥግ */
     .status-badge {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      border-radius: 14px;
-      font-size: 10.5px;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 11px;
       font-weight: 800;
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s;
@@ -119,27 +114,13 @@
       background: rgba(0, 242, 121, 0.12);
       color: var(--accent-green);
       border-color: rgba(0, 242, 121, 0.4);
+      box-shadow: 0 0 10px rgba(0, 242, 121, 0.2);
     }
 
     .status-closed {
       background: rgba(255, 51, 102, 0.12);
       color: var(--accent-red);
       border-color: rgba(255, 51, 102, 0.4);
-    }
-
-    /* ቋንቋ መቀየሪያ አዝራር */
-    .lang-toggle-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 10.5px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
     .container {  
@@ -150,7 +131,7 @@
       width: 100%;  
     }  
 
-    /* የተጠቃሚ ፕሮፋይል ካርድ */
+    /* አዲሱ የታመቀ የተጠቃሚ ፕሮፋይል ካርድ (User Profile Card) */
     .user-profile-card {
       background: linear-gradient(135deg, rgba(20, 30, 55, 0.9), rgba(10, 16, 32, 0.95));
       border: 1px solid rgba(56, 189, 248, 0.3);
@@ -164,14 +145,14 @@
     }
 
     .profile-avatar {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: linear-gradient(135deg, #38bdf8, #2563eb);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 900;
       color: #fff;
       border: 2px solid rgba(56, 189, 248, 0.5);
@@ -191,7 +172,7 @@
     }
 
     .profile-name {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 800;
       color: #fff;
       white-space: nowrap;
@@ -200,7 +181,7 @@
     }
 
     .profile-handle {
-      font-size: 10.5px;
+      font-size: 11px;
       color: var(--accent-cyan);
       font-weight: 600;
       margin-bottom: 2px;
@@ -517,6 +498,7 @@
       font-weight: 700;  
     }  
 
+    /* VIP Best Value Badge */  
     .best-rate-badge {  
       display: inline-flex;  
       align-items: center;  
@@ -532,7 +514,7 @@
       box-shadow: 0 0 8px rgba(255, 183, 3, 0.25);  
     }  
 
-    /* SUPPORT PAGE */  
+    /* SUPPORT PAGE: Grid Action Buttons */  
     .support-grid {  
       display: grid;  
       grid-template-columns: 1fr 1fr;  
@@ -576,6 +558,7 @@
       transform: scale(0.97);  
     }  
 
+    /* Proof Channel Compact Card */  
     .proof-card {  
       background: rgba(10, 15, 30, 0.85);  
       border: 1px solid rgba(56, 189, 248, 0.25);  
@@ -592,7 +575,7 @@
       border-color: var(--accent-green);  
     }  
 
-    /* ማጠቃለያ ካርድ */
+    /* የተጠቃሚ ማጠቃለያ ካርድ */
     .history-stats-compact {
       background: rgba(18, 26, 47, 0.85);
       border: 1px solid rgba(56, 189, 248, 0.25);
@@ -696,7 +679,7 @@
   </style>  
 </head>  
 <body>  
-  <!-- Header: የሱቁ ስም፣ የስራ ሰዓት ሁኔታ እና ቋንቋ መቀየሪያ -->  
+  <!-- Header: የሱቁ ስም እና የሰዓት ሁኔታ ብቻ -->  
   <header>  
     <div class="brand">  
       <div class="brand-logo">  
@@ -707,13 +690,8 @@
         <img class="flag-icon" src="https://flagcdn.com/w40/et.png" alt="ኢትዮጵያ">  
       </div>  
     </div>  
-    <div class="header-right">
-      <div id="storeStatusBadge" class="status-badge status-open">
-        <span data-i18n="store_open">● ክፍት ነው (ሙከራ)</span>
-      </div>
-      <button type="button" class="lang-toggle-btn" onclick="toggleLanguage()">
-        <span id="langBtnText">🇬🇧 EN</span>
-      </button>
+    <div id="storeStatusBadge" class="status-badge status-open">
+      <span>● ክፍት ነው</span>
     </div>
   </header>  
 
@@ -728,7 +706,7 @@
         </div>  
         <div class="profile-handle" id="cardUserHandle">@username</div>  
         <div class="profile-meta-row">  
-          <span class="profile-hours-text" data-i18n="working_hours">⏰ የስራ ሰዓት፦ ከጠዋቱ 1:00 - ማታ 3:00</span>  
+          <span class="profile-hours-text">⏰ የስራ ሰዓት፦ ከጠዋቱ 1:00 - ማታ 3:00</span>  
         </div>  
       </div>  
     </div>  
@@ -737,7 +715,7 @@
     <div id="tab-sell" class="tab-content active">  
       <div class="card">  
         <div class="form-group">  
-          <label class="form-label" data-i18n="amount_label">የሚሸጡት USDT መጠን</label>  
+          <label class="form-label">የሚሸጡት USDT መጠን</label>  
           <div class="input-wrapper">  
             <input type="number" id="usdtAmount" class="form-input" placeholder="ዝቅተኛው 0.5 USDT" step="0.1" oninput="calculateETB()">  
             <span class="input-suffix">USDT</span>  
@@ -747,7 +725,7 @@
         <!-- Live Glowing Rate Display -->  
         <div class="rate-card">  
           <div>  
-            <div class="rate-label" data-i18n="exchange_rate">የምንዛሬ ተመን (ተመን)</div>  
+            <div class="rate-label">የምንዛሬ ተመን (ተመን)</div>  
             <div style="font-size: 11.5px; color: #94a3b8; font-weight: 700;" id="appliedRateLabel">1 USDT = 180 ETB</div>  
           </div>  
           <div class="rate-val" id="totalETBDisplay">0.00 ETB</div>  
@@ -755,7 +733,7 @@
 
         <!-- Network Selection -->  
         <div class="form-group">  
-          <label class="form-label" data-i18n="select_network">የክሪፕቶ ኔትወርክ ይምረጡ</label>  
+          <label class="form-label">የክሪፕቶ ኔትወርክ ይምረጡ</label>  
           <div class="networks-grid">  
             <button type="button" class="network-btn active" onclick="selectNetwork('binance', this)">  
               <i class="fa-solid fa-qrcode"></i> Binance Pay  
@@ -776,14 +754,14 @@
             <div style="font-size: 10.5px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700;" id="networkTitle">Binance Pay UID</div>  
             <div class="address-value" id="cryptoAddress">1182277662</div>  
             <button type="button" class="copy-btn" onclick="copyCryptoAddress()">  
-              <i class="fa-regular fa-copy"></i> <span data-i18n="copy_addr">አድራሻውን ኮፒ አድርግ</span>  
+              <i class="fa-regular fa-copy"></i> አድራሻውን ኮፒ አድርግ  
             </button>  
           </div>  
         </div>  
 
         <!-- Payment Method -->  
         <div class="form-group">  
-          <label class="form-label" data-i18n="payout_method">ብር መቀበያ ዘዴ</label>  
+          <label class="form-label">ብር መቀበያ ዘዴ</label>  
           <select id="payoutMethod" class="form-input" onchange="updateAccountPlaceholder()">  
             <option value="Telebirr">📱 ቴሌብር (Telebirr)</option>  
             <option value="CBE">🏦 የኢትዮጵያ ንግድ ባንክ (CBE)</option>  
@@ -791,30 +769,30 @@
         </div>  
 
         <div class="form-group">  
-          <label class="form-label" data-i18n="acc_num_label">የስልክ / የባንክ አካውንት ቁጥር</label>  
+          <label class="form-label">የስልክ / የባንክ አካውንት ቁጥር</label>  
           <input type="text" id="accountNumber" class="form-input" placeholder="ለምሳሌ: 0912345678">  
         </div>  
 
         <div class="form-group">  
-          <label class="form-label" data-i18n="acc_name_label">የተጠቃሚው ሙሉ ስም</label>  
+          <label class="form-label">የተጠቃሚው ሙሉ ስም</label>  
           <input type="text" id="accountName" class="form-input" placeholder="ለምሳሌ: አበበ ከበደ">  
         </div>  
 
         <!-- Screenshot Upload Box -->  
         <div class="form-group">  
-          <label class="form-label" data-i18n="receipt_label">የላኩበት ደረሰኝ (ስክሪንሾት)</label>  
+          <label class="form-label">የላኩበት ደረሰኝ (ስክሪንሾት)</label>  
           <label class="file-upload-box" for="screenshotFile">  
             <input type="file" id="screenshotFile" accept="image/*" onchange="previewFileName()">  
-            <span class="file-upload-btn"><i class="fa-solid fa-image"></i> <span data-i18n="choose_photo">ፎቶ ምረጥ</span></span>  
-            <span class="file-name-label" id="fileNameLabel" data-i18n="no_file">ምንም ፎቶ አልተመረጠም</span>  
+            <span class="file-upload-btn"><i class="fa-solid fa-image"></i> ፎቶ ምረጥ</span>  
+            <span class="file-name-label" id="fileNameLabel">ምንም ፎቶ አልተመረጠም</span>  
           </label>  
         </div>  
 
         <button type="button" class="submit-btn" id="submitBtn" onclick="submitOrder()">  
-          <i class="fa-solid fa-paper-plane"></i> <span data-i18n="btn_submit">ትዕዛዙን አረጋግጥና ላክ</span>  
+          <i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ  
         </button>  
 
-        <div class="disclaimer" data-i18n="disclaimer">  
+        <div class="disclaimer">  
           🔒 የ Unique P2P አገልግሎት በቴሌግራም ደህንነት ደንብ መሰረት የተጠበቀ ህጋዊ የምንዛሬ መገበያያ ነው።  
         </div>  
       </div>  
@@ -825,15 +803,15 @@
       <div class="trust-badges-bar">
         <div class="trust-badge-item">
           <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i>
-          <span data-i18n="badge_fast">ፈጣን አፈጻጸም</span>
+          <span>ፈጣን አፈጻጸም</span>
         </div>
         <div class="trust-badge-item">
           <i class="fa-solid fa-shield-halved" style="color: var(--accent-green);"></i>
-          <span data-i18n="badge_secure">የተረጋገጠ ደህንነት</span>
+          <span>የተረጋገጠ ደህንነት</span>
         </div>
         <div class="trust-badge-item">
           <i class="fa-solid fa-headset" style="color: var(--accent-cyan);"></i>
-          <span data-i18n="badge_support">24/7 ቀጥታ ድጋፍ</span>
+          <span>24/7 ቀጥታ ድጋፍ</span>
         </div>
       </div>
 
@@ -841,12 +819,12 @@
         <div style="margin-bottom: 10px;">  
           <i class="fa-solid fa-store" style="font-size: 32px; color: var(--accent-gold);"></i>  
         </div>  
-        <h3 style="font-size: 15px; margin-bottom: 6px; font-weight: 800;" data-i18n="buy_title">USDT የመግዛት አገልግሎት</h3>  
-        <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.45; margin-bottom: 16px; font-weight: 500;" data-i18n="buy_desc">  
+        <h3 style="font-size: 15px; margin-bottom: 6px; font-weight: 800;">USDT የመግዛት አገልግሎት</h3>  
+        <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.45; margin-bottom: 16px; font-weight: 500;">  
           በቅርቡ በራስ-ሰር ስራ ይጀምራል! ለአሁኑ በቀጥታ ከአድሚን መግዛት ይችላሉ፦  
         </p>  
         <a href="https://t.me/Aropc" target="_blank" class="submit-btn" style="text-decoration: none; padding: 11px 16px; font-size: 13.5px;">  
-          <i class="fa-solid fa-headset"></i> <span data-i18n="contact_admin">አድሚን ያነጋግሩ (@Aropc)</span>  
+          <i class="fa-solid fa-headset"></i> አድሚን ያነጋግሩ (@Aropc)  
         </a>  
       </div>  
     </div>  
@@ -856,18 +834,18 @@
       <div class="card">  
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">  
           <h3 style="font-size: 15px; color: var(--accent-gold); font-weight: 800; display: flex; align-items: center; gap: 7px;">  
-            <i class="fa-solid fa-chart-line"></i> <span data-i18n="rates_title">የዛሬ የ USDT መሸጫ ዋጋዎች</span>  
+            <i class="fa-solid fa-chart-line"></i> የዛሬ የ USDT መሸጫ ዋጋዎች  
           </h3>  
           <span style="font-size: 11px; color: var(--accent-green); font-weight: 800; background: rgba(0, 242, 121, 0.1); padding: 3px 8px; border-radius: 10px; border: 1px solid rgba(0, 242, 121, 0.25);">  
-            ● LIVE  
+            ● ቀጥታ (LIVE)  
           </span>  
         </div>  
 
         <table class="rate-table">  
           <thead>  
             <tr>  
-              <th data-i18n="th_amount">መጠን (USDT)</th>  
-              <th data-i18n="th_rate">ተመን (Rate)</th>  
+              <th>መጠን (USDT)</th>  
+              <th>ተመን (Rate)</th>  
             </tr>  
           </thead>  
           <tbody>  
@@ -885,8 +863,8 @@
             </tr>  
             <tr>  
               <td>  
-                <span data-i18n="above_31">31 USDT በላይ</span>   
-                <span class="best-rate-badge"><i class="fa-solid fa-fire"></i> <span data-i18n="best_rate">ምርጥ ተመን</span></span>  
+                31 USDT በላይ   
+                <span class="best-rate-badge"><i class="fa-solid fa-fire"></i> ምርጥ ተመን</span>  
               </td>  
               <td style="color: var(--accent-green); font-weight: 900;" id="tableRateTier4">185 ETB</td>  
             </tr>  
@@ -894,7 +872,7 @@
         </table>  
 
         <button type="button" class="submit-btn" style="margin-top: 16px;" onclick="goToSellTab()">  
-          <i class="fa-solid fa-bolt"></i> <span data-i18n="btn_sell_now">አሁንኑ በዚሁ ተመን ሽጥ</span>  
+          <i class="fa-solid fa-bolt"></i> አሁንኑ በዚሁ ተመን ሽጥ  
         </button>  
       </div>  
     </div>  
@@ -904,23 +882,23 @@
       <div class="history-stats-compact">
         <div class="history-stats-header">
           <span style="font-size: 11.5px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 5px;">
-            <i class="fa-solid fa-chart-pie" style="color: var(--accent-cyan);"></i> <span data-i18n="summary_title">ማጠቃለያ</span>
+            <i class="fa-solid fa-chart-pie" style="color: var(--accent-cyan);"></i> ማጠቃለያ
           </span>
           <span class="trader-rank-badge" id="traderRankBadge">
-            🥉 Standard Member
+            🥉 ጀማሪ ነጋዴ (Standard)
           </span>
         </div>
         <div class="stats-mini-grid">
           <div class="stats-mini-box">
-            <div class="lbl" data-i18n="stat_total">ጠቅላላ</div>
+            <div class="lbl">ጠቅላላ</div>
             <div class="val" id="stat-total" style="color: #fff;">0</div>
           </div>
           <div class="stats-mini-box" style="border-color: rgba(0, 242, 121, 0.2);">
-            <div class="lbl" style="color: var(--accent-green);" data-i18n="stat_approved">የጸደቁ</div>
+            <div class="lbl" style="color: var(--accent-green);">የጸደቁ</div>
             <div class="val" id="stat-approved" style="color: var(--accent-green);">0</div>
           </div>
           <div class="stats-mini-box" style="border-color: rgba(255, 51, 102, 0.2);">
-            <div class="lbl" style="color: var(--accent-red);" data-i18n="stat_declined">ውድቅ</div>
+            <div class="lbl" style="color: var(--accent-red);">ውድቅ</div>
             <div class="val" id="stat-declined" style="color: var(--accent-red);">0</div>
           </div>
         </div>
@@ -929,10 +907,10 @@
       <div class="card">  
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">  
           <h3 style="font-size: 14.5px; color: var(--accent-gold); font-weight: 800; display: flex; align-items: center; gap: 6px;">  
-            <i class="fa-solid fa-receipt"></i> <span data-i18n="history_title">የእርስዎ የትዕዛዝ ታሪክ</span>  
+            <i class="fa-solid fa-receipt"></i> የእርስዎ የትዕዛዝ ታሪክ  
           </h3>  
           <button type="button" onclick="loadOrderHistory()" style="background: none; border: none; color: var(--accent-cyan); font-size: 12.5px; cursor: pointer; font-weight: 700;">  
-            <i class="fa-solid fa-rotate-right"></i> <span data-i18n="refresh">አድስ</span>  
+            <i class="fa-solid fa-rotate-right"></i> አድስ  
           </button>  
         </div>  
 
@@ -949,40 +927,40 @@
       <div class="trust-badges-bar">
         <div class="trust-badge-item">
           <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i>
-          <span data-i18n="badge_fast">ፈጣን አፈጻጸም</span>
+          <span>ፈጣን አፈጻጸም</span>
         </div>
         <div class="trust-badge-item">
           <i class="fa-solid fa-shield-halved" style="color: var(--accent-green);"></i>
-          <span data-i18n="badge_secure">የተረጋገጠ ደህንነት</span>
+          <span>የተረጋገጠ ደህንነት</span>
         </div>
         <div class="trust-badge-item">
           <i class="fa-solid fa-headset" style="color: var(--accent-cyan);"></i>
-          <span data-i18n="badge_support">24/7 ቀጥታ ድጋፍ</span>
+          <span>24/7 ቀጥታ ድጋፍ</span>
         </div>
       </div>
 
       <div class="card" style="padding: 18px 14px;">  
         <h3 style="font-size: 15px; margin-bottom: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px;">  
-          <i class="fa-solid fa-headset" style="color: var(--accent-cyan);"></i> <span data-i18n="support_header">የደንበኞች ድጋፍ መስጫ</span>  
+          <i class="fa-solid fa-headset" style="color: var(--accent-cyan);"></i> የደንበኞች ድጋፍ መስጫ  
         </h3>  
 
         <div class="support-grid">  
           <a href="https://t.me/Aropc" target="_blank" class="btn-support-admin">  
-            <i class="fa-solid fa-headphones"></i> <span data-i18n="admin_support">አድሚን (@Aropc)</span>  
+            <i class="fa-solid fa-headphones"></i> አድሚን (@Aropc)  
           </a>  
           <a href="https://t.me/Unique_techs" target="_blank" class="btn-support-channel">  
-            <i class="fa-solid fa-bullhorn"></i> <span data-i18n="channel_community">ማህበረሰብ (ቻናል)</span>  
+            <i class="fa-solid fa-bullhorn"></i> ማህበረሰብ (ቻናል)  
           </a>  
         </div>  
 
         <a href="https://t.me/Ut_proof" target="_blank" class="proof-card">  
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">  
             <span style="font-size: 13px; font-weight: 800; color: var(--accent-gold); display: flex; align-items: center; gap: 7px;">  
-              <i class="fa-solid fa-share-nodes"></i> <span data-i18n="proof_title">የክፍያዎች ማረጋገጫ (Proof)</span>  
+              <i class="fa-solid fa-share-nodes"></i> የክፍያዎች ማረጋገጫ (Proof)  
             </span>  
             <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--accent-cyan); font-size: 12px;"></i>  
           </div>  
-          <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.4; font-weight: 500;" data-i18n="proof_desc">  
+          <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.4; font-weight: 500;">  
             የተከፈሉ እውነተኛ ደረሰኞችን በ @Ut_proof ቻናል ይመልከቱ።  
           </p>  
         </a>  
@@ -994,23 +972,23 @@
   <div class="bottom-nav">  
     <button class="nav-item active" onclick="switchTab('sell', this)">  
       <i class="fa-solid fa-arrow-down"></i>  
-      <span data-i18n="nav_sell">USDT መሸጥ</span>  
+      <span>USDT መሸጥ</span>  
     </button>  
     <button class="nav-item" onclick="switchTab('buy', this)">  
       <i class="fa-solid fa-arrow-up"></i>  
-      <span data-i18n="nav_buy">USDT መግዛት</span>  
+      <span>USDT መግዛት</span>  
     </button>  
     <button class="nav-item" onclick="switchTab('rates', this)">  
       <i class="fa-solid fa-chart-simple"></i>  
-      <span data-i18n="nav_rates">የዛሬ ዋጋ</span>  
+      <span>የዛሬ ዋጋ</span>  
     </button>  
     <button class="nav-item" onclick="switchTab('history', this); loadOrderHistory();">  
       <i class="fa-solid fa-clock-rotate-left"></i>  
-      <span data-i18n="nav_history">የትዕዛዝ ታሪክ</span>  
+      <span>የትዕዛዝ ታሪክ</span>  
     </button>  
     <button class="nav-item" onclick="switchTab('support', this)">  
       <i class="fa-solid fa-circle-question"></i>  
-      <span data-i18n="nav_support">ድጋፍ</span>  
+      <span>ድጋፍ</span>  
     </button>  
   </div>  
 
@@ -1019,35 +997,35 @@
     <div style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 18px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
       <div style="text-align: center; margin-bottom: 14px;">
         <i class="fa-solid fa-triangle-exclamation" style="font-size: 26px; color: #ffb703;"></i>
-        <h3 style="font-size: 15px; color: #fff; margin-top: 6px; font-weight: 800;" data-i18n="modal_title">መረጃዎን ያረጋግጡ</h3>
-        <p style="font-size: 11px; color: #94a3b8; margin-top: 2px;" data-i18n="modal_sub">የተሳሳተ አካውንት እንዳይሞሉ ደግመው ይመልከቱ</p>
+        <h3 style="font-size: 15px; color: #fff; margin-top: 6px; font-weight: 800;">መረጃዎን ያረጋግጡ</h3>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 2px;">የተሳሳተ አካውንት እንዳይሞሉ ደግመው ይመልከቱ</p>
       </div>
 
       <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-size: 12px; margin-bottom: 14px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-          <span style="color: #94a3b8;" data-i18n="modal_method">የክፍያ መንገድ:</span>
+          <span style="color: #94a3b8;">የክፍያ መንገድ:</span>
           <strong id="modalMethod" style="color: #fff;">-</strong>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-          <span style="color: #94a3b8;" data-i18n="modal_account">አካውንት ቁጥር:</span>
+          <span style="color: #94a3b8;">አካውንት ቁጥር:</span>
           <strong id="modalAccount" style="color: #38bdf8; font-family: monospace;">-</strong>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-          <span style="color: #94a3b8;" data-i18n="modal_name">ሙሉ ስም:</span>
+          <span style="color: #94a3b8;">ሙሉ ስም:</span>
           <strong id="modalName" style="color: #fff;">-</strong>
         </div>
         <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px; margin-top: 4px;">
-          <span style="color: #94a3b8;" data-i18n="modal_receive">የሚቀበሉት ብር:</span>
+          <span style="color: #94a3b8;">የሚቀበሉት ብር:</span>
           <strong id="modalTotal" style="color: #00f279;">-</strong>
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
         <button type="button" onclick="closeConfirmModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;">
-          ✏️ <span data-i18n="btn_edit">አስተካክል</span>
+          ✏️ አስተካክል
         </button>
         <button type="button" onclick="executeFinalSubmit()" id="modalSubmitBtn" style="background: linear-gradient(135deg, #00f279, #059669); border: none; color: #060913; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer;">
-          ✅ <span data-i18n="btn_confirm_send">አረጋግጥና ላክ</span>
+          ✅ አረጋግጥና ላክ
         </button>
       </div>
     </div>
@@ -1068,154 +1046,12 @@
         document.getElementById('avatarLetter').innerText = (u.first_name || "U")[0].toUpperCase();
       }  
     }  
-
-    // ቋንቋዎች (Translation Dictionary)
-    let currentLang = localStorage.getItem("p2p_lang") || "am";
-
-    const translations = {
-      am: {
-        store_open: "● ክፍት ነው (ሙከራ)",
-        store_closed: "● ዝግ ነው",
-        working_hours: "⏰ የስራ ሰዓት፦ ከጠዋቱ 1:00 - ማታ 3:00",
-        amount_label: "የሚሸጡት USDT መጠን",
-        amount_placeholder: "ዝቅተኛው 0.5 USDT",
-        exchange_rate: "የምንዛሬ ተመን (ተመን)",
-        select_network: "የክሪፕቶ ኔትወርክ ይምረጡ",
-        copy_addr: "አድራሻውን ኮፒ አድርግ",
-        payout_method: "ብር መቀበያ ዘዴ",
-        acc_num_label: "የስልክ / የባንክ አካውንት ቁጥር",
-        acc_name_label: "የተጠቃሚው ሙሉ ስም",
-        receipt_label: "የላኩበት ደረሰኝ (ስክሪንሾት)",
-        choose_photo: "ፎቶ ምረጥ",
-        no_file: "ምንም ፎቶ አልተመረጠም",
-        btn_submit: "ትዕዛዙን አረጋግጥና ላክ",
-        disclaimer: "🔒 የ Unique P2P አገልግሎት በቴሌግራም ደህንነት ደንብ መሰረት የተጠበቀ ህጋዊ የምንዛሬ መገበያያ ነው።",
-        badge_fast: "ፈጣን አፈጻጸም",
-        badge_secure: "የተረጋገጠ ደህንነት",
-        badge_support: "24/7 ቀጥታ ድጋፍ",
-        buy_title: "USDT የመግዛት አገልግሎት",
-        buy_desc: "በቅርቡ በራስ-ሰር ስራ ይጀምራል! ለአሁኑ በቀጥታ ከአድሚን መግዛት ይችላሉ፦",
-        contact_admin: "አድሚን ያነጋግሩ (@Aropc)",
-        rates_title: "የዛሬ የ USDT መሸጫ ዋጋዎች",
-        th_amount: "መጠን (USDT)",
-        th_rate: "ተመን (Rate)",
-        above_31: "31 USDT በላይ",
-        best_rate: "ምርጥ ተመን",
-        btn_sell_now: "አሁንኑ በዚሁ ተመን ሽጥ",
-        summary_title: "ማጠቃለያ",
-        stat_total: "ጠቅላላ",
-        stat_approved: "የጸደቁ",
-        stat_declined: "ውድቅ",
-        history_title: "የእርስዎ የትዕዛዝ ታሪክ",
-        refresh: "አድስ",
-        support_header: "የደንበኞች ድጋፍ መስጫ",
-        admin_support: "አድሚን (@Aropc)",
-        channel_community: "ማህበረሰብ (ቻናል)",
-        proof_title: "የክፍያዎች ማረጋገጫ (Proof)",
-        proof_desc: "የተከፈሉ እውነተኛ ደረሰኞችን በ @Ut_proof ቻናል ይመልከቱ።",
-        nav_sell: "USDT መሸጥ",
-        nav_buy: "USDT መግዛት",
-        nav_rates: "የዛሬ ዋጋ",
-        nav_history: "የትዕዛዝ ታሪክ",
-        nav_support: "ድጋፍ",
-        modal_title: "መረጃዎን ያረጋግጡ",
-        modal_sub: "የተሳሳተ አካውንት እንዳይሞሉ ደግመው ይመልከቱ",
-        modal_method: "የክፍያ መንገድ:",
-        modal_account: "አካውንት ቁጥር:",
-        modal_name: "ሙሉ ስም:",
-        modal_receive: "የሚቀበሉት ብር:",
-        btn_edit: "አስተካክል",
-        btn_confirm_send: "አረጋግጥና ላክ"
-      },
-      en: {
-        store_open: "● Open (Test Mode)",
-        store_closed: "● Closed",
-        working_hours: "⏰ Hours: 7:00 AM - 9:00 PM (EAT)",
-        amount_label: "Amount of USDT to Sell",
-        amount_placeholder: "Min 0.5 USDT",
-        exchange_rate: "Exchange Rate",
-        select_network: "Select Crypto Network",
-        copy_addr: "Copy Address",
-        payout_method: "Payout Method",
-        acc_num_label: "Account / Phone Number",
-        acc_name_label: "Account Holder Full Name",
-        receipt_label: "Transfer Screenshot / Receipt",
-        choose_photo: "Choose Photo",
-        no_file: "No file chosen",
-        btn_submit: "Confirm & Submit Order",
-        disclaimer: "🔒 Unique P2P is a secure and verified escrow exchange on Telegram.",
-        badge_fast: "Fast Execution",
-        badge_secure: "Verified Security",
-        badge_support: "24/7 Live Support",
-        buy_title: "Buy USDT Service",
-        buy_desc: "Automated buying coming soon! Currently, you can purchase directly via Admin:",
-        contact_admin: "Contact Admin (@Aropc)",
-        rates_title: "Today's USDT Sell Rates",
-        th_amount: "Amount (USDT)",
-        th_rate: "Rate (ETB)",
-        above_31: "31 USDT & Above",
-        best_rate: "Best Rate",
-        btn_sell_now: "Sell at this Rate Now",
-        summary_title: "Trading Stats",
-        stat_total: "Total",
-        stat_approved: "Approved",
-        stat_declined: "Declined",
-        history_title: "Your Order History",
-        refresh: "Refresh",
-        support_header: "Customer Support Desk",
-        admin_support: "Admin Support (@Aropc)",
-        channel_community: "Community Channel",
-        proof_title: "Payment Proofs (@Ut_proof)",
-        proof_desc: "View verified payout receipts in our @Ut_proof channel.",
-        nav_sell: "Sell USDT",
-        nav_buy: "Buy USDT",
-        nav_rates: "Rates",
-        nav_history: "History",
-        nav_support: "Support",
-        modal_title: "Confirm Your Order Details",
-        modal_sub: "Double check your details before sending",
-        modal_method: "Payment Method:",
-        modal_account: "Account Number:",
-        modal_name: "Full Name:",
-        modal_receive: "You Receive:",
-        btn_edit: "Edit",
-        btn_confirm_send: "Confirm & Send"
-      }
-    };
-
-    function applyLanguage(lang) {
-      currentLang = lang;
-      localStorage.setItem("p2p_lang", lang);
-      
-      const btnText = document.getElementById("langBtnText");
-      if (btnText) {
-        btnText.innerText = lang === "am" ? "🇬🇧 EN" : "🇪🇹 AM";
-      }
-
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (translations[lang] && translations[lang][key]) {
-          el.innerText = translations[lang][key];
-        }
-      });
-
-      const amtInput = document.getElementById("usdtAmount");
-      if (amtInput) {
-        amtInput.placeholder = translations[lang].amount_placeholder;
-      }
-    }
-
-    function toggleLanguage() {
-      triggerHaptic('light');
-      const nextLang = currentLang === "am" ? "en" : "am";
-      applyLanguage(nextLang);
-    }
   
     const addresses = {  
       binance: { name: "Binance Pay UID", val: "1182277662" },  
-      bep20: { name: "BEP-20 (BSC) Address", val: "0xdc6bffaecee233cb3a1b41513349fd4cf842a486" },  
-      ton: { name: "TON Wallet Address", val: "UQBnagfOnShZYOgwPOfCy5Jx5dr80D9p4laxNvORleI4YT9j" },  
-      ltc: { name: "Litecoin (LTC) Address", val: "LMSESUBB5Ee9JschXusNrqKTQjMSr4d6sc" }  
+      bep20: { name: "BEP-20 (BSC) አድራሻ", val: "0xdc6bffaecee233cb3a1b41513349fd4cf842a486" },  
+      ton: { name: "TON Wallet አድራሻ", val: "UQBnagfOnShZYOgwPOfCy5Jx5dr80D9p4laxNvORleI4YT9j" },  
+      ltc: { name: "Litecoin (LTC) አድራሻ", val: "LMSESUBB5Ee9JschXusNrqKTQjMSr4d6sc" }  
     };  
   
     let selectedNet = "binance";  
@@ -1223,13 +1059,20 @@
     let dynamicRates = { tier1: 178, tier2: 180, tier3: 182, tier4: 185 };  
     let isCurrentStoreOpen = true;
 
-    // ለሙከራ ጊዜ ሁልጊዜ ክፍት
+    // የስራ ሰዓት ሁኔታን መገምገም
     function evaluateStoreHours() {
+      // ለሙከራ ጊዜ ሁልጊዜ ክፍት እንዲሆን ተደርጓል (እውነተኛ ስራ ሲጀምር eatHours ይተካል)
       isCurrentStoreOpen = true;
+
       const badge = document.getElementById('storeStatusBadge');
       if (badge) {
-        badge.className = "status-badge status-open";
-        badge.innerHTML = `<span>${translations[currentLang].store_open}</span>`;
+        if (isCurrentStoreOpen) {
+          badge.className = "status-badge status-open";
+          badge.innerHTML = "<span>● ክፍት ነው</span>";
+        } else {
+          badge.className = "status-badge status-closed";
+          badge.innerHTML = "<span>● ዝግ ነው</span>";
+        }
       }
     }
 
@@ -1240,7 +1083,19 @@
         const data = await response.json();  
         if (data.success && data.rates) {  
           dynamicRates = data.rates;  
-          isCurrentStoreOpen = true;
+          if (data.isOpen !== undefined) {
+            isCurrentStoreOpen = data.isOpen;
+            const badge = document.getElementById('storeStatusBadge');
+            if (badge) {
+              if (isCurrentStoreOpen) {
+                badge.className = "status-badge status-open";
+                badge.innerHTML = "<span>● ክፍት ነው</span>";
+              } else {
+                badge.className = "status-badge status-closed";
+                badge.innerHTML = "<span>● ዝግ ነው</span>";
+              }
+            }
+          }
           document.getElementById('tableRateTier1').innerText = `${dynamicRates.tier1} ETB`;  
           document.getElementById('tableRateTier2').innerText = `${dynamicRates.tier2} ETB`;  
           document.getElementById('tableRateTier3').innerText = `${dynamicRates.tier3} ETB`;  
@@ -1249,7 +1104,7 @@
           calculateETB();  
         }  
       } catch (err) {  
-        console.log("Rates fetch fallback");  
+        console.log("ተመኑን ማምጣት አልተቻለም፤ ነባሪው ጥቅም ላይ ይውላል።");  
       }  
     }  
   
@@ -1275,9 +1130,9 @@
       const method = document.getElementById("payoutMethod").value;
       const accInput = document.getElementById("accountNumber");
       if (method === "CBE") {
-        accInput.placeholder = "1000123456789";
+        accInput.placeholder = "ለምሳሌ: 1000123456789";
       } else {
-        accInput.placeholder = "0912345678";
+        accInput.placeholder = "ለምሳሌ: 0912345678";
       }
     }
   
@@ -1286,10 +1141,10 @@
       const addr = document.getElementById('cryptoAddress').innerText;  
       if (navigator.clipboard && navigator.clipboard.writeText) {  
         navigator.clipboard.writeText(addr).then(() => {  
-          showNotification(currentLang === "am" ? "✅ አድራሻው ኮፒ ተደርጓል!" : "✅ Address copied!");  
+          showNotification("✅ አድራሻው ኮፒ ተደርጓል!");  
         });  
       } else {  
-        showNotification("Address: " + addr);  
+        showNotification("✅ አድራሻ: " + addr);  
       }  
     }  
   
@@ -1301,7 +1156,7 @@
         label.innerText = "📁 " + fileInput.files[0].name;  
         label.style.color = "var(--accent-green)";  
       } else {  
-        label.innerText = translations[currentLang].no_file;  
+        label.innerText = "ምንም ፎቶ አልተመረጠም";  
         label.style.color = "var(--text-muted)";  
       }  
     }  
@@ -1340,6 +1195,7 @@
       document.getElementById('tab-' + tabId).classList.add('active');  
       if (el) el.classList.add('active');  
 
+      // የተጠቃሚው ካርድ በሽያጭ ገጽ ላይ ብቻ እንዲታይ
       const profCard = document.getElementById('userProfileCard');
       if (profCard) {
         if (tabId === 'sell') {
@@ -1367,7 +1223,7 @@
       evaluateStoreHours();
       if (!isCurrentStoreOpen) {
         triggerHaptic('error');
-        showNotification(currentLang === "am" ? "⏰ የሱቃችን የስራ ሰዓት ከጠዋቱ 1:00 እስከ ማታ 3:00 ነው።" : "⏰ Store operational hours: 7:00 AM – 9:00 PM (EAT).");
+        showNotification("⏰ የሱቃችን የስራ ሰዓት ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM – 9:00 PM) ነው። እባክዎ በስራ ሰዓት ይጠቀሙ!");
         return;
       }
 
@@ -1380,12 +1236,12 @@
 
       if (!Number.isFinite(amt) || amt < 0.5) {  
         triggerHaptic('error');  
-        showNotification(currentLang === "am" ? "⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!" : "⚠️ Minimum amount is 0.5 USDT!");  
+        showNotification("⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!");  
         return;  
       }  
       if (!account || !name) {  
         triggerHaptic('error');  
-        showNotification(currentLang === "am" ? "⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!" : "⚠️ Please enter account number and full name!");  
+        showNotification("⚠️ እባክዎ የባንክ/ቴሌብር አካውንት ቁጥር እና ሙሉ ስም ያስገቡ!");  
         return;  
       }  
 
@@ -1394,26 +1250,26 @@
         const teleRegex = /^09\d{8}$/;
         if (!teleRegex.test(cleanAcc)) {
           triggerHaptic('error');
-          showNotification(currentLang === "am" ? "⚠️ የቴሌብር ቁጥር 09 የሚጀምር 10 ድጅት መሆን አለበት!" : "⚠️ Invalid Telebirr number! Must be 10 digits starting with 09.");
+          showNotification("⚠️ የቴሌብር ቁጥር ትክክል አይደለም! (09 የሚጀምር 10 ድጅት መሆን አለበት) ደግመው በትክክል ያስገቡ✅");
           return;
         }
       } else if (method === "CBE") {
         const cbeRegex = /^\d{13}$/;
         if (!cbeRegex.test(cleanAcc)) {
           triggerHaptic('error');
-          showNotification(currentLang === "am" ? "⚠️ የንግድ ባንክ (CBE) አካውንት 13 ድጅት መሆን አለበት!" : "⚠️ CBE Account number must be 13 digits!");
+          showNotification("⚠️ የንግድ ባንክ (CBE) አካውንት 13 ድጅት መሆን አለበት! ደግመው በትክክል ያስገቡ✅");
           return;
         }
       }
 
       if (!file) {  
         triggerHaptic('error');  
-        showNotification(currentLang === "am" ? "⚠️ እባክዎ የላኩበትን ደረሰኝ (ስክሪንሾት) ይምረጡ!" : "⚠️ Please upload payment screenshot!");  
+        showNotification("⚠️ እባክዎ የላኩበትን ደረሰኝ (ስክሪንሾት) ይምረጡ!");  
         return;  
       }  
   
       if (!tg || !tg.initData) {  
-        showNotification("Please open inside Telegram Mini App.");  
+        showNotification("⚠️ እባክዎ Telegram Mini App ውስጥ ይክፈቱት።");  
         return;  
       }  
 
@@ -1440,7 +1296,7 @@
 
       triggerHaptic('medium');  
       modalBtn.disabled = true;  
-      modalBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';  
+      modalBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';  
 
       try {  
         const formData = new FormData();  
@@ -1460,23 +1316,21 @@
         const result = await response.json();  
 
         if (!response.ok || !result.success) {  
-          throw new Error(result.message || "Order submission failed.");  
+          throw new Error(result.message || "ትዕዛዙ አልተላከም።");  
         }  
 
         closeConfirmModal();
         triggerHaptic('success');  
         const rate = getRate(amt);  
         const totalETB = amt * rate;  
-        const orderIdText = result.orderId ? `\nOrder ID: ${result.orderId}` : '';
-        const successMsg = currentLang === "am" 
-          ? `✅ ትዕዛዝዎ በተሳካ ሁኔታ ተመዝግቧል!${orderIdText}\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ አረጋግጦ ክፍያውን ገቢ ያደርጋል!`
-          : `✅ Order submitted successfully!${orderIdText}\n\nAmount: ${amt} USDT\nPayout: ${totalETB.toLocaleString()} ETB\n\nAdmin is verifying and processing payment!`;  
+        const orderIdText = result.orderId ? `\nየትዕዛዝ ቁጥር (Order ID): ${result.orderId}` : '';
+        const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ በዳታቤዝ ተመዝግቧል!${orderIdText}\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ ደረሰኙን አረጋግጦ ክፍያውን ወዲያውኑ ገቢ ያደርጋል!`;  
 
         if (tg.showPopup) {  
           tg.showPopup({  
-            title: currentLang === "am" ? "🎉 ትዕዛዝዎ ተልኳል!" : "🎉 Order Sent!",  
+            title: "🎉 ትዕዛዝዎ ተልኳል!",  
             message: successMsg,  
-            buttons: [{ type: "ok", text: currentLang === "am" ? "እሺ (ጨርስ)" : "OK" }]  
+            buttons: [{ type: "ok", text: "እሺ (ጨርስ)" }]  
           }, function() {  
             if (tg.close) tg.close();  
           });  
@@ -1497,28 +1351,30 @@
         showNotification("❌ " + error.message);  
       } finally {  
         modalBtn.disabled = false;  
-        modalBtn.innerHTML = `✅ ${translations[currentLang].btn_confirm_send}`;  
+        modalBtn.innerHTML = '✅ አረጋግጥና ላክ';  
       }  
     }
 
     async function loadOrderHistory() {
       const container = document.getElementById("historyList");
       if (!tg || !tg.initData) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 18px;">Please open in Telegram Mini App.</p>';
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 18px;">እባክዎ በቴሌግራም Mini App በኩል ይክፈቱት።</p>';
         return;
       }
 
-      container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 12.5px; padding: 18px 0;"><i class="fa-solid fa-spinner fa-spin"></i> ...</p>';
+      container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 12.5px; padding: 18px 0;"><i class="fa-solid fa-spinner fa-spin"></i> በመጫን ላይ...</p>';
 
       try {
         const response = await fetch(`${SERVER_URL}/api/my-orders?initData=${encodeURIComponent(tg.initData)}`);
         const data = await response.json();
 
         if (!data.success || !data.orders || data.orders.length === 0) {
-          container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 12.5px; padding: 18px 0;">${currentLang === "am" ? "ምንም አይነት የተመዘገበ ትዕዛዝ የለም።" : "No orders found."}</p>`;
+          container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 12.5px; padding: 18px 0;">ምንም አይነት የተመዘገበ ትዕዛዝ የለም።</p>';
           document.getElementById("stat-total").innerText = "0";
           document.getElementById("stat-approved").innerText = "0";
           document.getElementById("stat-declined").innerText = "0";
+          document.getElementById("traderRankBadge").innerText = "🥉 ጀማሪ ነጋዴ";
+          document.getElementById("homeRankBadge").innerText = "🥉 Standard Member";
           return;
         }
 
@@ -1534,15 +1390,15 @@
         const homeRankBadge = document.getElementById("homeRankBadge");
         
         if (approved >= 10) {
-          rankBadge.innerHTML = '🥇 VIP Member';
+          rankBadge.innerHTML = '🥇 VIP ነጋዴ';
           homeRankBadge.innerHTML = '🥇 VIP Member';
           homeRankBadge.style.color = '#ffb703';
         } else if (approved >= 5) {
-          rankBadge.innerHTML = '🥈 Pro Member';
+          rankBadge.innerHTML = '🥈 ከፍተኛ ነጋዴ (Pro)';
           homeRankBadge.innerHTML = '🥈 Pro Member';
           homeRankBadge.style.color = '#38bdf8';
         } else {
-          rankBadge.innerHTML = '🥉 Standard Member';
+          rankBadge.innerHTML = '🥉 ጀማሪ ነጋዴ';
           homeRankBadge.innerHTML = '🥉 Standard Member';
           homeRankBadge.style.color = '#94a3b8';
         }
@@ -1551,11 +1407,11 @@
         data.orders.forEach(o => {
           let statusBadge = '';
           if (o.status === 'approved') {
-            statusBadge = `<span style="color: #00f279; background: rgba(0,242,121,0.1); padding: 2px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 800;">${currentLang === "am" ? "✅ ጸድቋል" : "✅ Approved"}</span>`;
+            statusBadge = '<span style="color: #00f279; background: rgba(0,242,121,0.1); padding: 2px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 800;">✅ ጸድቋል</span>';
           } else if (o.status === 'declined') {
-            statusBadge = `<span style="color: #ff3366; background: rgba(255,51,102,0.1); padding: 2px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 800;">${currentLang === "am" ? "❌ ውድቅ" : "❌ Declined"}</span>`;
+            statusBadge = '<span style="color: #ff3366; background: rgba(255,51,102,0.1); padding: 2px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 800;">❌ ውድቅ</span>';
           } else {
-            statusBadge = `<span style="color: #ffb703; background: rgba(255,183,3,0.1); padding: 2px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 800;">${currentLang === "am" ? "⏳ በሂደት" : "⏳ Pending"}</span>`;
+            statusBadge = '<span style="color: #ffb703; background: rgba(255,183,3,0.1); padding: 2px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 800;">⏳ በሂደት</span>';
           }
 
           html += `
@@ -1568,7 +1424,7 @@
                 ${Number(o.total).toLocaleString()} ETB (${o.method})
               </div>
               <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted);">
-                <span>ID: <code>${o.orderId.substring(0, 8)}...</code></span>
+                <span>መለያ፡ <code>${o.orderId.substring(0, 8)}...</code></span>
                 <span>${new Date(o.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
@@ -1578,12 +1434,12 @@
         container.innerHTML = html;
 
       } catch (err) {
-        container.innerHTML = '<p style="text-align: center; color: var(--accent-red); font-size: 12px; padding: 18px;">Error loading orders.</p>';
+        container.innerHTML = '<p style="text-align: center; color: var(--accent-red); font-size: 12px; padding: 18px;">ትዕዛዞችን ማምጣት አልተቻለም። እባክዎ ደግመው ይሞክሩ።</p>';
       }
     }
 
-    applyLanguage(currentLang);
     fetchLiveRates();  
   </script>  
 </body>  
-</html>
+  </html>
+  
