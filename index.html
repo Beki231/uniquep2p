@@ -504,14 +504,14 @@
       background: none;  
       border: none;  
       color: var(--text-muted);  
-      font-size: 10.5px;  
+      font-size: 10px;  
       font-weight: 700;  
       cursor: pointer;  
       flex: 1;  
     }  
 
     .nav-item i {  
-      font-size: 18px;  
+      font-size: 17px;  
     }  
 
     .nav-item.active {  
@@ -710,7 +710,27 @@
       </div>  
     </div>  
 
-    <!-- TAB 4: SUPPORT (ድጋፍ) -->  
+    <!-- TAB 4: ORDER HISTORY (የትዕዛዝ ታሪክ) -->  
+    <div id="tab-history" class="tab-content">  
+      <div class="card">  
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">  
+          <h3 style="font-size: 15px; color: var(--accent-gold); font-weight: 800; display: flex; align-items: center; gap: 7px;">  
+            <i class="fa-solid fa-receipt"></i> የእርስዎ የትዕዛዝ ታሪክ  
+          </h3>  
+          <button type="button" onclick="loadOrderHistory()" style="background: none; border: none; color: var(--accent-cyan); font-size: 13px; cursor: pointer; font-weight: 700;">  
+            <i class="fa-solid fa-rotate-right"></i> አድስ  
+          </button>  
+        </div>  
+
+        <div id="historyList">  
+          <p style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0;">  
+            <i class="fa-solid fa-spinner fa-spin"></i> በመጫን ላይ...  
+          </p>  
+        </div>  
+      </div>  
+    </div>  
+
+    <!-- TAB 5: SUPPORT (ድጋፍ) -->  
     <div id="tab-support" class="tab-content">  
       <div class="card" style="padding: 22px 16px;">  
         <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px;">  
@@ -754,6 +774,10 @@
     <button class="nav-item" onclick="switchTab('rates', this)">  
       <i class="fa-solid fa-chart-simple"></i>  
       <span>የዛሬ ዋጋ</span>  
+    </button>  
+    <button class="nav-item" onclick="switchTab('history', this); loadOrderHistory();">  
+      <i class="fa-solid fa-clock-rotate-left"></i>  
+      <span>የትዕዛዝ ታሪክ</span>  
     </button>  
     <button class="nav-item" onclick="switchTab('support', this)">  
       <i class="fa-solid fa-circle-question"></i>  
@@ -1007,6 +1031,60 @@
         submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';  
       }  
     }  
+
+    // ከ MongoDB የትዕዛዝ ታሪክን በ Mini App ውስጥ የሚያመጣ ፈንክሽን
+    async function loadOrderHistory() {
+      const container = document.getElementById("historyList");
+      if (!tg || !tg.initData) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">እባክዎ በቴሌግራም Mini App በኩል ይክፈቱት።</p>';
+        return;
+      }
+
+      container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0;"><i class="fa-solid fa-spinner fa-spin"></i> በመጫን ላይ...</p>';
+
+      try {
+        const response = await fetch(`${SERVER_URL}/api/my-orders?initData=${encodeURIComponent(tg.initData)}`);
+        const data = await response.json();
+
+        if (!data.success || !data.orders || data.orders.length === 0) {
+          container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0;">ምንም አይነት የተመዘገበ ትዕዛዝ የለም።</p>';
+          return;
+        }
+
+        let html = '';
+        data.orders.forEach(o => {
+          let statusBadge = '';
+          if (o.status === 'approved') {
+            statusBadge = '<span style="color: #00f279; background: rgba(0,242,121,0.1); padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">✅ ጸድቋል</span>';
+          } else if (o.status === 'declined') {
+            statusBadge = '<span style="color: #ff3366; background: rgba(255,51,102,0.1); padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">❌ ውድቅ ሆኗል</span>';
+          } else {
+            statusBadge = '<span style="color: #ffb703; background: rgba(255,183,3,0.1); padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">⏳ በመጠባበቅ ላይ</span>';
+          }
+
+          html += `
+            <div style="background: rgba(8, 12, 24, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-weight: 800; font-size: 14px; color: #fff;">${o.amount} USDT</span>
+                ${statusBadge}
+              </div>
+              <div style="font-size: 12.5px; color: var(--accent-cyan); font-weight: 700; margin-bottom: 4px;">
+                ${Number(o.total).toLocaleString()} ETB (${o.method})
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
+                <span>መለያ፡ <code>${o.orderId.substring(0, 10)}...</code></span>
+                <span>${new Date(o.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+      } catch (err) {
+        container.innerHTML = '<p style="text-align: center; color: var(--accent-red); font-size: 12px; padding: 20px;">ትዕዛዞችን ማምጣት አልተቻለም። እባክዎ ደግመው ይሞክሩ።</p>';
+      }
+    }
 
     fetchLiveRates();  
   </script>  
