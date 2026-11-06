@@ -215,9 +215,7 @@ function escapeHTML(value) {
 // የዕለታዊ ሪፖርት ማመንጫ ፈንክሽን (/daily)
 async function generateDailyReport() {
   const now = new Date();
-  // የዛሬ 00:00:00 ሰዓት
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-  // የዛሬ 23:59:59 ሰዓት
   const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
   const todayOrders = await Order.find({
@@ -424,7 +422,7 @@ app.post("/telegram-webhook", async (req, res) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            chat_id: ADMIN_CHAT_ID,
+            chat_id: msg.chat.id,
             text: `✅ ደረሰኙ ለተጠቃሚው ተልኳል፤ እንዲሁም ወደ ${PROOF_CHANNEL_ID} ፖስት ተደርጓል!`
           })
         });
@@ -437,7 +435,7 @@ app.post("/telegram-webhook", async (req, res) => {
       await telegram("sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: `❌ የደረሰኝ መላክ ሂደት ተሰርዟል።` })
+        body: JSON.stringify({ chat_id: msg.chat.id, text: `❌ የደረሰኝ መላክ ሂደት ተሰርዟል።` })
       });
       return;
     }
@@ -447,7 +445,87 @@ app.post("/telegram-webhook", async (req, res) => {
   if (msg && msg.text && String(msg.from.id) === ADMIN_CHAT_ID) {
     const text = msg.text.trim();
 
-    // /daily (የቀኑን ሪፖርት አንተ በጠየቅክ ሰዓት ብቻ ያመጣል)
+    // 1. /setrates (አራቱንም የምንዛሬ ተመኖች ለየብቻ ለመቀየር)
+    // አጠቃቀም: /setrates 178 180 182 185
+    if (text.startsWith("/setrates")) {
+      const parts = text.split(" ").filter(p => p.trim() !== "");
+      const t1 = Number(parts[1]);
+      const t2 = Number(parts[2]);
+      const t3 = Number(parts[3]);
+      const t4 = Number(parts[4]);
+
+      if (t1 && t2 && t3 && t4) {
+        exchangeRates = { tier1: t1, tier2: t2, tier3: t3, tier4: t4 };
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: `✅ <b>ሁሉም 4ቱም የምንዛሬ ተመኖች ተቀይረዋል!</b>\n\n` +
+                  `▫️ 0.5 - 0.9 USDT: <b>${t1} ETB</b>\n` +
+                  `▫️ 1.0 - 10 USDT: <b>${t2} ETB</b>\n` +
+                  `▫️ 11 - 30 USDT: <b>${t3} ETB</b>\n` +
+                  `▫️ 31+ USDT: <b>${t4} ETB</b>\n\n` +
+                  `⚡ Mini App ላይ በቀጥታ ተዘምኗል።`,
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      } else {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: "⚠️ <b>የ /setrates አጠቃቀም፦</b>\n\n4ቱንም ተመኖች በስፔስ ለይተህ አስገባ፦\n<code>/setrates 178 180 182 185</code>",
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      }
+    }
+
+    // 2. /setrate (አንድ ዋና ተመን ብቻ በማስገባት ሌሎቹን በራስ-ሰር ለማስላት)
+    // አጠቃቀም: /setrate 180
+    if (text.startsWith("/setrate")) {
+      const parts = text.split(" ").filter(p => p.trim() !== "");
+      const newRate = Number(parts[1]);
+      if (newRate && newRate > 0) {
+        exchangeRates.tier1 = newRate - 2;
+        exchangeRates.tier2 = newRate;
+        exchangeRates.tier3 = newRate + 2;
+        exchangeRates.tier4 = newRate + 5;
+
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: `✅ <b>የምንዛሬ ተመን ተቀይሯል!</b>\n\n` +
+                  `▫️ 0.5 - 0.9 USDT: <b>${exchangeRates.tier1} ETB</b>\n` +
+                  `▫️ 1.0 - 10 USDT: <b>${exchangeRates.tier2} ETB</b> (ዋና)\n` +
+                  `▫️ 11 - 30 USDT: <b>${exchangeRates.tier3} ETB</b>\n` +
+                  `▫️ 31+ USDT: <b>${exchangeRates.tier4} ETB</b>\n\n` +
+                  `⚡ Mini App ውስጥ በቅጽበት ተዘምኗል።`,
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      } else {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: "⚠️ አጠቃቀም፦ <code>/setrate 180</code>",
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      }
+    }
+
+    // /daily
     if (text === "/daily" || text.startsWith("/daily")) {
       const reportText = await generateDailyReport();
       await telegram("sendMessage", {
