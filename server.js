@@ -375,7 +375,10 @@ app.post("/telegram-webhook", async (req, res) => {
   const msg = req.body.message;
 
   // 1. አድሚን ደረሰኝ ፎቶ ሲልክ ተቀብሎ ለተጠቃሚውና ለ @Ut_proof ቻናል ማስተላለፍ
-  if (msg && String(msg.from.id) === ADMIN_CHAT_ID && pendingReceiptOrder) {
+  const senderId = String(msg?.from?.id || "").trim();
+  const isAdmin = senderId === ADMIN_CHAT_ID;
+
+  if (msg && isAdmin && pendingReceiptOrder) {
     if (msg.photo && msg.photo.length > 0) {
       const order = await Order.findOne({ orderId: pendingReceiptOrder });
       if (order && order.status === "pending") {
@@ -442,11 +445,10 @@ app.post("/telegram-webhook", async (req, res) => {
   }
 
   // 2. የአድሚን ትዕዛዞች (ADMIN COMMANDS)
-  if (msg && msg.text && String(msg.from.id) === ADMIN_CHAT_ID) {
+  if (msg && msg.text && isAdmin) {
     const text = msg.text.trim();
 
-    // 1. /setrates (አራቱንም የምንዛሬ ተመኖች ለየብቻ ለመቀየር)
-    // አጠቃቀም: /setrates 178 180 182 185
+    // 1. /setrates
     if (text.startsWith("/setrates")) {
       const parts = text.split(" ").filter(p => p.trim() !== "");
       const t1 = Number(parts[1]);
@@ -485,8 +487,7 @@ app.post("/telegram-webhook", async (req, res) => {
       }
     }
 
-    // 2. /setrate (አንድ ዋና ተመን ብቻ በማስገባት ሌሎቹን በራስ-ሰር ለማስላት)
-    // አጠቃቀም: /setrate 180
+    // 2. /setrate
     if (text.startsWith("/setrate")) {
       const parts = text.split(" ").filter(p => p.trim() !== "");
       const newRate = Number(parts[1]);
@@ -525,41 +526,59 @@ app.post("/telegram-webhook", async (req, res) => {
       }
     }
 
-    // /daily
+    // 3. /daily
     if (text === "/daily" || text.startsWith("/daily")) {
-      const reportText = await generateDailyReport();
-      await telegram("sendMessage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: msg.chat.id, text: reportText, parse_mode: "HTML" })
-      });
+      try {
+        const reportText = await generateDailyReport();
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: msg.chat.id, text: reportText, parse_mode: "HTML" })
+        });
+      } catch (e) {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: msg.chat.id, text: `❌ የሪፖርት ስህተት፦ ${e.message}` })
+        });
+      }
       return;
     }
 
-    // /stats
+    // 4. /stats
     if (text.startsWith("/stats")) {
-      const totalUsers = await User.countDocuments();
-      const totalOrders = await Order.countDocuments();
-      const completedOrders = await Order.countDocuments({ status: "approved" });
-      const pendingOrders = await Order.countDocuments({ status: "pending" });
+      try {
+        const totalUsers = await User.countDocuments();
+        const totalOrders = await Order.countDocuments();
+        const completedOrders = await Order.countDocuments({ status: "approved" });
+        const pendingOrders = await Order.countDocuments({ status: "pending" });
 
-      const statsMsg = 
-        `📊 <b>የ Unique P2P አጠቃላይ መረጃ ዳሽቦርድ</b>\n` +
-        `━━━━━━━━━━━━━━━━━━\n` +
-        `👥 <b>ጠቅላላ ተጠቃሚዎች:</b> ${totalUsers}\n` +
-        `📦 <b>ጠቅላላ ትዕዛዞች:</b> ${totalOrders}\n` +
-        `✅ <b>የጸደቁ ትዕዛዞች:</b> ${completedOrders}\n` +
-        `⏳ <b>በመጠባበቅ ላይ ያሉ:</b> ${pendingOrders}`;
+        const statsMsg = 
+          `📊 <b>የ Unique P2P አጠቃላይ መረጃ ዳሽቦርድ</b>\n` +
+          `━━━━━━━━━━━━━━━━━━\n` +
+          `👥 <b>በዳታቤዝ ያሉ ተጠቃሚዎች:</b> ${totalUsers}\n` +
+          `📦 <b>ጠቅላላ ትዕዛዞች:</b> ${totalOrders}\n` +
+          `✅ <b>የጸደቁ ትዕዛዞች:</b> ${completedOrders}\n` +
+          `⏳ <b>በመጠባበቅ ላይ ያሉ:</b> ${pendingOrders}\n` +
+          `━━━━━━━━━━━━━━━━━━\n` +
+          `⚡ <i>ሲስተሙ እና ዳታቤዙ በጥሩ ሁኔታ ላይ ይገኛሉ!</i>`;
 
-      await telegram("sendMessage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: msg.chat.id, text: statsMsg, parse_mode: "HTML" })
-      });
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: msg.chat.id, text: statsMsg, parse_mode: "HTML" })
+        });
+      } catch (err) {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: msg.chat.id, text: `❌ የ Stats ስህተት፦ ${err.message}` })
+        });
+      }
       return;
     }
 
-    // /broadcast
+    // 5. /broadcast
     if (text.startsWith("/broadcast")) {
       const broadcastContent = text.replace("/broadcast", "").trim();
       if (!broadcastContent) {
@@ -575,28 +594,40 @@ app.post("/telegram-webhook", async (req, res) => {
         return;
       }
 
-      const allUsers = await User.find({}, "telegramId");
+      const dbUsers = await User.find({}, "telegramId");
+      const orderUsers = await Order.find({}, "userId");
+      
+      const uniqueIds = new Set();
+      dbUsers.forEach(u => { if (u.telegramId) uniqueIds.add(u.telegramId); });
+      orderUsers.forEach(o => { if (o.userId) uniqueIds.add(o.userId); });
+
+      const allUserIds = Array.from(uniqueIds);
       let successCount = 0;
       let failCount = 0;
 
       await telegram("sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: msg.chat.id, text: `📢 መልዕክቱ ለ ${allUsers.length} ተጠቃሚዎች በመላክ ላይ ነው...` })
+        body: JSON.stringify({ chat_id: msg.chat.id, text: `📢 መልዕክቱ ለ ${allUserIds.length} ተጠቃሚዎች በመላክ ላይ ነው...` })
       });
 
-      for (const u of allUsers) {
+      for (const targetId of allUserIds) {
         try {
           await telegram("sendMessage", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: u.telegramId, text: broadcastContent, parse_mode: "HTML" })
+            body: JSON.stringify({
+              chat_id: targetId,
+              text: broadcastContent,
+              parse_mode: "HTML"
+            })
           });
           successCount++;
-          await new Promise(r => setTimeout(r, 50));
         } catch (e) {
+          console.error(`Broadcast failed for ${targetId}:`, e.message);
           failCount++;
         }
+        await new Promise(r => setTimeout(r, 60));
       }
 
       await telegram("sendMessage", {
@@ -611,7 +642,7 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // /send
+    // 6. /send
     if (text.startsWith("/send")) {
       const parts = text.split(" ");
       const targetUserId = parts[1];
@@ -651,7 +682,7 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // /pause
+    // 7. /pause
     if (text.startsWith("/pause")) {
       const reason = text.replace("/pause", "").trim() || "ቦቱ ለአጭር ጊዜ ጥገና ቆሟል። እባክዎ ጥቂት ቆይተው ይሞክሩ።";
       await Settings.findOneAndUpdate({ key: "global_settings" }, { isPaused: true, pauseReason: reason }, { upsert: true });
@@ -663,7 +694,7 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // /resume
+    // 8. /resume
     if (text === "/resume") {
       await Settings.findOneAndUpdate({ key: "global_settings" }, { isPaused: false }, { upsert: true });
       await telegram("sendMessage", {
@@ -680,6 +711,7 @@ app.post("/telegram-webhook", async (req, res) => {
     const userId = msg.from.id;
     const text = msg.text.trim();
 
+    // ተጠቃሚውን MongoDB ላይ ማስመዝገብ
     await User.findOneAndUpdate(
       { telegramId: userId },
       { username: msg.from.username, firstName: msg.from.first_name },
@@ -739,7 +771,8 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    if (String(callback.from.id) !== ADMIN_CHAT_ID) {
+    const callbackSenderId = String(callback.from.id || "").trim();
+    if (callbackSenderId !== ADMIN_CHAT_ID) {
       await telegram("answerCallbackQuery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -772,7 +805,7 @@ app.post("/telegram-webhook", async (req, res) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: ADMIN_CHAT_ID,
+          chat_id: msg ? msg.chat.id : ADMIN_CHAT_ID,
           text: `📸 <b>እባክዎ አሁን የከፈሉበትን የደረሰኝ ፎቶ (ቴሌብር/CBE Screenshot) ይላኩ፦</b>\n\n(ለመሰረዝ <code>/cancel</code> ብለው መጻፍ ይችላሉ)`,
           parse_mode: "HTML"
         })
