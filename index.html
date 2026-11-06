@@ -976,7 +976,8 @@
         triggerHaptic('success');  
         const rate = getRate(amt);  
         const totalETB = amt * rate;  
-        const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ ለአድሚን ተልኳል!\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ ደረሰኙን አረጋግጦ ክፍያውን ወዲያውኑ ገቢ ያደርጋል!`;  
+        const orderIdText = result.orderId ? `\nየትዕዛዝ ቁጥር (Order ID): ${result.orderId}` : '';
+        const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ በዳታቤዝ ተመዝግቧል!${orderIdText}\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ ደረሰኙን አረጋግጦ ክፍያውን ወዲያውኑ ገቢ ያደርጋል!`;  
   
         if (tg.showPopup) {  
           tg.showPopup({  
