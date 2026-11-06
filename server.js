@@ -78,15 +78,10 @@ let exchangeRates = {
   tier4: 185
 };
 
-// የስራ ሰዓት መቆጣጠሪያ ፈንክሽን (Ethiopian Time: UTC+3)
-// ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM - 9:00 PM / 7:00 - 21:00)
 function isStoreOpen() {
-  const now = new Date();
-  // UTC+3 ሰዓት ማስላት
-  const utcHours = now.getUTCHours();
-  const eatHours = (utcHours + 3) % 24; 
-  return eatHours >= 7 && eatHours < 21;
+  return true;
 }
+
 
 async function telegram(method, body) {
   const response = await fetch(`${BOT_API}/${method}`, body);
