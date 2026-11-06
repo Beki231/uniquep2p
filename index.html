@@ -1024,24 +1024,16 @@
     let dynamicRates = { tier1: 178, tier2: 180, tier3: 182, tier4: 185 };  
     let isCurrentStoreOpen = true;
 
-    // የስራ ሰዓትን በኢትዮጵያ ሰዓት መገምገም
-    function evaluateStoreHours() {
-      const now = new Date();
-      const utcHours = now.getUTCHours();
-      const eatHours = (utcHours + 3) % 24; 
-      isCurrentStoreOpen = eatHours >= 7 && eatHours < 21; // 7:00 AM - 9:00 PM
+        function evaluateStoreHours() {
+      isCurrentStoreOpen = true;
 
       const badge = document.getElementById('storeStatusBadge');
       if (badge) {
-        if (isCurrentStoreOpen) {
-          badge.className = "status-badge status-open";
-          badge.innerHTML = "<span>● ክፍት ነው</span>";
-        } else {
-          badge.className = "status-badge status-closed";
-          badge.innerHTML = "<span>● ዝግ ነው</span>";
-        }
+        badge.className = "status-badge status-open";
+        badge.innerHTML = "<span>● ክፍት ነው (ሙከራ)</span>";
       }
     }
+
 
     async function fetchLiveRates() {  
       evaluateStoreHours();
