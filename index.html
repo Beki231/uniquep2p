@@ -147,7 +147,7 @@
       font-weight: 500;
     }  
 
-    /* Trust Badges Bar (ቦታ የማይይዝ አነስተኛ ባጅ) */
+    /* Trust Badges Bar */
     .trust-badges-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -511,7 +511,7 @@
       border-color: var(--accent-green);  
     }  
 
-    /* የተጠቃሚ ማጠቃለያ ካርድ (እጅግ የተሰበሰበ እና አነስተኛ) */
+    /* የተጠቃሚ ማጠቃለያ ካርድ */
     .history-stats-compact {
       background: rgba(18, 26, 47, 0.85);
       border: 1px solid rgba(56, 189, 248, 0.25);
@@ -927,6 +927,45 @@
     </button>  
   </div>  
 
+  <!-- Double-Check Confirmation Modal (የክፍያ ማረጋገጫ መስኮት) -->
+  <div id="confirmModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+    <div style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 18px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 26px; color: #ffb703;"></i>
+        <h3 style="font-size: 15px; color: #fff; margin-top: 6px; font-weight: 800;">መረጃዎን ያረጋግጡ</h3>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 2px;">የተሳሳተ አካውንት እንዳይሞሉ ደግመው ይመልከቱ</p>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-size: 12px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span style="color: #94a3b8;">የክፍያ መንገድ:</span>
+          <strong id="modalMethod" style="color: #fff;">-</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span style="color: #94a3b8;">አካውንት ቁጥር:</span>
+          <strong id="modalAccount" style="color: #38bdf8; font-family: monospace;">-</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span style="color: #94a3b8;">ሙሉ ስም:</span>
+          <strong id="modalName" style="color: #fff;">-</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px; margin-top: 4px;">
+          <span style="color: #94a3b8;">የሚቀበሉት ብር:</span>
+          <strong id="modalTotal" style="color: #00f279;">-</strong>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button type="button" onclick="closeConfirmModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;">
+          ✏️ አስተካክል
+        </button>
+        <button type="button" onclick="executeFinalSubmit()" id="modalSubmitBtn" style="background: linear-gradient(135deg, #00f279, #059669); border: none; color: #060913; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer;">
+          ✅ አረጋግጥና ላክ
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>  
     const tg = window.Telegram?.WebApp;  
     if (tg) {  
@@ -1072,16 +1111,21 @@
         alert(msg);  
       }  
     }  
-  
-    async function submitOrder() {  
+
+    function closeConfirmModal() {
+      triggerHaptic('light');
+      document.getElementById('confirmModal').style.display = 'none';
+    }
+
+    // 1. መጀመሪያ ቅጹን አጣርቶ የማረጋገጫ ሞዳሉን ያሳያል
+    function submitOrder() {  
       const amt = Number(document.getElementById("usdtAmount").value);  
       const account = document.getElementById("accountNumber").value.trim();  
       const name = document.getElementById("accountName").value.trim();  
       const method = document.getElementById("payoutMethod").value;  
       const fileInput = document.getElementById("screenshotFile");  
       const file = fileInput.files ? fileInput.files[0] : null;  
-      const submitBtn = document.getElementById("submitBtn");  
-  
+
       if (!Number.isFinite(amt) || amt < 0.5) {  
         triggerHaptic('error');  
         showNotification("⚠️ እባክዎ ዝቅተኛው 0.5 USDT ያስገቡ!");  
@@ -1120,38 +1164,61 @@
         showNotification("⚠️ እባክዎ Telegram Mini App ውስጥ ይክፈቱት።");  
         return;  
       }  
-  
+
+      const rate = getRate(amt);
+      const totalETB = amt * rate;
+
+      document.getElementById("modalMethod").innerText = method === "Telebirr" ? "ቴሌብር (Telebirr)" : "ንግድ ባንክ (CBE)";
+      document.getElementById("modalAccount").innerText = cleanAcc;
+      document.getElementById("modalName").innerText = name;
+      document.getElementById("modalTotal").innerText = totalETB.toLocaleString() + " ETB";
+
+      triggerHaptic('medium');
+      document.getElementById('confirmModal').style.display = 'flex';
+    }  
+
+    // 2. ተጠቃሚው 'አረጋግጥና ላክ' ሲል ብቻ ትዕዛዙ ይላካል
+    async function executeFinalSubmit() {
+      const amt = Number(document.getElementById("usdtAmount").value);  
+      const account = document.getElementById("accountNumber").value.trim().replace(/\s+/g, '');  
+      const name = document.getElementById("accountName").value.trim();  
+      const method = document.getElementById("payoutMethod").value;  
+      const fileInput = document.getElementById("screenshotFile");  
+      const file = fileInput.files ? fileInput.files[0] : null;  
+      const modalBtn = document.getElementById("modalSubmitBtn");
+
       triggerHaptic('medium');  
-      submitBtn.disabled = true;  
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';  
-  
+      modalBtn.disabled = true;  
+      modalBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በመላክ ላይ...';  
+
       try {  
         const formData = new FormData();  
         formData.append("initData", tg.initData);  
         formData.append("amount", String(amt));  
-        formData.append("account", cleanAcc);  
+        formData.append("account", account);  
         formData.append("name", name);  
         formData.append("method", method);  
         formData.append("network", selectedNet);  
         formData.append("screenshot", file);  
-  
+
         const response = await fetch(`${SERVER_URL}/api/orders`, {  
           method: "POST",  
           body: formData  
         });  
-  
+
         const result = await response.json();  
-  
+
         if (!response.ok || !result.success) {  
           throw new Error(result.message || "ትዕዛዙ አልተላከም።");  
         }  
-  
+
+        closeConfirmModal();
         triggerHaptic('success');  
         const rate = getRate(amt);  
         const totalETB = amt * rate;  
         const orderIdText = result.orderId ? `\nየትዕዛዝ ቁጥር (Order ID): ${result.orderId}` : '';
         const successMsg = `✅ ትዕዛዝዎ በተሳካ ሁኔታ በዳታቤዝ ተመዝግቧል!${orderIdText}\n\nመጠን: ${amt} USDT\nየሚከፈለው: ${totalETB.toLocaleString()} ETB\n\nአድሚኑ ደረሰኙን አረጋግጦ ክፍያውን ወዲያውኑ ገቢ ያደርጋል!`;  
-  
+
         if (tg.showPopup) {  
           tg.showPopup({  
             title: "🎉 ትዕዛዝዎ ተልኳል!",  
@@ -1164,22 +1231,22 @@
           showNotification(successMsg);  
           if (tg.close) tg.close();  
         }  
-  
+
         document.getElementById("usdtAmount").value = "";  
         document.getElementById("accountNumber").value = "";  
         document.getElementById("accountName").value = "";  
         fileInput.value = "";  
         previewFileName();  
         calculateETB();  
-  
+
       } catch (error) {  
         triggerHaptic('error');  
         showNotification("❌ " + error.message);  
       } finally {  
-        submitBtn.disabled = false;  
-        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ትዕዛዙን አረጋግጥና ላክ';  
+        modalBtn.disabled = false;  
+        modalBtn.innerHTML = '✅ አረጋግጥና ላክ';  
       }  
-    }  
+    }
 
     // ከ MongoDB የትዕዛዝ ታሪክን የሚያመጣ ፈንክሽን
     async function loadOrderHistory() {
