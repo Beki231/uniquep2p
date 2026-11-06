@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const crypto = require("crypto");
 const cors = require("cors");
+const mongoose = require("mongoose");
 
 const app = express();
 const upload = multer({
@@ -12,13 +13,49 @@ const upload = multer({
 app.use(cors());
 app.use(express.json());
 
+// Environment Variables
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+const MONGO_URI = process.env.MONGO_URI;
 const BOT_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const CHANNEL_ID = "@Unique_techs";
 
 const BANNER_IMAGE_URL = "https://raw.githubusercontent.com/beki231/uniquep2p/main/welcome.jpg"; 
+
+// 1. MongoDB ግንኙነት እና Schemas
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("MongoDB በተሳካ ሁኔታ ተገናኝቷል"))
+  .catch(err => console.error("MongoDB ግንኙነት ስህተት:", err));
+
+const UserSchema = new mongoose.Schema({
+  telegramId: { type: Number, required: true, unique: true },
+  username: String,
+  firstName: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const OrderSchema = new mongoose.Schema({
+  orderId: { type: String, required: true, unique: true },
+  userId: { type: Number, required: true },
+  userName: String,
+  telegramUsername: String,
+  amount: { type: Number, required: true },
+  total: { type: Number, required: true },
+  rate: Number,
+  account: { type: String, required: true },
+  method: { type: String, required: true },
+  network: String,
+  status: { type: String, enum: ["pending", "approved", "declined"], default: "pending" },
+  receiptFileId: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model("User", UserSchema);
+const Order = mongoose.model("Order", OrderSchema);
+
+// አድሚን ደረሰኝ እስኪልክ የሚጠብቅበት ጊዜያዊ state
+let pendingReceiptOrder = null;
 
 const addresses = {
   binance: "Binance Pay UID",
@@ -33,10 +70,6 @@ let exchangeRates = {
   tier3: 182,
   tier4: 185
 };
-
-const orders = new Map();
-// አድሚን ደረሰኝ እስኪልክ የሚጠብቅበት ጊዜያዊ state
-let pendingReceiptOrder = null;
 
 async function telegram(method, body) {
   const response = await fetch(`${BOT_API}/${method}`, body);
@@ -63,12 +96,22 @@ async function checkMembership(userId) {
   }
 }
 
+// 5ቱ ዋና ዋና አዝራሮች (Persistent Bottom Keyboard)
+const mainBottomKeyboard = {
+  keyboard: [
+    [{ text: "💵 Buy USDT" }, { text: "💰 Sell USDT" }],
+    [{ text: "📊 Rates" }, { text: "📜 Order History" }],
+    [{ text: "📞 Support" }]
+  ],
+  resize_keyboard: true
+};
+
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
     `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
     `━━━━━━━━━━━━━━━━━━\n` +
     `🔐 <b>ደህንነቱ የተጠበቀ እና ⚡ እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> 💯\n\n` +
-    `👇 <b>ንግድ ለመጀመር ከስር ያለውን Mini App ይክፈቱ፦</b>`;
+    `👇 <b>ንግድ ለመጀመር ከስር ያለውን Mini App ይክፈቱ ወይም አማራጮቹን ይጠቀሙ፦</b>`;
 
   const welcomeKeyboard = {
     inline_keyboard: [
@@ -90,6 +133,17 @@ async function sendWelcomeBanner(userId) {
         caption: welcomeCaption,
         parse_mode: "HTML",
         reply_markup: welcomeKeyboard
+      })
+    });
+
+    // አዝራሮቹን ከታች ለመዘርጋት የተላከ
+    await telegram("sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: userId,
+        text: "የሚፈልጉትን አገልግሎት ከታች ካሉት አዝራሮች ይምረጡ፡",
+        reply_markup: mainBottomKeyboard
       })
     });
   } catch (e) {
@@ -163,6 +217,7 @@ function escapeHTML(value) {
   })[char]);
 }
 
+// REST Endpoints
 app.get("/api/rates", (req, res) => {
   res.json({
     success: true,
@@ -207,12 +262,18 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
     const total = amount * rate;
     const orderId = crypto.randomUUID();
 
-    orders.set(orderId, {
+    // ትዕዛዙን በቋሚነት በ MongoDB መመዝገብ
+    await Order.create({
+      orderId,
       userId: user.id,
+      userName: name,
+      telegramUsername: user.username || "",
       amount,
       total,
+      rate,
       account,
       method,
+      network: addresses[network],
       status: "pending"
     });
 
@@ -272,6 +333,7 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
   }
 });
 
+// Webhook Handler
 app.post("/telegram-webhook", async (req, res) => {
   if (req.get("X-Telegram-Bot-Api-Secret-Token") !== WEBHOOK_SECRET) {
     return res.sendStatus(403);
@@ -284,11 +346,14 @@ app.post("/telegram-webhook", async (req, res) => {
   // አድሚን ደረሰኝ ፎቶ ሲልክ ተቀብሎ ለተጠቃሚው ማስተላለፍ
   if (msg && String(msg.from.id) === String(ADMIN_CHAT_ID) && pendingReceiptOrder) {
     if (msg.photo && msg.photo.length > 0) {
-      const order = orders.get(pendingReceiptOrder);
+      const order = await Order.findOne({ orderId: pendingReceiptOrder });
       if (order && order.status === "pending") {
         order.status = "approved";
         
         const photoId = msg.photo[msg.photo.length - 1].file_id;
+        order.receiptFileId = photoId;
+        await order.save();
+        
         const userMsg = 
           `✅ <b>የትዕዛዝ ማረጋገጫ እና ደረሰኝ፦</b>\n\n` +
           `የ <b>${order.amount} USDT</b> ሽያጭ ትዕዛዝዎ ጸድቋል!\n` +
@@ -332,7 +397,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // የምንዛሬ ተመን መቀየሪያ
+  // የምንዛሬ ተመን መቀየሪያ በአድሚን
   if (msg && msg.text && String(msg.from.id) === String(ADMIN_CHAT_ID)) {
     const text = msg.text.trim();
 
@@ -385,35 +450,131 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // Force Join ወይም /start ሜሴጅ ሲመጣ
-  if (msg && msg.text && msg.text.startsWith("/start")) {
+  // የተጠቃሚ መልዕክቶች እና 5ቱ አዝራሮች አሰራር
+  if (msg && msg.text) {
     const userId = msg.from.id;
-    const isMember = await checkMembership(userId);
+    const text = msg.text.trim();
 
-    if (!isMember) {
+    // ተጠቃሚውን ዳታቤዝ ላይ ማስመዝገብ
+    await User.findOneAndUpdate(
+      { telegramId: userId },
+      { username: msg.from.username, firstName: msg.from.first_name },
+      { upsert: true }
+    );
+
+    // 1. /start
+    if (text.startsWith("/start")) {
+      const isMember = await checkMembership(userId);
+      if (!isMember) {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: userId,
+            text: "👋 <b>እባክዎ መጀመሪያ ቻናላችንን ይቀላቀሉ!</b>\n\nከዚያም ከስር ያለውን <b>«✅ ተቀላቅያለሁ»</b> የሚለውን ይጫኑ፦",
+            parse_mode: "HTML",
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: "📢 ቻናል ተቀላቀል", url: "https://t.me/Unique_techs" }],
+                [{ text: "✅ ተቀላቅያለሁ", callback_data: "check_join" }]
+              ]
+            }
+          })
+        });
+        return;
+      }
+
+      await sendWelcomeBanner(userId);
+      return;
+    }
+
+    // 2. 📊 Rates
+    if (text === "📊 Rates") {
+      const rateMsg = 
+        `📊 <b>የዛሬው የ USDT ምንዛሬ ተመን፦</b>\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `▫️ 0.5 - 0.9 USDT: <b>${exchangeRates.tier1} ETB</b>\n` +
+        `▫️ 1.0 - 10 USDT: <b>${exchangeRates.tier2} ETB</b>\n` +
+        `▫️ 11 - 30 USDT: <b>${exchangeRates.tier3} ETB</b>\n` +
+        `▫️ 31+ USDT: <b>${exchangeRates.tier4} ETB</b>\n\n` +
+        `<i>ተመኑ እንደ ገበያው ሁኔታ በየጊዜው ይስተካከላል።</i>`;
+
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: userId, text: rateMsg, parse_mode: "HTML" })
+      });
+      return;
+    }
+
+    // 3. 📞 Support
+    if (text === "📞 Support") {
+      const supportMsg = 
+        `📞 <b>የደንበኞች አገልግሎት እና ድጋፍ</b>\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `ማንኛውም አይነት ጥያቄ፣ ክፍያ ወይም የንግድ እገዛ ሲያስፈልግዎት ያነጋግሩን፦\n\n` +
+        `👤 <b>አድሚን:</b> @Aropc\n` +
+        `📢 <b>ይፋዊ ቻናል:</b> @Unique_techs`;
+
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: userId, text: supportMsg, parse_mode: "HTML" })
+      });
+      return;
+    }
+
+    // 4. 📜 Order History (ከ MongoDB ወስዶ ማሳየት)
+    if (text === "📜 Order History") {
+      const userOrders = await Order.find({ userId }).sort({ createdAt: -1 }).limit(5);
+
+      if (!userOrders || userOrders.length === 0) {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: userId, text: "ምንም አይነት የተመዘገበ ትዕዛዝ አላገኘንም።" })
+        });
+        return;
+      }
+
+      let historyText = `📜 <b>የቅርብ ጊዜ ትዕዛዞችዎ፦</b>\n━━━━━━━━━━━━━━━━━━\n`;
+      userOrders.forEach((o, i) => {
+        const badge = o.status === "approved" ? "✅ ጸድቋል" : o.status === "declined" ? "❌ ውድቅ ሆኗል" : "⏳ በመጠባበቅ ላይ";
+        historyText += `${i + 1}. <b>${o.amount} USDT</b> (${o.total.toLocaleString()} ETB)\n` +
+                       `• መንገድ: ${o.method}\n` +
+                       `• ሁኔታ: ${badge}\n` +
+                       `• ቀን: <code>${new Date(o.createdAt).toLocaleDateString()}</code>\n\n`;
+      });
+
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: userId, text: historyText, parse_mode: "HTML" })
+      });
+      return;
+    }
+
+    // 5. 💵 Buy USDT & 💰 Sell USDT
+    if (text === "💵 Buy USDT" || text === "💰 Sell USDT") {
       await telegram("sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: userId,
-          text: "👋 <b>እባክዎ መጀመሪያ ቻናላችንን ይቀላቀሉ!</b>\n\nከዚያም ከስር ያለውን <b>«✅ ተቀላቅያለሁ»</b> የሚለውን ይጫኑ፦",
+          text: `⚡ ንግድ ለመፈጸም ከታች ያለውን <b>Mini App</b> በመጫን በቀላሉ ማጠናቀቅ ይችላሉ፦`,
           parse_mode: "HTML",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "📢 ቻናል ተቀላቀል", url: "https://t.me/Unique_techs" }],
-              [{ text: "✅ ተቀላቅያለሁ", callback_data: "check_join" }]
+              [{ text: "🚀 Mini App ክፈት", web_app: { url: "https://beki231.github.io/uniquep2p/?v=3" } }]
             ]
           }
         })
       });
       return;
     }
-
-    await sendWelcomeBanner(userId);
-    return;
   }
 
-  // Callback Query
+  // Callback Query (Buttons)
   const callback = req.body.callback_query;
   if (!callback) return;
 
@@ -454,7 +615,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
 
     const [action, orderId] = (callback.data || "").split(":");
-    const order = orders.get(orderId);
+    const order = await Order.findOne({ orderId });
 
     if (!order || order.status !== "pending") {
       await telegram("answerCallbackQuery", {
@@ -501,6 +662,8 @@ app.post("/telegram-webhook", async (req, res) => {
     // 2. ፈጣን Approve
     if (action === "quick_approve") {
       order.status = "approved";
+      await order.save();
+
       const message = `✅ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየ ${order.amount} USDT ሽያጭ ትዕዛዝዎ ጸድቋል! ${order.total.toLocaleString()} ETB ወደ አካውንትዎ ገቢ ተደርጓል። እናመሰግናለን! 🙏`;
 
       await telegram("sendMessage", {
@@ -537,6 +700,8 @@ app.post("/telegram-webhook", async (req, res) => {
     // 3. Decline
     if (action === "decline") {
       order.status = "declined";
+      await order.save();
+
       const message = `❌ <b>የትዕዛዝ ማረጋገጫ፦</b>\n\nየትዕዛዝ ጥያቄዎ ውድቅ ተደርጓል። እባክዎ ለተጨማሪ መረጃ አድሚኑን ያነጋግሩ (@Aropc)።`;
 
       await telegram("sendMessage", {
