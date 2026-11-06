@@ -78,6 +78,16 @@ let exchangeRates = {
   tier4: 185
 };
 
+// የስራ ሰዓት መቆጣጠሪያ ፈንክሽን (Ethiopian Time: UTC+3)
+// ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM - 9:00 PM / 7:00 - 21:00)
+function isStoreOpen() {
+  const now = new Date();
+  // UTC+3 ሰዓት ማስላት
+  const utcHours = now.getUTCHours();
+  const eatHours = (utcHours + 3) % 24; 
+  return eatHours >= 7 && eatHours < 21;
+}
+
 async function telegram(method, body) {
   const response = await fetch(`${BOT_API}/${method}`, body);
   const result = await response.json();
@@ -101,16 +111,6 @@ async function checkMembership(userId) {
     return false;
   }
 }
-
-// 5ቱ ዋና ዋና አዝራሮች
-const mainBottomKeyboard = {
-  keyboard: [
-    [{ text: "💵 Buy USDT" }, { text: "💰 Sell USDT" }],
-    [{ text: "📊 Rates" }, { text: "📜 Order History" }],
-    [{ text: "📞 Support" }]
-  ],
-  resize_keyboard: true
-};
 
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
@@ -257,7 +257,11 @@ async function generateDailyReport() {
 
 // REST Endpoints
 app.get("/api/rates", (req, res) => {
-  res.json({ success: true, rates: exchangeRates });
+  res.json({ 
+    success: true, 
+    rates: exchangeRates,
+    isOpen: isStoreOpen() 
+  });
 });
 
 app.get("/api/my-orders", async (req, res) => {
@@ -279,6 +283,14 @@ app.get("/api/my-orders", async (req, res) => {
 
 app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
   try {
+    // 1. የስራ ሰዓት ማጣሪያ
+    if (!isStoreOpen()) {
+      return res.status(400).json({
+        success: false,
+        message: "የስራ ሰዓታችን ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM – 9:00 PM) ነው። እባክዎ በስራ ሰዓት ይጠቀሙ!"
+      });
+    }
+
     const botSettings = await Settings.findOne({ key: "global_settings" });
     if (botSettings && botSettings.isPaused) {
       return res.status(503).json({
@@ -373,11 +385,10 @@ app.post("/telegram-webhook", async (req, res) => {
   res.sendStatus(200);
 
   const msg = req.body.message;
-
-  // 1. አድሚን ደረሰኝ ፎቶ ሲልክ ተቀብሎ ለተጠቃሚውና ለ @Ut_proof ቻናል ማስተላለፍ
   const senderId = String(msg?.from?.id || "").trim();
   const isAdmin = senderId === ADMIN_CHAT_ID;
 
+  // 1. አድሚን ደረሰኝ ፎቶ ሲልክ ተቀብሎ ለተጠቃሚውና ለ @Ut_proof ቻናል ማስተላለፍ
   if (msg && isAdmin && pendingReceiptOrder) {
     if (msg.photo && msg.photo.length > 0) {
       const order = await Order.findOne({ orderId: pendingReceiptOrder });
@@ -399,9 +410,10 @@ app.post("/telegram-webhook", async (req, res) => {
           body: JSON.stringify({ chat_id: order.userId, photo: photoId, caption: userMsg, parse_mode: "HTML" })
         });
 
-        // ወደ @Ut_proof ፖስት ማድረግ
+        // ወደ @Ut_proof ራስ-ሰር ፖስት ማድረግ (Auto Proof Post)
         try {
-          const maskedName = order.userName.length > 3 ? order.userName.substring(0, 3) + "***" : order.userName + "***";
+          const rawName = order.userName || "ደንበኛ";
+          const maskedName = rawName.length > 3 ? rawName.substring(0, 3) + "***" : rawName + "***";
           const proofMsg = 
             `🎉 <b>አዲስ የተጠናቀቀ ክፍያ ማረጋገጫ!</b> ✅\n` +
             `━━━━━━━━━━━━━━━━━━\n` +
@@ -552,6 +564,7 @@ app.post("/telegram-webhook", async (req, res) => {
         const totalOrders = await Order.countDocuments();
         const completedOrders = await Order.countDocuments({ status: "approved" });
         const pendingOrders = await Order.countDocuments({ status: "pending" });
+        const declinedOrders = await Order.countDocuments({ status: "declined" });
 
         const statsMsg = 
           `📊 <b>የ Unique P2P አጠቃላይ መረጃ ዳሽቦርድ</b>\n` +
@@ -560,6 +573,7 @@ app.post("/telegram-webhook", async (req, res) => {
           `📦 <b>ጠቅላላ ትዕዛዞች:</b> ${totalOrders}\n` +
           `✅ <b>የጸደቁ ትዕዛዞች:</b> ${completedOrders}\n` +
           `⏳ <b>በመጠባበቅ ላይ ያሉ:</b> ${pendingOrders}\n` +
+          `❌ <b>ውድቅ የተደረጉ:</b> ${declinedOrders}\n` +
           `━━━━━━━━━━━━━━━━━━\n` +
           `⚡ <i>ሲስተሙ እና ዳታቤዙ በጥሩ ሁኔታ ላይ ይገኛሉ!</i>`;
 
@@ -711,7 +725,6 @@ app.post("/telegram-webhook", async (req, res) => {
     const userId = msg.from.id;
     const text = msg.text.trim();
 
-    // ተጠቃሚውን MongoDB ላይ ማስመዝገብ
     await User.findOneAndUpdate(
       { telegramId: userId },
       { username: msg.from.username, firstName: msg.from.first_name },
@@ -835,8 +848,10 @@ app.post("/telegram-webhook", async (req, res) => {
         body: JSON.stringify({ chat_id: order.userId, text: message, parse_mode: "HTML" })
       });
 
+      // ወደ @Ut_proof በጽሑፍ መለጠፍ
       try {
-        const maskedName = order.userName.length > 3 ? order.userName.substring(0, 3) + "***" : order.userName + "***";
+        const rawName = order.userName || "ደንበኛ";
+        const maskedName = rawName.length > 3 ? rawName.substring(0, 3) + "***" : rawName + "***";
         const proofMsg = 
           `🎉 <b>አዲስ የተጠናቀቀ ክፍያ ማረጋገጫ!</b> ✅\n` +
           `━━━━━━━━━━━━━━━━━━\n` +
