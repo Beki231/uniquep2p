@@ -919,20 +919,20 @@
         return;  
       }  
 
-      // Account Format Validation (Telebirr & CBE)
+      // Account Format Validation (Telebirr 09 ብቻ & CBE 13 ድጅት)
       const cleanAcc = account.replace(/\s+/g, '');
       if (method === "Telebirr") {
-        const teleRegex = /^(09|07)\d{8}$/;
+        const teleRegex = /^09\d{8}$/;
         if (!teleRegex.test(cleanAcc)) {
           triggerHaptic('error');
-          showNotification("⚠️ የቴሌብር ቁጥር ትክክል አይደለም! (በ09 ወይም በ07 የሚጀምር 10 ድጅት መሆን አለበት)");
+          showNotification("⚠️ የቴሌብር ቁጥር ትክክል አይደለም! (09 የሚጀምር 10 ድጅት መሆን አለበት) ደግመው በትክክል ያስገቡ✅");
           return;
         }
       } else if (method === "CBE") {
         const cbeRegex = /^\d{13}$/;
         if (!cbeRegex.test(cleanAcc)) {
           triggerHaptic('error');
-          showNotification("⚠️ የንግድ ባንክ (CBE) አካውንት 13 ድጅት መሆን አለበት!");
+          showNotification("⚠️ የንግድ ባንክ (CBE) አካውንት 13 ድጅት መሆን አለበት! ደግመው በትክክል ያስገቡ✅");
           return;
         }
       }
