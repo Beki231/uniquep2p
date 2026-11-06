@@ -45,7 +45,7 @@
       background: rgba(6, 9, 19, 0.92);  
       backdrop-filter: blur(14px);  
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);  
-      padding: 12px 16px;  
+      padding: 10px 14px;  
       position: sticky;  
       top: 0;  
       z-index: 100;  
@@ -80,7 +80,7 @@
     }
 
     .brand-name {  
-      font-size: 15.5px;  
+      font-size: 15px;  
       font-weight: 800;  
       letter-spacing: -0.3px;  
       color: #ffffff;
@@ -97,17 +97,48 @@
       box-shadow: 0 0 4px rgba(0,0,0,0.4);
     }
 
+    /* Working Hours & User Badge Box */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 9px;
+      border-radius: 14px;
+      font-size: 10.5px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s;
+    }
+
+    .status-open {
+      background: rgba(0, 242, 121, 0.1);
+      color: var(--accent-green);
+      border-color: rgba(0, 242, 121, 0.35);
+    }
+
+    .status-closed {
+      background: rgba(255, 51, 102, 0.1);
+      color: var(--accent-red);
+      border-color: rgba(255, 51, 102, 0.35);
+    }
+
     .user-badge {  
       display: flex;  
       align-items: center;  
-      gap: 6px;  
-      background: rgba(0, 242, 121, 0.08);  
-      padding: 5px 12px;  
-      border-radius: 18px;  
-      font-size: 11.5px;  
+      gap: 5px;  
+      background: rgba(56, 189, 248, 0.08);  
+      padding: 4px 10px;  
+      border-radius: 14px;  
+      font-size: 11px;  
       font-weight: 700;
-      color: var(--accent-green);  
-      border: 1px solid rgba(0, 242, 121, 0.25);  
+      color: var(--accent-cyan);  
+      border: 1px solid rgba(56, 189, 248, 0.25);  
     }  
 
     .container {  
@@ -626,10 +657,16 @@
         <img class="flag-icon" src="https://flagcdn.com/w40/et.png" alt="ኢትዮጵያ">  
       </div>  
     </div>  
-    <div class="user-badge" id="userBadge">  
-      <i class="fa-solid fa-shield-halved"></i>  
-      <span id="userName">ተጠቃሚ</span>  
-    </div>  
+    <div class="header-actions">
+      <!-- የስራ ሰዓት ሁኔታ አዶ -->
+      <div id="storeStatusBadge" class="status-badge status-open">
+        <span>● ክፍት ነው</span>
+      </div>
+      <div class="user-badge" id="userBadge">  
+        <i class="fa-solid fa-shield-halved"></i>  
+        <span id="userName">ተጠቃሚ</span>  
+      </div>  
+    </div>
   </header>  
 
   <div class="container">  
@@ -639,7 +676,7 @@
         <i class="fa-solid fa-bolt"></i> ፈጣን እና ደህንነቱ የተጠበቀ P2P  
       </div>  
       <div class="banner-subtitle">  
-        USDT በደቂቃዎች ውስጥ ሽጠው በቴሌብር ወይም በኢትዮጵያ ንግድ ባንክ (CBE) ብር ይቀበሉ!  
+        USDT በደቂቃዎች ውስጥ ሽጠው በቴሌብር ወይም በኢትዮጵያ ንግድ ባንክ (CBE) ብር ይቀበሉ! (የስራ ሰዓት: 1:00 ጠዋት - 3:00 ማታ)  
       </div>  
     </div>  
 
@@ -732,7 +769,6 @@
 
     <!-- TAB 2: BUY USDT (መግዛት) -->  
     <div id="tab-buy" class="tab-content">  
-      <!-- Compact Trust Badges -->
       <div class="trust-badges-bar">
         <div class="trust-badge-item">
           <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i>
@@ -812,7 +848,6 @@
 
     <!-- TAB 4: ORDER HISTORY (የትዕዛዝ ታሪክ) -->  
     <div id="tab-history" class="tab-content">  
-      <!-- Compact ማጠቃለያ ካርድ እና ደረጃ -->
       <div class="history-stats-compact">
         <div class="history-stats-header">
           <span style="font-size: 11.5px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 5px;">
@@ -858,7 +893,6 @@
 
     <!-- TAB 5: SUPPORT (ድጋፍ) -->  
     <div id="tab-support" class="tab-content">  
-      <!-- Compact Trust Badges -->
       <div class="trust-badges-bar">
         <div class="trust-badge-item">
           <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i>
@@ -927,7 +961,7 @@
     </button>  
   </div>  
 
-  <!-- Double-Check Confirmation Modal (የክፍያ ማረጋገጫ መስኮት) -->
+  <!-- Double-Check Confirmation Modal -->
   <div id="confirmModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
     <div style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 18px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
       <div style="text-align: center; margin-bottom: 14px;">
@@ -988,13 +1022,47 @@
     let selectedNet = "binance";  
     const SERVER_URL = "https://uniquep2p.onrender.com";  
     let dynamicRates = { tier1: 178, tier2: 180, tier3: 182, tier4: 185 };  
+    let isCurrentStoreOpen = true;
+
+    // የስራ ሰዓትን በኢትዮጵያ ሰዓት መገምገም
+    function evaluateStoreHours() {
+      const now = new Date();
+      const utcHours = now.getUTCHours();
+      const eatHours = (utcHours + 3) % 24; 
+      isCurrentStoreOpen = eatHours >= 7 && eatHours < 21; // 7:00 AM - 9:00 PM
+
+      const badge = document.getElementById('storeStatusBadge');
+      if (badge) {
+        if (isCurrentStoreOpen) {
+          badge.className = "status-badge status-open";
+          badge.innerHTML = "<span>● ክፍት ነው</span>";
+        } else {
+          badge.className = "status-badge status-closed";
+          badge.innerHTML = "<span>● ዝግ ነው</span>";
+        }
+      }
+    }
 
     async function fetchLiveRates() {  
+      evaluateStoreHours();
       try {  
         const response = await fetch(`${SERVER_URL}/api/rates?t=${Date.now()}`);  
         const data = await response.json();  
         if (data.success && data.rates) {  
           dynamicRates = data.rates;  
+          if (data.isOpen !== undefined) {
+            isCurrentStoreOpen = data.isOpen;
+            const badge = document.getElementById('storeStatusBadge');
+            if (badge) {
+              if (isCurrentStoreOpen) {
+                badge.className = "status-badge status-open";
+                badge.innerHTML = "<span>● ክፍት ነው</span>";
+              } else {
+                badge.className = "status-badge status-closed";
+                badge.innerHTML = "<span>● ዝግ ነው</span>";
+              }
+            }
+          }
           document.getElementById('tableRateTier1').innerText = `${dynamicRates.tier1} ETB`;  
           document.getElementById('tableRateTier2').innerText = `${dynamicRates.tier2} ETB`;  
           document.getElementById('tableRateTier3').innerText = `${dynamicRates.tier3} ETB`;  
@@ -1117,8 +1185,16 @@
       document.getElementById('confirmModal').style.display = 'none';
     }
 
-    // 1. መጀመሪያ ቅጹን አጣርቶ የማረጋገጫ ሞዳሉን ያሳያል
+    // 1. መጀመሪያ ፎርሙን አጣርቶ የማረጋገጫ መስኮት ያሳያል
     function submitOrder() {  
+      // የስራ ሰዓት ማረጋገጫ
+      evaluateStoreHours();
+      if (!isCurrentStoreOpen) {
+        triggerHaptic('error');
+        showNotification("⏰ የሱቃችን የስራ ሰዓት ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM – 9:00 PM) ነው። እባክዎ በስራ ሰዓት ይጠቀሙ!");
+        return;
+      }
+
       const amt = Number(document.getElementById("usdtAmount").value);  
       const account = document.getElementById("accountNumber").value.trim();  
       const name = document.getElementById("accountName").value.trim();  
