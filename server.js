@@ -225,6 +225,34 @@ app.get("/api/rates", (req, res) => {
   });
 });
 
+// Mini App ላይ የትዕዛዝ ታሪክን ከ MongoDB አንብቦ የሚያመጣ አዲሱ Endpoint
+app.get("/api/my-orders", async (req, res) => {
+  try {
+    const user = verifyInitData(req.query.initData);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    const userOrders = await Order.find({ userId: user.id })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json({
+      success: true,
+      orders: userOrders
+    });
+  } catch (err) {
+    console.error("Order history fetch error:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching orders"
+    });
+  }
+});
+
 app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
   try {
     const user = verifyInitData(req.body.initData);
@@ -524,7 +552,7 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // 4. 📜 Order History (ከ MongoDB ወስዶ ማሳየት)
+    // 4. 📜 Order History (ከ MongoDB ወስዶ በቻት ማሳየት)
     if (text === "📜 Order History") {
       const userOrders = await Order.find({ userId }).sort({ createdAt: -1 }).limit(5);
 
