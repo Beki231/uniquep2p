@@ -24,12 +24,15 @@ const PROOF_CHANNEL_ID = "@Ut_proof";
 
 // የ Welcome መልዕክት ፎቶ ሊንክ
 const BANNER_IMAGE_URL = "https://i.postimg.cc/L88G59b1/IMG-20261103-102834-245.jpg"; 
+// የ Statics ሪፖርት ፎቶ ሊንክ
+const STATS_BANNER_URL = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80";
 
 // 1. Schemas
 const UserSchema = new mongoose.Schema({
   telegramId: { type: Number, required: true, unique: true },
   username: String,
   firstName: String,
+  isBanned: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -85,7 +88,6 @@ let exchangeRates = {
   tier4: 185
 };
 
-// ተመኖችን ከዳታቤዝ ማስጀመሪያ
 async function initRates() {
   try {
     let savedRate = await Rate.findOne({ key: "current_rates" });
@@ -117,7 +119,6 @@ mongoose.connect(MONGO_URI)
   })
   .catch(err => console.error("MongoDB ግንኙነት ስህተት:", err));
 
-// የስራ ሰዓት (ከጠዋቱ 1:00 እስከ ማታ 3:00 / 7:00 AM - 9:00 PM)
 function isStoreOpen() {
   const now = new Date();
   const utcHours = now.getUTCHours();
@@ -151,13 +152,14 @@ async function checkMembership(userId) {
 
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
-    `👋 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> \n\n` +
-    `🔐 <b>ደህንነቱ የተጠበቀ እና እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> \n\n` +
+    `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
+    `━━━━━━━━━━━━━━━━━━\n` +
+    `🔐 <b>ደህንነቱ የተጠበቀ እና ⚡ እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> 💯\n\n` +
     `👇 <b>ንግድ ለመጀመር ከስር ያለውን Mini App ይክፈቱ፦</b>`;
 
   const welcomeKeyboard = {
     inline_keyboard: [
-      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=6" } }],
+      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=7" } }],
       [
         { text: "👨‍💻 አድሚን (@Aropc)", url: "https://t.me/Aropc" },
         { text: "📢 ቻናል", url: "https://t.me/Unique_techs" }
@@ -178,7 +180,6 @@ async function sendWelcomeBanner(userId) {
       })
     });
   } catch (e) {
-    console.error("Welcome photo error, sending text fallback:", e.message);
     await telegram("sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -262,12 +263,26 @@ app.get("/api/rates", async (req, res) => {
   });
 });
 
+// Mini App ላይ የቻናል አባልነትን መፈተሻ
+app.get("/api/check-channel", async (req, res) => {
+  try {
+    const user = verifyInitData(req.query.initData);
+    if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const isMember = await checkMembership(user.id);
+    const dbUser = await User.findOne({ telegramId: user.id });
+    const isBanned = dbUser ? dbUser.isBanned : false;
+
+    res.json({ success: true, isMember, isBanned });
+  } catch (err) {
+    res.json({ success: false, isMember: false });
+  }
+});
+
 app.get("/api/user-avatar", async (req, res) => {
   try {
     const user = verifyInitData(req.query.initData);
-    if (!user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+    if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
 
     const photosRes = await telegram("getUserProfilePhotos", {
       method: "POST",
@@ -298,9 +313,7 @@ app.get("/api/user-avatar", async (req, res) => {
 app.get("/api/my-orders", async (req, res) => {
   try {
     const user = verifyInitData(req.query.initData);
-    if (!user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+    if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
 
     const userOrders = await Order.find({ userId: user.id })
       .sort({ createdAt: -1 })
@@ -314,24 +327,33 @@ app.get("/api/my-orders", async (req, res) => {
 
 app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
   try {
+    const user = verifyInitData(req.body.initData);
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Telegram verification failed." });
+    }
+
+    // Ban መሆኑን መፈተሽ
+    const dbUser = await User.findOne({ telegramId: user.id });
+    if (dbUser && dbUser.isBanned) {
+      return res.status(403).json({
+        success: false,
+        message: "🚫 አካውንትዎ በአድሚን ታግዷል (Banned)! ትዕዛዝ ማስተላለፍ አይችሉም።"
+      });
+    }
+
     const botSettings = await Settings.findOne({ key: "global_settings" });
     if (botSettings && botSettings.isPaused) {
       return res.status(503).json({
         success: false,
-        message: botSettings.pauseReason || "⏸️ ቦቱ ለጊዜው አገልግሎት አቁሟል። እባክዎ ጥቂት ቆይተው ይሞክሩ።"
+        message: botSettings.pauseReason || "⏸️ ቦቱ ለጊዜው አገልግሎት አቁሟል።"
       });
     }
 
     if (!isStoreOpen()) {
       return res.status(400).json({
         success: false,
-        message: "⏰ የስራ ሰዓታችን ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM – 9:00 PM) ነው። እባክዎ በስራ ሰዓት ይጠቀሙ!"
+        message: "⏰ የስራ ሰዓታችን ከጠዋቱ 1:00 እስከ ማታ 3:00 (7:00 AM – 9:00 PM) ነው።"
       });
-    }
-
-    const user = verifyInitData(req.body.initData);
-    if (!user) {
-      return res.status(401).json({ success: false, message: "Telegram verification failed." });
     }
 
     const amount = Number(req.body.amount);
@@ -380,14 +402,16 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
       `━━━━━━━━━━━━━━━━━━\n` +
       `🆔 <b>Order:</b> <code>${orderId}</code>`;
 
+    // Ban / Unban እና Approve / Decline አዝራሮች
     const keyboard = {
       inline_keyboard: [
         [
           { text: "📸 ደረሰኝ ልከህ አጽድቅ", callback_data: `receipt:${orderId}` },
-          { text: "✅ ፈጣን Approve", callback_data: `quick_approve:${orderId}` }
+          { text: "✅ Approve", callback_data: `quick_approve:${orderId}` }
         ],
         [
-          { text: "❌ Decline", callback_data: `decline:${orderId}` }
+          { text: "❌ Decline", callback_data: `decline:${orderId}` },
+          { text: "🚫 Ban User", callback_data: `ban_user:${user.id}` }
         ]
       ]
     };
@@ -504,9 +528,98 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 2. የአድሚን ትዕዛዞች (Admin Management Commands)
+  // 2. የአድሚን ትዕዛዞች
   if (msg && msg.text && isAdmin) {
     const text = msg.text.trim();
+
+    // /statics ወይም Statics (በስክሪንሾትህ መሰረት ውብ ካርድ)
+    if (text === "/statics" || text === "Statics" || text === "/stats") {
+      const totalUsers = await User.countDocuments();
+      const now = new Date();
+      const eatOffset = 3 * 60; // UTC+3
+      const localTime = new Date(now.getTime() + (now.getTimezoneOffset() + eatOffset) * 60000);
+      
+      const dateStr = localTime.toISOString().split("T")[0];
+      const hours = localTime.getHours();
+      const minutes = String(localTime.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      const timeStr = `${displayHours}:${minutes} ${ampm}`;
+
+      const staticsCaption = 
+        `📊 <b>Bot Statistics</b>\n\n` +
+        `👥 <b>Total Users: ${totalUsers}</b>\n\n` +
+        `📅 <b>Date: ${dateStr}</b>\n` +
+        `⏰ <b>Time: ${timeStr}</b>`;
+
+      const staticsKeyboard = {
+        inline_keyboard: [
+          [{ text: "🔐 Admin Panel", callback_data: "open_admin_panel" }]
+        ]
+      };
+
+      try {
+        await telegram("sendPhoto", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            photo: STATS_BANNER_URL,
+            caption: staticsCaption,
+            parse_mode: "HTML",
+            reply_markup: staticsKeyboard
+          })
+        });
+      } catch (err) {
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: staticsCaption,
+            parse_mode: "HTML",
+            reply_markup: staticsKeyboard
+          })
+        });
+      }
+      return;
+    }
+
+    // /ban [User_ID]
+    if (text.startsWith("/ban ")) {
+      const targetId = Number(text.split(" ")[1]);
+      if (targetId) {
+        await User.findOneAndUpdate({ telegramId: targetId }, { isBanned: true }, { upsert: true });
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: `🚫 ተጠቃሚ <code>${targetId}</code> ታግዷል (Banned)!`,
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      }
+    }
+
+    // /unban [User_ID]
+    if (text.startsWith("/unban ")) {
+      const targetId = Number(text.split(" ")[1]);
+      if (targetId) {
+        await User.findOneAndUpdate({ telegramId: targetId }, { isBanned: false });
+        await telegram("sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: msg.chat.id,
+            text: `✅ ተጠቃሚ <code>${targetId}</code> እገዳው ተነስቷል (Unbanned)!`,
+            parse_mode: "HTML"
+          })
+        });
+        return;
+      }
+    }
 
     // /pause
     if (text === "/pause" || text.startsWith("/pause ")) {
@@ -540,35 +653,9 @@ app.post("/telegram-webhook", async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: msg.chat.id,
-          text: `▶️ <b>ቦቱ ስራውን ቀጥሏል (Resumed)!</b> ተጠቃሚዎች ማዘዝ ይችላሉ።`,
+          text: `▶️ <b>ቦቱ ስራውን ቀጥሏል (Resumed)!</b>`,
           parse_mode: "HTML"
         })
-      });
-      return;
-    }
-
-    // /stats
-    if (text.startsWith("/stats")) {
-      const totalUsers = await User.countDocuments();
-      const totalOrders = await Order.countDocuments();
-      const approvedOrders = await Order.countDocuments({ status: "approved" });
-      const pendingOrders = await Order.countDocuments({ status: "pending" });
-      const declinedOrders = await Order.countDocuments({ status: "declined" });
-
-      const statsMsg = 
-        `📊 <b>የአጠቃላይ ሁኔታ ዳሽቦርድ (Stats)</b>\n` +
-        `━━━━━━━━━━━━━━━━━━\n` +
-        `👥 <b>ጠቅላላ ተጠቃሚዎች:</b> ${totalUsers}\n` +
-        `📦 <b>ጠቅላላ ትዕዛዞች:</b> ${totalOrders}\n` +
-        `━━━━━━━━━━━━━━━━━━\n` +
-        `✅ <b>የጸደቁ (Approved):</b> ${approvedOrders}\n` +
-        `⏳ <b>በሂደት ላይ (Pending):</b> ${pendingOrders}\n` +
-        `❌ <b>ውድቅ የተደረጉ (Declined):</b> ${declinedOrders}`;
-
-      await telegram("sendMessage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: msg.chat.id, text: statsMsg, parse_mode: "HTML" })
       });
       return;
     }
@@ -623,7 +710,7 @@ app.post("/telegram-webhook", async (req, res) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: msg.chat.id,
-            text: `⚠️ <b>አጠቃቀም፦</b> <code>/send [User_ID] [መልዕክት]</code>\n\nለምሳሌ፦\n<code>/send 123456789 ሰላም ክፍያዎ ገቢ ተደርጓል</code>`,
+            text: `⚠️ አጠቃቀም፦ <code>/send [User_ID] [መልዕክት]</code>`,
             parse_mode: "HTML"
           })
         });
@@ -636,15 +723,14 @@ app.post("/telegram-webhook", async (req, res) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: targetUserId,
-            text: `📩 <b>ከ Unique P2P አስተዳዳሪ የተላከ መልዕክት፦</b>\n\n${escapeHTML(customMessage)}`,
+            text: `📩 <b>ከ Unique P2P አስተዳዳሪ፦</b>\n\n${escapeHTML(customMessage)}`,
             parse_mode: "HTML"
           })
         });
-
         await telegram("sendMessage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: msg.chat.id, text: `✅ መልዕክቱ ለ <code>${targetUserId}</code> በተሳካ ሁኔታ ደርሷል!` , parse_mode: "HTML" })
+          body: JSON.stringify({ chat_id: msg.chat.id, text: `✅ መልዕክቱ ለ <code>${targetUserId}</code> ደርሷል!` , parse_mode: "HTML" })
         });
       } catch (err) {
         await telegram("sendMessage", {
@@ -659,15 +745,6 @@ app.post("/telegram-webhook", async (req, res) => {
     // /broadcast [Message]
     if (text.startsWith("/broadcast ")) {
       const broadcastMsg = text.replace("/broadcast ", "").trim();
-      if (!broadcastMsg) {
-        await telegram("sendMessage", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: msg.chat.id, text: `⚠️ እባክዎ የሚተላለፈውን መልዕክት ያስገቡ፦\n<code>/broadcast ሰላም ለሁላችሁም...</code>`, parse_mode: "HTML" })
-        });
-        return;
-      }
-
       const allUsers = await User.find({});
       await telegram("sendMessage", {
         method: "POST",
@@ -688,16 +765,14 @@ app.post("/telegram-webhook", async (req, res) => {
             })
           });
           sentCount++;
-          await new Promise(r => setTimeout(r, 60)); // የቴሌግራም Limit እንዳይጥስ
-        } catch (e) {
-          // Blocked or deactivated
-        }
+          await new Promise(r => setTimeout(r, 60));
+        } catch (e) {}
       }
 
       await telegram("sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: msg.chat.id, text: `✅ መልዕክቱ ለ <b>${sentCount}</b> ተጠቃሚዎች በተሳካ ሁኔታ ተላልፏል!` , parse_mode: "HTML" })
+        body: JSON.stringify({ chat_id: msg.chat.id, text: `✅ መልዕክቱ ለ <b>${sentCount}</b> ተጠቃሚዎች ተላልፏል!` , parse_mode: "HTML" })
       });
       return;
     }
@@ -712,13 +787,11 @@ app.post("/telegram-webhook", async (req, res) => {
 
       if (t1 && t2 && t3 && t4) {
         exchangeRates = { tier1: t1, tier2: t2, tier3: t3, tier4: t4 };
-
         await Rate.findOneAndUpdate(
           { key: "current_rates" },
           { tier1: t1, tier2: t2, tier3: t3, tier4: t4 },
           { upsert: true }
         );
-
         await telegram("sendMessage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -758,7 +831,7 @@ app.post("/telegram-webhook", async (req, res) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: msg.chat.id,
-            text: `✅ <b>ተመን ተቀይሯል!</b> ዋናው ተመን፡ <b>${exchangeRates.tier2} ETB</b> (በዳታቤዝ ተቀምጧል)`,
+            text: `✅ <b>ተመን ተቀይሯል!</b> ዋናው ተመን፡ <b>${exchangeRates.tier2} ETB</b>`,
             parse_mode: "HTML"
           })
         });
@@ -767,10 +840,24 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 3. User Start Message (Force Join ፍተሻው ሳይዛባ)
+  // 3. User Start Message
   if (msg && msg.text) {
     const userId = msg.from.id;
     const text = msg.text.trim();
+
+    const existingUser = await User.findOne({ telegramId: userId });
+    if (existingUser && existingUser.isBanned) {
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: "🚫 <b>አካውንትዎ ታግዷል (Banned)!</b> አገልግሎቱን መጠቀም አይችሉም።",
+          parse_mode: "HTML"
+        })
+      });
+      return;
+    }
 
     await User.findOneAndUpdate(
       { telegramId: userId },
@@ -829,6 +916,54 @@ app.post("/telegram-webhook", async (req, res) => {
 
     const callbackSenderId = String(callback.from.id || "").trim();
     if (callbackSenderId !== ADMIN_CHAT_ID) return;
+
+    // Admin Panel Info Click
+    if (callback.data === "open_admin_panel") {
+      const totalUsers = await User.countDocuments();
+      const approvedOrders = await Order.countDocuments({ status: "approved" });
+      const pendingOrders = await Order.countDocuments({ status: "pending" });
+      const declinedOrders = await Order.countDocuments({ status: "declined" });
+
+      const panelText = 
+        `🔐 <b>Admin Control Panel</b>\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `👥 ተጠቃሚዎች: <b>${totalUsers}</b>\n` +
+        `✅ የጸደቁ: <b>${approvedOrders}</b> | ⏳ በሂደት: <b>${pendingOrders}</b> | ❌ ውድቅ: <b>${declinedOrders}</b>\n\n` +
+        `⚙️ <b>የትዕዛዞች ዝርዝር፦</b>\n` +
+        `• /daily — የዛሬ ገቢና ትዕዛዝ\n` +
+        `• /pause & /resume — ቦቱን ማቆሚያ/ማስጀመሪያ\n` +
+        `• /setrates [t1] [t2] [t3] [t4] — ተመን መቀየሪያ\n` +
+        `• /ban [ID] & /unban [ID] — ተጠቃሚ ማገጃ`;
+
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: callback.message.chat.id, text: panelText, parse_mode: "HTML" })
+      });
+      await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id }) });
+      return;
+    }
+
+    // Ban User Callback
+    if (callback.data.startsWith("ban_user:")) {
+      const banTargetId = Number(callback.data.split(":")[1]);
+      await User.findOneAndUpdate({ telegramId: banTargetId }, { isBanned: true });
+      await telegram("answerCallbackQuery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ callback_query_id: callback.id, text: `User ${banTargetId} Banned!`, show_alert: true })
+      });
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: callback.message.chat.id,
+          text: `🚫 ተጠቃሚ <code>${banTargetId}</code> ታግዷል (Banned)! እገዳውን ለማንሳት <code>/unban ${banTargetId}</code> ይጠቀሙ።`,
+          parse_mode: "HTML"
+        })
+      });
+      return;
+    }
 
     const [action, orderId] = (callback.data || "").split(":");
     const order = await Order.findOne({ orderId });
