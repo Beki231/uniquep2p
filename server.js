@@ -150,7 +150,7 @@ async function checkMembership(userId) {
   }
 }
 
-// ቻናሉን ካልተቀላቀሉ የሚላክ ውብና ማራኪ መልዕክት
+// ቻናሉን ካልተቀላቀሉ የሚላክ ውብና ማራኪ መልዕክት (ያንተ ጽሑፍ እንዳለ ተጠብቋል)
 async function sendJoinRequiredMessage(userId) {
   const joinText = 
     `👋 <b>እንኳን ወደ Unique P2P መገበያያ በደህና መጡ!</b>\n\n` +
@@ -179,6 +179,7 @@ async function sendJoinRequiredMessage(userId) {
   });
 }
 
+// Welcome Banner (ያንተ ጽሑፍ እንዳለ ተጠብቋል)
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
     `👋 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> \n\n` +
@@ -187,7 +188,7 @@ async function sendWelcomeBanner(userId) {
 
   const welcomeKeyboard = {
     inline_keyboard: [
-      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=7" } }],
+      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=8" } }],
       [
         { text: "👨‍💻 አድሚን (@Aropc)", url: "https://t.me/Aropc" },
         { text: "📢 ቻናል", url: "https://t.me/Unique_techs" }
@@ -292,7 +293,7 @@ app.get("/api/rates", async (req, res) => {
   });
 });
 
-// Mini App ላይ የቻናል አባልነትን እና Ban መሆኑን መፈተሻ
+// Mini App ላይ የቻናል አባልነትን እና Ban መሆኑን መፈተሻ (የተጠናከረ)
 app.get("/api/check-channel", async (req, res) => {
   try {
     const user = verifyInitData(req.query.initData);
@@ -304,7 +305,7 @@ app.get("/api/check-channel", async (req, res) => {
 
     res.json({ success: true, isMember, isBanned });
   } catch (err) {
-    res.json({ success: false, isMember: false });
+    res.json({ success: false, isMember: false, isBanned: false });
   }
 });
 
@@ -431,6 +432,7 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
       `━━━━━━━━━━━━━━━━━━\n` +
       `🆔 <b>Order:</b> <code>${orderId}</code>`;
 
+    // Ban / Unban እና Approve / Decline አዝራሮች
     const keyboard = {
       inline_keyboard: [
         [
@@ -556,11 +558,11 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 2. የአድሚን ትዕዛዞች
+  // 2. የአድሚን ትዕዛዞች (ያንተ ትዕዛዞች እንዳሉ ሆነው)
   if (msg && msg.text && isAdmin) {
     const text = msg.text.trim();
 
-    // /stats — ነባሩ ዝርዝር ዳሽቦርድ (ጽሑፍ ብቻ)
+    // /stats — ነባሩ ዝርዝር ዳሽቦርድ (ጽሑፍ ብቻ)[span_0](start_span)[span_0](end_span)
     if (text === "/stats") {
       const totalUsers = await User.countDocuments();
       const totalOrders = await Order.countDocuments();
@@ -586,7 +588,7 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // /statics ወይም Statics — ስዕል ያለው ካርድ
+    // /statics ወይም Statics — ስዕል ያለው ካርድ[span_1](start_span)[span_1](end_span)
     if (text === "/statics" || text === "Statics") {
       const totalUsers = await User.countDocuments();
       const now = new Date();
