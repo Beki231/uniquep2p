@@ -795,7 +795,10 @@
 
           <!-- Dynamic Crypto Address Box -->  
           <div class="address-box">  
-            <div style="font-size: 10.5px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700;" id="networkTitle">Binance Pay UID</div>  
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-size: 10.5px; color: var(--text-muted); font-weight: 700;" id="networkTitle">Binance Pay UID</span>
+              <span id="binanceNickBadge" style="font-size: 10.5px; color: var(--accent-gold); font-weight: 800; background: rgba(255, 183, 3, 0.12); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(255, 183, 3, 0.35); user-select: none;">Nickname:- UniqueTech</span>
+            </div>
             <div class="address-value" id="cryptoAddress">1182277662</div>  
             <button type="button" class="copy-btn" onclick="copyCryptoAddress()">  
               <i class="fa-regular fa-copy"></i> <span data-i18n="copy_addr">አድራሻውን ኮፒ አድርግ</span>  
@@ -1332,6 +1335,12 @@
       if (btnElement) btnElement.classList.add('active');  
       document.getElementById('networkTitle').innerText = addresses[netKey].name;  
       document.getElementById('cryptoAddress').innerText = addresses[netKey].val;  
+
+      // Binance Pay ሲመረጥ ብቻ Nickname ማሳየት
+      const nickBadge = document.getElementById('binanceNickBadge');
+      if (nickBadge) {
+        nickBadge.style.display = netKey === 'binance' ? 'inline-block' : 'none';
+      }
     }  
 
     function updateAccountPlaceholder() {
