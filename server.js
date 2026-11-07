@@ -84,7 +84,6 @@ function isStoreOpen() {
   const now = new Date();
   const utcHours = now.getUTCHours();
   const eatHours = (utcHours + 3) % 24; 
-  // ለሙከራ ጊዜ 'return true;' ማድረግ ትችላለህ
   return eatHours >= 7 && eatHours < 21;
 }
 
@@ -121,7 +120,7 @@ async function sendWelcomeBanner(userId) {
 
   const welcomeKeyboard = {
     inline_keyboard: [
-      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=4" } }],
+      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=5" } }],
       [
         { text: "👨‍💻 አድሚን (@Aropc)", url: "https://t.me/Aropc" },
         { text: "📢 ቻናል", url: "https://t.me/Unique_techs" }
@@ -219,6 +218,40 @@ app.get("/api/rates", (req, res) => {
     rates: exchangeRates,
     isOpen: isStoreOpen() 
   });
+});
+
+// አዲስ፡ የደንበኛውን እውነተኛ የቴሌግራም ፕሮፋይል ፎቶ አምጥቶ የሚያቀብል Endpoint
+app.get("/api/user-avatar", async (req, res) => {
+  try {
+    const user = verifyInitData(req.query.initData);
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const photosRes = await telegram("getUserProfilePhotos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: user.id, limit: 1 })
+    });
+
+    if (photosRes && photosRes.total_count > 0 && photosRes.photos[0].length > 0) {
+      const fileId = photosRes.photos[0][0].file_id; // አነስተኛ መጠን ያለው አቫታር
+      const fileRes = await telegram("getFile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_id: fileId })
+      });
+
+      if (fileRes && fileRes.file_path) {
+        const photoUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileRes.file_path}`;
+        return res.json({ success: true, photoUrl });
+      }
+    }
+
+    res.json({ success: false, message: "No profile photo found" });
+  } catch (err) {
+    res.json({ success: false, message: "Error fetching photo" });
+  }
 });
 
 app.get("/api/my-orders", async (req, res) => {
@@ -348,7 +381,7 @@ app.post("/telegram-webhook", async (req, res) => {
   const senderId = String(msg?.from?.id || "").trim();
   const isAdmin = senderId === ADMIN_CHAT_ID;
 
-  // 1. አድሚን ደረሰኝ ፎቶ ሲልክ (ሁለቱንም ፎቶዎች ወደ @Ut_proof በ sendMediaGroup መለጠፍ)
+  // 1. አድሚን ደረሰኝ ፎቶ ሲልክ
   if (msg && isAdmin && pendingReceiptOrder) {
     if (msg.photo && msg.photo.length > 0) {
       const order = await Order.findOne({ orderId: pendingReceiptOrder });
@@ -358,7 +391,6 @@ app.post("/telegram-webhook", async (req, res) => {
         order.receiptFileId = adminReceiptPhotoId;
         await order.save();
 
-        // ለተጠቃሚው ማሳወቂያ
         const userMsg = 
           `✅ <b>የትዕዛዝ ማረጋገጫ እና ደረሰኝ፦</b>\n\n` +
           `የ <b>${order.amount} USDT</b> ሽያጭ ትዕዛዝዎ ጸድቋል!\n` +
@@ -371,7 +403,6 @@ app.post("/telegram-webhook", async (req, res) => {
           body: JSON.stringify({ chat_id: order.userId, photo: adminReceiptPhotoId, caption: userMsg, parse_mode: "HTML" })
         });
 
-        // ወደ @Ut_proof ሁለት ፎቶዎችን (የደንበኛውን + የአንተን ደረሰኝ) በአንድ ላይ መለጠፍ
         try {
           const rawName = order.userName || "ደንበኛ";
           const maskedName = rawName.length > 3 ? rawName.substring(0, 3) + "***" : rawName + "***";
@@ -388,7 +419,6 @@ app.post("/telegram-webhook", async (req, res) => {
             `⚡ <i>ደህንነቱ የተጠበቀ ፈጣን P2P ንግድ በ @Unique_techs</i>`;
 
           if (order.customerProofFileId) {
-            // ሁለት ፎቶዎችን እንደ አንድ አልበም መለጠፍ
             const media = [
               { type: "photo", media: order.customerProofFileId },
               { type: "photo", media: adminReceiptPhotoId, caption: proofCaption, parse_mode: "HTML" }
@@ -400,7 +430,6 @@ app.post("/telegram-webhook", async (req, res) => {
               body: JSON.stringify({ chat_id: PROOF_CHANNEL_ID, media: media })
             });
           } else {
-            // የደንበኛው ፎቶ ከሌለ የአድሚኑን ብቻ መለጠፍ
             await telegram("sendPhoto", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
