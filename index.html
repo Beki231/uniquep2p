@@ -1138,8 +1138,8 @@
         btn_confirm_send: "አረጋግጥና ላክ"
       },
       en: {
-        store_open: "● Open",
-        store_closed: "● Closed",
+        store_open: "● LIVE",
+        store_closed: "● CLOSED",
         working_hours: "⏰ Hours: 7:00 AM - 9:00 PM (EAT)",
         amount_label: "Amount of USDT to Sell",
         amount_placeholder: "Min 0.5 USDT",
@@ -1213,6 +1213,8 @@
       if (amtInput) {
         amtInput.placeholder = translations[lang].amount_placeholder;
       }
+
+      evaluateStoreHours();
     }
 
     function toggleLanguage() {
