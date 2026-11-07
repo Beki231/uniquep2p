@@ -153,14 +153,12 @@ async function checkMembership(userId) {
 // ቻናሉን ካልተቀላቀሉ የሚላክ ውብና ማራኪ መልዕክት
 async function sendJoinRequiredMessage(userId) {
   const joinText = 
-    `👋 <b>እንኳን ወደ Unique P2P መገበያያ በደህና መጡ!</b>\n` +
-    `━━━━━━━━━━━━━━━━━━━━\n` +
-    `⚠️ <b>ማሳሰቢያ፦</b> የቦቱን እና የ Mini App አገልግሎቶችን ለመጠቀም መጀመሪያ ይፋዊ ቻናላችንን መቀላቀል <b>ግዴታ</b> ነው።\n\n` +
+    `👋 <b>እንኳን ወደ Unique P2P መገበያያ በደህና መጡ!</b>\n\n` +
     `📢 <b>ቻናላችንን በመቀላቀል፦</b>\n` +
-    `• የዕለቱን ትኩስ የምንዛሬ ዋጋዎች\n` +
+    `• አዳዲስ በብር እና በዶላር የሚከፍሉ ስራዎች \n` +
     `• እውነተኛ የክፍያ ማረጋገጫዎችና መረጃዎችን\n` +
     `• ልዩ ልዩ ማስታወቂያዎችን በፍጥነት ያገኛሉ!\n\n` +
-    `👇 <i>ከታች ያለውን አዝራር ተጭነው ቻናሉን ከተቀላቀሉ በኋላ <b>«✅ ተቀላቅያለሁ (Verify)»</b> የሚለውን ይጫኑ፦</i>`;
+    `👇 <i>ከታች ያለውን ተጭነው ቻናሉን ከተቀላቀሉ በኋላ <b>«✅ ተቀላቅያለሁ (Verify)»</b> የሚለውን ይጫኑ፦</i>`;
 
   const joinKeyboard = {
     inline_keyboard: [
@@ -183,9 +181,8 @@ async function sendJoinRequiredMessage(userId) {
 
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
-    `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
-    `━━━━━━━━━━━━━━━━━━\n` +
-    `🔐 <b>ደህንነቱ የተጠበቀ እና ⚡ እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> 💯\n\n` +
+    `👋 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> \n\n` +
+    `🔐 <b>ደህንነቱ የተጠበቀ እና እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> \n\n` +
     `👇 <b>ንግድ ለመጀመር ከስር ያለውን Mini App ይክፈቱ፦</b>`;
 
   const welcomeKeyboard = {
