@@ -26,10 +26,6 @@ const PROOF_CHANNEL_ID = "@Ut_proof";
 const BANNER_IMAGE_URL = "https://i.postimg.cc/L88G59b1/IMG-20261103-102834-245.jpg"; 
 
 // 1. MongoDB ግንኙነት እና Schemas
-mongoose.connect(MONGO_URI)
-  .then(() => console.log("MongoDB በተሳካ ሁኔታ ተገናኝቷል"))
-  .catch(err => console.error("MongoDB ግንኙነት ስህተት:", err));
-
 const UserSchema = new mongoose.Schema({
   telegramId: { type: Number, required: true, unique: true },
   username: String,
@@ -60,9 +56,19 @@ const SettingsSchema = new mongoose.Schema({
   pauseReason: { type: String, default: "ቦቱ ለአጭር ጊዜ ጥገና ቆሟል። እባክዎ ጥቂት ቆይተው ይሞክሩ።" }
 });
 
+// አዲስ፡ ተመንን በዳታቤዝ ቋሚ አድርጎ ማስቀመጫ Schema
+const RateSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  tier1: { type: Number, default: 178 },
+  tier2: { type: Number, default: 180 },
+  tier3: { type: Number, default: 182 },
+  tier4: { type: Number, default: 185 }
+});
+
 const User = mongoose.model("User", UserSchema);
 const Order = mongoose.model("Order", OrderSchema);
 const Settings = mongoose.model("Settings", SettingsSchema);
+const Rate = mongoose.model("Rate", RateSchema);
 
 let pendingReceiptOrder = null;
 
@@ -79,6 +85,38 @@ let exchangeRates = {
   tier3: 182,
   tier4: 185
 };
+
+// ሰርቨሩ ሲነሳ ወይም Render Restart ሲያደርግ ተመኖችን ከ MongoDB ዳታቤዝ ማንበቢያ ፈንክሽን
+async function initRates() {
+  try {
+    let savedRate = await Rate.findOne({ key: "current_rates" });
+    if (!savedRate) {
+      savedRate = await Rate.create({
+        key: "current_rates",
+        tier1: 178,
+        tier2: 180,
+        tier3: 182,
+        tier4: 185
+      });
+    }
+    exchangeRates = {
+      tier1: savedRate.tier1,
+      tier2: savedRate.tier2,
+      tier3: savedRate.tier3,
+      tier4: savedRate.tier4
+    };
+    console.log("ተመኖች ከዳታቤዝ በተሳካ ሁኔታ ተጭነዋል:", exchangeRates);
+  } catch (err) {
+    console.error("ተመኖችን ከዳታቤዝ የመጫን ስህተት:", err.message);
+  }
+}
+
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log("MongoDB በተሳካ ሁኔታ ተገናኝቷል");
+    initRates();
+  })
+  .catch(err => console.error("MongoDB ግንኙነት ስህተት:", err));
 
 // የስራ ሰዓት (ከጠዋቱ 1:00 እስከ ማታ 3:00 / 7:00 AM - 9:00 PM)
 function isStoreOpen() {
@@ -465,7 +503,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 2. የአድሚን ትዕዛዞች
+  // 2. የአድሚን ትዕዛዞች (በዳታቤዝ ቋሚ ሆነው የሚቀመጡ)
   if (msg && msg.text && isAdmin) {
     const text = msg.text.trim();
 
@@ -478,12 +516,20 @@ app.post("/telegram-webhook", async (req, res) => {
 
       if (t1 && t2 && t3 && t4) {
         exchangeRates = { tier1: t1, tier2: t2, tier3: t3, tier4: t4 };
+
+        // በ MongoDB ዳታቤዝ ቋሚ አድርጎ ማስቀመጥ
+        await Rate.findOneAndUpdate(
+          { key: "current_rates" },
+          { tier1: t1, tier2: t2, tier3: t3, tier4: t4 },
+          { upsert: true }
+        );
+
         await telegram("sendMessage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: msg.chat.id,
-            text: `✅ <b>ተመኖች ተቀይረዋል!</b>\n\n0.5-0.9: <b>${t1}</b> | 1-10: <b>${t2}</b> | 11-30: <b>${t3}</b> | 31+: <b>${t4}</b>`,
+            text: `✅ <b>ተመኖች በዳታቤዝ ቋሚ ሆነው ተቀምጠዋል!</b>\n\n0.5-0.9: <b>${t1}</b> | 1-10: <b>${t2}</b> | 11-30: <b>${t3}</b> | 31+: <b>${t4}</b>`,
             parse_mode: "HTML"
           })
         });
@@ -500,12 +546,24 @@ app.post("/telegram-webhook", async (req, res) => {
         exchangeRates.tier3 = newRate + 2;
         exchangeRates.tier4 = newRate + 5;
 
+        // በ MongoDB ዳታቤዝ ቋሚ አድርጎ ማስቀመጥ
+        await Rate.findOneAndUpdate(
+          { key: "current_rates" },
+          { 
+            tier1: exchangeRates.tier1, 
+            tier2: exchangeRates.tier2, 
+            tier3: exchangeRates.tier3, 
+            tier4: exchangeRates.tier4 
+          },
+          { upsert: true }
+        );
+
         await telegram("sendMessage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: msg.chat.id,
-            text: `✅ <b>ተመን ተቀይሯል!</b> ዋናው ተመን፡ <b>${exchangeRates.tier2} ETB</b>`,
+            text: `✅ <b>ተመን ተቀይሯል!</b> ዋናው ተመን፡ <b>${exchangeRates.tier2} ETB</b> (በዳታቤዝ ተቀምጧል)`,
             parse_mode: "HTML"
           })
         });
