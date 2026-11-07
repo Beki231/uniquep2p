@@ -150,36 +150,7 @@ async function checkMembership(userId) {
   }
 }
 
-// ቻናሉን ካልተቀላቀሉ የሚላክ ውብና ማራኪ መልዕክት (ያንተ ጽሑፍ እንዳለ ተጠብቋል)
-async function sendJoinRequiredMessage(userId) {
-  const joinText = 
-    `👋 <b>እንኳን ወደ Unique P2P መገበያያ በደህና መጡ!</b>\n\n` +
-    `📢 <b>ቻናላችንን በመቀላቀል፦</b>\n` +
-    `• አዳዲስ በብር እና በዶላር የሚከፍሉ ስራዎች \n` +
-    `• እውነተኛ የክፍያ ማረጋገጫዎችና መረጃዎችን\n` +
-    `• ልዩ ልዩ ማስታወቂያዎችን በፍጥነት ያገኛሉ!\n\n` +
-    `👇 <i>ከታች ያለውን ተጭነው ቻናሉን ከተቀላቀሉ በኋላ <b>«✅ ተቀላቅያለሁ (Verify)»</b> የሚለውን ይጫኑ፦</i>`;
-
-  const joinKeyboard = {
-    inline_keyboard: [
-      [{ text: "📢 ቻናሉን ተቀላቀል (Join Channel)", url: "https://t.me/Unique_techs" }],
-      [{ text: "✅ ተቀላቅያለሁ (Verify Join)", callback_data: "check_join" }]
-    ]
-  };
-
-  await telegram("sendMessage", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: userId,
-      text: joinText,
-      parse_mode: "HTML",
-      reply_markup: joinKeyboard
-    })
-  });
-}
-
-// Welcome Banner (ያንተ ጽሑፍ እንዳለ ተጠብቋል)
+// Welcome Banner
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
     `👋 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> \n\n` +
@@ -293,7 +264,7 @@ app.get("/api/rates", async (req, res) => {
   });
 });
 
-// Mini App ላይ የቻናል አባልነትን እና Ban መሆኑን መፈተሻ (የተጠናከረ)
+// Mini App ላይ የቻናል አባልነትን እና Ban መሆኑን መፈተሻ
 app.get("/api/check-channel", async (req, res) => {
   try {
     const user = verifyInitData(req.query.initData);
@@ -432,7 +403,6 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
       `━━━━━━━━━━━━━━━━━━\n` +
       `🆔 <b>Order:</b> <code>${orderId}</code>`;
 
-    // Ban / Unban እና Approve / Decline አዝራሮች
     const keyboard = {
       inline_keyboard: [
         [
@@ -558,11 +528,11 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 2. የአድሚን ትዕዛዞች (ያንተ ትዕዛዞች እንዳሉ ሆነው)
+  // 2. የአድሚን ትዕዛዞች
   if (msg && msg.text && isAdmin) {
     const text = msg.text.trim();
 
-    // /stats — ነባሩ ዝርዝር ዳሽቦርድ (ጽሑፍ ብቻ)[span_0](start_span)[span_0](end_span)
+    // /stats — ነባሩ ዝርዝር ዳሽቦርድ (ጽሑፍ ብቻ)
     if (text === "/stats") {
       const totalUsers = await User.countDocuments();
       const totalOrders = await Order.countDocuments();
@@ -588,7 +558,7 @@ app.post("/telegram-webhook", async (req, res) => {
       return;
     }
 
-    // /statics ወይም Statics — ስዕል ያለው ካርድ[span_1](start_span)[span_1](end_span)
+    // /statics ወይም Statics — ስዕል ያለው ካርድ
     if (text === "/statics" || text === "Statics") {
       const totalUsers = await User.countDocuments();
       const now = new Date();
@@ -896,7 +866,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 3. User Start Message (Force Join ፍተሻው የተጠናከረ)
+  // 3. User Start Message (የቦቱ Force Join ሙሉ ለሙሉ ጠፍቷል - ቀጥታ Welcome Banner ይሄዳል)
   if (msg && msg.text) {
     const userId = msg.from.id;
     const text = msg.text.trim();
@@ -922,11 +892,7 @@ app.post("/telegram-webhook", async (req, res) => {
     );
 
     if (text.startsWith("/start")) {
-      const isMember = await checkMembership(userId);
-      if (!isMember) {
-        await sendJoinRequiredMessage(userId);
-        return;
-      }
+      // ያለምንም የቻናል ማረጋገጫ ቀጥታ የ Welcome Banner መልዕክቱን መላክ
       await sendWelcomeBanner(userId);
       return;
     }
@@ -937,26 +903,6 @@ app.post("/telegram-webhook", async (req, res) => {
   if (!callback) return;
 
   try {
-    // ተጠቃሚው "✅ ተቀላቅያለሁ" ሲል ማረጋገጥ
-    if (callback.data === "check_join") {
-      const isMember = await checkMembership(callback.from.id);
-      if (isMember) {
-        await telegram("answerCallbackQuery", { 
-          method: "POST", 
-          headers: { "Content-Type": "application/json" }, 
-          body: JSON.stringify({ callback_query_id: callback.id, text: "🎉 እንኳን ደህና መጡ! ቻናሉ ተረጋግጧል።" }) 
-        });
-        await sendWelcomeBanner(callback.from.id);
-      } else {
-        await telegram("answerCallbackQuery", { 
-          method: "POST", 
-          headers: { "Content-Type": "application/json" }, 
-          body: JSON.stringify({ callback_query_id: callback.id, text: "⚠️ ቻናሉን አልተቀላቀሉም! እባክዎ መጀመሪያ Join ይበሉ።", show_alert: true }) 
-        });
-      }
-      return;
-    }
-
     const callbackSenderId = String(callback.from.id || "").trim();
     if (callbackSenderId !== ADMIN_CHAT_ID) return;
 
