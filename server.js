@@ -150,6 +150,37 @@ async function checkMembership(userId) {
   }
 }
 
+// ቻናሉን ካልተቀላቀሉ የሚላክ ውብና ማራኪ መልዕክት
+async function sendJoinRequiredMessage(userId) {
+  const joinText = 
+    `👋 <b>እንኳን ወደ Unique P2P መገበያያ በደህና መጡ!</b>\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `⚠️ <b>ማሳሰቢያ፦</b> የቦቱን እና የ Mini App አገልግሎቶችን ለመጠቀም መጀመሪያ ይፋዊ ቻናላችንን መቀላቀል <b>ግዴታ</b> ነው።\n\n` +
+    `📢 <b>ቻናላችንን በመቀላቀል፦</b>\n` +
+    `• የዕለቱን ትኩስ የምንዛሬ ዋጋዎች\n` +
+    `• እውነተኛ የክፍያ ማረጋገጫዎችና መረጃዎችን\n` +
+    `• ልዩ ልዩ ማስታወቂያዎችን በፍጥነት ያገኛሉ!\n\n` +
+    `👇 <i>ከታች ያለውን አዝራር ተጭነው ቻናሉን ከተቀላቀሉ በኋላ <b>«✅ ተቀላቅያለሁ (Verify)»</b> የሚለውን ይጫኑ፦</i>`;
+
+  const joinKeyboard = {
+    inline_keyboard: [
+      [{ text: "📢 ቻናሉን ተቀላቀል (Join Channel)", url: "https://t.me/Unique_techs" }],
+      [{ text: "✅ ተቀላቅያለሁ (Verify Join)", callback_data: "check_join" }]
+    ]
+  };
+
+  await telegram("sendMessage", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: userId,
+      text: joinText,
+      parse_mode: "HTML",
+      reply_markup: joinKeyboard
+    })
+  });
+}
+
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
     `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
@@ -180,6 +211,7 @@ async function sendWelcomeBanner(userId) {
       })
     });
   } catch (e) {
+    console.error("Welcome photo error, sending text fallback:", e.message);
     await telegram("sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -263,7 +295,7 @@ app.get("/api/rates", async (req, res) => {
   });
 });
 
-// Mini App ላይ የቻናል አባልነትን መፈተሻ
+// Mini App ላይ የቻናል አባልነትን እና Ban መሆኑን መፈተሻ
 app.get("/api/check-channel", async (req, res) => {
   try {
     const user = verifyInitData(req.query.initData);
@@ -402,7 +434,6 @@ app.post("/api/orders", upload.single("screenshot"), async (req, res) => {
       `━━━━━━━━━━━━━━━━━━\n` +
       `🆔 <b>Order:</b> <code>${orderId}</code>`;
 
-    // Ban / Unban እና Approve / Decline አዝራሮች
     const keyboard = {
       inline_keyboard: [
         [
@@ -532,8 +563,34 @@ app.post("/telegram-webhook", async (req, res) => {
   if (msg && msg.text && isAdmin) {
     const text = msg.text.trim();
 
-    // /statics ወይም Statics (በስክሪንሾትህ መሰረት ውብ ካርድ)
-    if (text === "/statics" || text === "Statics" || text === "/stats") {
+    // /stats — ነባሩ ዝርዝር ዳሽቦርድ (ጽሑፍ ብቻ)
+    if (text === "/stats") {
+      const totalUsers = await User.countDocuments();
+      const totalOrders = await Order.countDocuments();
+      const approvedOrders = await Order.countDocuments({ status: "approved" });
+      const pendingOrders = await Order.countDocuments({ status: "pending" });
+      const declinedOrders = await Order.countDocuments({ status: "declined" });
+
+      const statsMsg = 
+        `📊 <b>የአጠቃላይ ሁኔታ ዳሽቦርድ (Stats)</b>\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `👥 <b>ጠቅላላ ተጠቃሚዎች:</b> ${totalUsers}\n` +
+        `📦 <b>ጠቅላላ ትዕዛዞች:</b> ${totalOrders}\n` +
+        `━━━━━━━━━━━━━━━━━━\n` +
+        `✅ <b>የጸደቁ (Approved):</b> ${approvedOrders}\n` +
+        `⏳ <b>በሂደት ላይ (Pending):</b> ${pendingOrders}\n` +
+        `❌ <b>ውድቅ የተደረጉ (Declined):</b> ${declinedOrders}`;
+
+      await telegram("sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: msg.chat.id, text: statsMsg, parse_mode: "HTML" })
+      });
+      return;
+    }
+
+    // /statics ወይም Statics — ስዕል ያለው ካርድ
+    if (text === "/statics" || text === "Statics") {
       const totalUsers = await User.countDocuments();
       const now = new Date();
       const eatOffset = 3 * 60; // UTC+3
@@ -840,7 +897,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 3. User Start Message
+  // 3. User Start Message (Force Join ፍተሻው የተጠናከረ)
   if (msg && msg.text) {
     const userId = msg.from.id;
     const text = msg.text.trim();
@@ -868,21 +925,7 @@ app.post("/telegram-webhook", async (req, res) => {
     if (text.startsWith("/start")) {
       const isMember = await checkMembership(userId);
       if (!isMember) {
-        await telegram("sendMessage", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: userId,
-            text: "👋 <b>እባክዎ መጀመሪያ ቻናላችንን ይቀላቀሉ!</b>",
-            parse_mode: "HTML",
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "📢 ቻናል ተቀላቀል", url: "https://t.me/Unique_techs" }],
-                [{ text: "✅ ተቀላቅያለሁ", callback_data: "check_join" }]
-              ]
-            }
-          })
-        });
+        await sendJoinRequiredMessage(userId);
         return;
       }
       await sendWelcomeBanner(userId);
@@ -895,20 +938,21 @@ app.post("/telegram-webhook", async (req, res) => {
   if (!callback) return;
 
   try {
+    // ተጠቃሚው "✅ ተቀላቅያለሁ" ሲል ማረጋገጥ
     if (callback.data === "check_join") {
       const isMember = await checkMembership(callback.from.id);
       if (isMember) {
         await telegram("answerCallbackQuery", { 
           method: "POST", 
           headers: { "Content-Type": "application/json" }, 
-          body: JSON.stringify({ callback_query_id: callback.id }) 
+          body: JSON.stringify({ callback_query_id: callback.id, text: "🎉 እንኳን ደህና መጡ! ቻናሉ ተረጋግጧል።" }) 
         });
         await sendWelcomeBanner(callback.from.id);
       } else {
         await telegram("answerCallbackQuery", { 
           method: "POST", 
           headers: { "Content-Type": "application/json" }, 
-          body: JSON.stringify({ callback_query_id: callback.id, text: "⚠️ እባክዎ መጀመሪያ ቻናሉን ይቀላቀሉ!", show_alert: true }) 
+          body: JSON.stringify({ callback_query_id: callback.id, text: "⚠️ ቻናሉን አልተቀላቀሉም! እባክዎ መጀመሪያ Join ይበሉ።", show_alert: true }) 
         });
       }
       return;
@@ -930,6 +974,7 @@ app.post("/telegram-webhook", async (req, res) => {
         `👥 ተጠቃሚዎች: <b>${totalUsers}</b>\n` +
         `✅ የጸደቁ: <b>${approvedOrders}</b> | ⏳ በሂደት: <b>${pendingOrders}</b> | ❌ ውድቅ: <b>${declinedOrders}</b>\n\n` +
         `⚙️ <b>የትዕዛዞች ዝርዝር፦</b>\n` +
+        `• /stats — ነባር ዝርዝር ዳሽቦርድ\n` +
         `• /daily — የዛሬ ገቢና ትዕዛዝ\n` +
         `• /pause & /resume — ቦቱን ማቆሚያ/ማስጀመሪያ\n` +
         `• /setrates [t1] [t2] [t3] [t4] — ተመን መቀየሪያ\n` +
