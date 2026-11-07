@@ -1078,6 +1078,35 @@
     </div>
   </div>
 
+  <!-- ንጹህ እና ውብ የቻናል መቀላቀያ ማስገደጃ (Clean Join Overlay) -->
+  <div id="simpleJoinModal" style="display: none; position: fixed; inset: 0; background: rgba(6, 9, 19, 0.96); backdrop-filter: blur(14px); z-index: 999999; align-items: center; justify-content: center; padding: 18px;">
+    <div style="background: linear-gradient(135deg, rgba(18,26,47,0.95), rgba(10,16,32,0.98)); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 20px; padding: 24px 18px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.7);">
+      
+      <div style="width: 65px; height: 65px; margin: 0 auto 14px; background: rgba(56, 189, 248, 0.15); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <i class="fa-solid fa-bullhorn" style="font-size: 26px; color: var(--accent-cyan);"></i>
+      </div>
+
+      <h3 style="font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px;">ቻናላችንን ይቀላቀሉ!</h3>
+      <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px;">
+        የ Unique P2P አገልግሎትን ለመጠቀም እባክዎ መጀመሪያ ይፋዊ ቻናላችንን ይቀላቀሉ።
+      </p>
+
+      <!-- Join Link Button -->
+      <a href="https://t.me/Unique_techs" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent-cyan); padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13.5px; text-decoration: none; margin-bottom: 10px;">
+        <i class="fa-brands fa-telegram"></i> 📢 ቻናል ተቀላቀል (Join)
+      </a>
+
+      <!-- Verify Button -->
+      <button type="button" onclick="verifySimpleJoin()" id="simpleVerifyBtn" style="width: 100%; background: linear-gradient(135deg, #00f279, #059669); border: none; color: #060913; padding: 12.5px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 15px rgba(0, 242, 121, 0.3);">
+        <i class="fa-solid fa-check"></i> ✅ ተቀላቅያለሁ (Verify)
+      </button>
+
+      <p id="simpleJoinErr" style="display: none; font-size: 11px; color: #ff3366; margin-top: 10px; font-weight: 700;">
+        ⚠️ እባክዎ መጀመሪያ ቻናሉን ይቀላቀሉ!
+      </p>
+    </div>
+  </div>
+
   <script>  
     const SERVER_URL = "https://uniquep2p.onrender.com";  
     const tg = window.Telegram?.WebApp;  
@@ -1657,9 +1686,73 @@
       }
     }
 
+    // ቻናል መፈተሻ እና የ Ban ሁኔታን መቆጣጠሪያ
+    async function checkChannelRequirement() {
+      if (!tg) return;
+
+      const initData = tg.initData;
+      if (!initData) return;
+
+      try {
+        const res = await fetch(`${SERVER_URL}/api/check-channel?initData=${encodeURIComponent(initData)}`);
+        const data = await res.json();
+        
+        if (data.success) {
+          if (data.isBanned) {
+            document.body.innerHTML = '<div style="display:flex;height:100vh;align-items:center;justify-content:center;color:#ff3366;font-size:16px;font-weight:900;text-align:center;padding:20px;">🚫 አካውንትዎ በአድሚን ታግዷል (Banned)!</div>';
+            return;
+          }
+
+          const modal = document.getElementById('simpleJoinModal');
+          if (!data.isMember) {
+            modal.style.display = 'flex';
+          } else {
+            modal.style.display = 'none';
+          }
+        }
+      } catch (err) {
+        console.error("Check channel error:", err);
+      }
+    }
+
+    // ተጠቃሚው "✅ ተቀላቅያለሁ (Verify)" ሲል ማረጋገጥ
+    async function verifySimpleJoin() {
+      triggerHaptic('medium');
+      const btn = document.getElementById('simpleVerifyBtn');
+      const errText = document.getElementById('simpleJoinErr');
+      
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> በማረጋገጥ ላይ...';
+      btn.disabled = true;
+      errText.style.display = 'none';
+
+      try {
+        const res = await fetch(`${SERVER_URL}/api/check-channel?initData=${encodeURIComponent(tg.initData)}`);
+        const data = await res.json();
+
+        if (data.success && data.isMember) {
+          triggerHaptic('success');
+          document.getElementById('simpleJoinModal').style.display = 'none';
+          showNotification("✅ ቻናሉ ተረጋግጧል! እንኳን ደህና መጡ።");
+        } else {
+          triggerHaptic('error');
+          errText.style.display = 'block';
+        }
+      } catch (e) {
+        showNotification("የኔትወርክ ስህተት፤ እባክዎ ደግመው ይሞክሩ።");
+      } finally {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ ተቀላቅያለሁ (Verify)';
+        btn.disabled = false;
+      }
+    }
+
     applyLanguage(currentLang);
     initUserProfile();
     fetchLiveRates();  
+
+    // አፑ ሲከፈት ቻናል ውስጥ መሆን አለመሆኑን መፈተሽ
+    if (tg) {
+      setTimeout(checkChannelRequirement, 350);
+    }
   </script>  
 </body>  
 </html>
