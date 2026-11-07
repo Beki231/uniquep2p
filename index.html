@@ -60,24 +60,15 @@
       gap: 10px;  
     }  
 
-    .brand-logo {  
+    .brand-logo-img {  
       width: 36px;  
       height: 36px;  
-      border-radius: 11px;  
-      background: linear-gradient(135deg, #00f279, #2563eb);  
-      display: flex;  
-      align-items: center;  
-      justify-content: center;  
-      font-size: 17px;  
-      color: #fff;  
-      box-shadow: 0 0 14px rgba(0, 242, 121, 0.35);
-      animation: pulseLogo 3s infinite alternate;
+      border-radius: 50%;  
+      object-fit: cover;
+      border: 1.5px solid var(--accent-gold);
+      box-shadow: 0 0 10px rgba(255, 183, 3, 0.45);
+      flex-shrink: 0;
     }  
-
-    @keyframes pulseLogo {
-      0% { box-shadow: 0 0 10px rgba(0, 242, 121, 0.2); }
-      100% { box-shadow: 0 0 18px rgba(56, 189, 248, 0.45); }
-    }
 
     .brand-name {  
       font-size: 15.5px;  
@@ -131,7 +122,7 @@
       width: 100%;  
     }  
 
-    /* አዲሱ የታመቀ የተጠቃሚ ፕሮፋይል ካርድ (User Profile Card) */
+    /* አዲሱ የታመቀ የተጠቃሚ ፕሮፋይል ካርድ */
     .user-profile-card {
       background: linear-gradient(135deg, rgba(20, 30, 55, 0.9), rgba(10, 16, 32, 0.95));
       border: 1px solid rgba(56, 189, 248, 0.3);
@@ -144,18 +135,13 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
-    .profile-avatar {
+    .profile-avatar-img {
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #38bdf8, #2563eb);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      color: #fff;
-      border: 2px solid rgba(56, 189, 248, 0.5);
+      object-fit: cover;
+      border: 2px solid var(--accent-gold);
+      box-shadow: 0 0 12px rgba(255, 183, 3, 0.4);
       flex-shrink: 0;
     }
 
@@ -682,9 +668,7 @@
   <!-- Header: የሱቁ ስም እና የሰዓት ሁኔታ ብቻ -->  
   <header>  
     <div class="brand">  
-      <div class="brand-logo">  
-        <i class="fa-solid fa-arrow-right-arrow-left"></i>  
-      </div>  
+      <img src="https://raw.githubusercontent.com/beki231/uniquep2p/main/logo.jpg" alt="Unique P2P" class="brand-logo-img">  
       <div class="brand-name">  
         Unique P2P Store  
         <img class="flag-icon" src="https://flagcdn.com/w40/et.png" alt="ኢትዮጵያ">  
@@ -692,13 +676,13 @@
     </div>  
     <div id="storeStatusBadge" class="status-badge status-open">
       <span>● ክፍት ነው</span>
-    </div>
+    </div>  
   </header>  
 
   <div class="container">  
-    <!-- አዲሱ የተጠቃሚ ፕሮፋይል ካርድ (በሽያጭ ገጽ ላይ ከላይ የሚቀመጥ) -->  
+    <!-- አዲሱ የተጠቃሚ ፕሮፋይል ካርድ -->  
     <div class="user-profile-card" id="userProfileCard">  
-      <div class="profile-avatar" id="avatarLetter">U</div>  
+      <img src="https://raw.githubusercontent.com/beki231/uniquep2p/main/logo.jpg" alt="Unique P2P" class="profile-avatar-img">  
       <div class="profile-info">  
         <div class="profile-top-row">  
           <span class="profile-name" id="cardUserName">ተጠቃሚ</span>  
@@ -1043,7 +1027,6 @@
         
         document.getElementById('cardUserName').innerText = displayName;  
         document.getElementById('cardUserHandle').innerText = handle;  
-        document.getElementById('avatarLetter').innerText = (u.first_name || "U")[0].toUpperCase();
       }  
     }  
   
@@ -1059,20 +1042,13 @@
     let dynamicRates = { tier1: 178, tier2: 180, tier3: 182, tier4: 185 };  
     let isCurrentStoreOpen = true;
 
-    // የስራ ሰዓት ሁኔታን መገምገም
+    // የስራ ሰዓት ሁኔታን መገምገም (ለሙከራ ሁልጊዜ ክፍት)
     function evaluateStoreHours() {
-      // ለሙከራ ጊዜ ሁልጊዜ ክፍት እንዲሆን ተደርጓል (እውነተኛ ስራ ሲጀምር eatHours ይተካል)
       isCurrentStoreOpen = true;
-
       const badge = document.getElementById('storeStatusBadge');
       if (badge) {
-        if (isCurrentStoreOpen) {
-          badge.className = "status-badge status-open";
-          badge.innerHTML = "<span>● ክፍት ነው</span>";
-        } else {
-          badge.className = "status-badge status-closed";
-          badge.innerHTML = "<span>● ዝግ ነው</span>";
-        }
+        badge.className = "status-badge status-open";
+        badge.innerHTML = "<span>● ክፍት ነው (ሙከራ)</span>";
       }
     }
 
@@ -1083,19 +1059,7 @@
         const data = await response.json();  
         if (data.success && data.rates) {  
           dynamicRates = data.rates;  
-          if (data.isOpen !== undefined) {
-            isCurrentStoreOpen = data.isOpen;
-            const badge = document.getElementById('storeStatusBadge');
-            if (badge) {
-              if (isCurrentStoreOpen) {
-                badge.className = "status-badge status-open";
-                badge.innerHTML = "<span>● ክፍት ነው</span>";
-              } else {
-                badge.className = "status-badge status-closed";
-                badge.innerHTML = "<span>● ዝግ ነው</span>";
-              }
-            }
-          }
+          isCurrentStoreOpen = true;
           document.getElementById('tableRateTier1').innerText = `${dynamicRates.tier1} ETB`;  
           document.getElementById('tableRateTier2').innerText = `${dynamicRates.tier2} ETB`;  
           document.getElementById('tableRateTier3').innerText = `${dynamicRates.tier3} ETB`;  
@@ -1195,7 +1159,6 @@
       document.getElementById('tab-' + tabId).classList.add('active');  
       if (el) el.classList.add('active');  
 
-      // የተጠቃሚው ካርድ በሽያጭ ገጽ ላይ ብቻ እንዲታይ
       const profCard = document.getElementById('userProfileCard');
       if (profCard) {
         if (tabId === 'sell') {
@@ -1441,5 +1404,4 @@
     fetchLiveRates();  
   </script>  
 </body>  
-  </html>
-  
+</html>
