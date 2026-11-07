@@ -151,9 +151,8 @@ async function checkMembership(userId) {
 
 async function sendWelcomeBanner(userId) {
   const welcomeCaption = 
-    `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> 💕\n` +
-    `━━━━━━━━━━━━━━━━━━\n` +
-    `🔐 <b>ደህንነቱ የተጠበቀ እና ⚡ እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> 💯\n\n` +
+    `📣 <b>እንኳን ወደ Unique P2P Store 🇪🇹 በደህና መጡ!</b> \n` +
+    `🔐 <b>ደህንነቱ የተጠበቀ እና እጅግ ፈጣን የ USDT መገበያያ ቤት!</b> \n\n` +
     `👇 <b>ንግድ ለመጀመር ከስር ያለውን Mini App ይክፈቱ፦</b>`;
 
   const welcomeKeyboard = {
