@@ -45,7 +45,7 @@
       background: rgba(6, 9, 19, 0.92);  
       backdrop-filter: blur(14px);  
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);  
-      padding: 12px 16px;  
+      padding: 10px 14px;  
       position: sticky;  
       top: 0;  
       z-index: 100;  
@@ -71,7 +71,7 @@
     }  
 
     .brand-name {  
-      font-size: 15.5px;  
+      font-size: 15px;  
       font-weight: 800;  
       letter-spacing: -0.3px;  
       color: #ffffff;
@@ -81,8 +81,8 @@
     }  
 
     .flag-icon {
-      width: 20px;
-      height: 14px;
+      width: 18px;
+      height: 13px;
       border-radius: 2px;
       object-fit: cover;
       box-shadow: 0 0 4px rgba(0,0,0,0.4);
@@ -135,14 +135,20 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
-    .profile-avatar-img {
-      width: 42px;
-      height: 42px;
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-gold);
-      box-shadow: 0 0 12px rgba(255, 183, 3, 0.4);
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 900;
+      color: #fff;
+      border: 2px solid rgba(56, 189, 248, 0.5);
       flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
     }
 
     .profile-info {
@@ -665,10 +671,10 @@
   </style>  
 </head>  
 <body>  
-  <!-- Header: የሱቁ ስም እና የሰዓት ሁኔታ ብቻ -->  
+  <!-- Header: የሱቁ ስም እና የስራ ሰዓት ሁኔታ -->  
   <header>  
     <div class="brand">  
-      <img src="https://raw.githubusercontent.com/beki231/uniquep2p/main/logo.jpg" alt="Unique P2P" class="brand-logo-img">  
+      <img src="https://i.postimg.cc/d39W0JVj/IMG-20261107-100340-894.jpg" alt="Unique P2P" class="brand-logo-img">  
       <div class="brand-name">  
         Unique P2P Store  
         <img class="flag-icon" src="https://flagcdn.com/w40/et.png" alt="ኢትዮጵያ">  
@@ -682,7 +688,7 @@
   <div class="container">  
     <!-- አዲሱ የተጠቃሚ ፕሮፋይል ካርድ -->  
     <div class="user-profile-card" id="userProfileCard">  
-      <img src="https://raw.githubusercontent.com/beki231/uniquep2p/main/logo.jpg" alt="Unique P2P" class="profile-avatar-img">  
+      <div class="profile-avatar" id="avatarLetter">U</div>  
       <div class="profile-info">  
         <div class="profile-top-row">  
           <span class="profile-name" id="cardUserName">ተጠቃሚ</span>  
@@ -1027,6 +1033,7 @@
         
         document.getElementById('cardUserName').innerText = displayName;  
         document.getElementById('cardUserHandle').innerText = handle;  
+        document.getElementById('avatarLetter').innerText = (u.first_name || "U")[0].toUpperCase();
       }  
     }  
   
@@ -1042,13 +1049,22 @@
     let dynamicRates = { tier1: 178, tier2: 180, tier3: 182, tier4: 185 };  
     let isCurrentStoreOpen = true;
 
-    // የስራ ሰዓት ሁኔታን መገምገም (ለሙከራ ሁልጊዜ ክፍት)
+    // የስራ ሰዓት ሁኔታን በኢትዮጵያ ሰዓት መገምገም (ከጠዋቱ 1:00 እስከ ማታ 3:00 / 7:00 AM - 9:00 PM)
     function evaluateStoreHours() {
-      isCurrentStoreOpen = true;
+      const now = new Date();
+      const utcHours = now.getUTCHours();
+      const eatHours = (utcHours + 3) % 24; 
+      isCurrentStoreOpen = eatHours >= 7 && eatHours < 21;
+
       const badge = document.getElementById('storeStatusBadge');
       if (badge) {
-        badge.className = "status-badge status-open";
-        badge.innerHTML = "<span>● ክፍት ነው (ሙከራ)</span>";
+        if (isCurrentStoreOpen) {
+          badge.className = "status-badge status-open";
+          badge.innerHTML = "<span>● ክፍት ነው</span>";
+        } else {
+          badge.className = "status-badge status-closed";
+          badge.innerHTML = "<span>● ዝግ ነው</span>";
+        }
       }
     }
 
@@ -1059,7 +1075,19 @@
         const data = await response.json();  
         if (data.success && data.rates) {  
           dynamicRates = data.rates;  
-          isCurrentStoreOpen = true;
+          if (data.isOpen !== undefined) {
+            isCurrentStoreOpen = data.isOpen;
+            const badge = document.getElementById('storeStatusBadge');
+            if (badge) {
+              if (isCurrentStoreOpen) {
+                badge.className = "status-badge status-open";
+                badge.innerHTML = "<span>● ክፍት ነው</span>";
+              } else {
+                badge.className = "status-badge status-closed";
+                badge.innerHTML = "<span>● ዝግ ነው</span>";
+              }
+            }
+          }
           document.getElementById('tableRateTier1').innerText = `${dynamicRates.tier1} ETB`;  
           document.getElementById('tableRateTier2').innerText = `${dynamicRates.tier2} ETB`;  
           document.getElementById('tableRateTier3').innerText = `${dynamicRates.tier3} ETB`;  
@@ -1159,6 +1187,7 @@
       document.getElementById('tab-' + tabId).classList.add('active');  
       if (el) el.classList.add('active');  
 
+      // የተጠቃሚው ካርድ በሽያጭ ገጽ ላይ ብቻ እንዲታይ
       const profCard = document.getElementById('userProfileCard');
       if (profCard) {
         if (tabId === 'sell') {
