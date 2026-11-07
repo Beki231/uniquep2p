@@ -22,7 +22,8 @@ const BOT_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const CHANNEL_ID = "@Unique_techs";
 const PROOF_CHANNEL_ID = "@Ut_proof";
 
-const BANNER_IMAGE_URL = "https://raw.githubusercontent.com/beki231/uniquep2p/main/welcome.jpg"; 
+// አዲሱ የተመረጠው የ Welcome መልዕክት ፎቶ ሊንክ
+const BANNER_IMAGE_URL = "https://i.postimg.cc/L88G59b1/IMG-20261103-102834-245.jpg"; 
 
 // 1. MongoDB ግንኙነት እና Schemas
 mongoose.connect(MONGO_URI)
@@ -120,7 +121,7 @@ async function sendWelcomeBanner(userId) {
 
   const welcomeKeyboard = {
     inline_keyboard: [
-      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=5" } }],
+      [{ text: "🚀 Open Unique Mini App 📱", web_app: { url: "https://beki231.github.io/uniquep2p/?v=6" } }],
       [
         { text: "👨‍💻 አድሚን (@Aropc)", url: "https://t.me/Aropc" },
         { text: "📢 ቻናል", url: "https://t.me/Unique_techs" }
@@ -141,6 +142,7 @@ async function sendWelcomeBanner(userId) {
       })
     });
   } catch (e) {
+    console.error("Welcome photo error, sending text fallback:", e.message);
     await telegram("sendMessage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -220,7 +222,7 @@ app.get("/api/rates", (req, res) => {
   });
 });
 
-// አዲስ፡ የደንበኛውን እውነተኛ የቴሌግራም ፕሮፋይል ፎቶ አምጥቶ የሚያቀብል Endpoint
+// የደንበኛውን እውነተኛ የቴሌግራም ፕሮፋይል ፎቶ አምጥቶ የሚያቀብል Endpoint
 app.get("/api/user-avatar", async (req, res) => {
   try {
     const user = verifyInitData(req.query.initData);
@@ -235,7 +237,7 @@ app.get("/api/user-avatar", async (req, res) => {
     });
 
     if (photosRes && photosRes.total_count > 0 && photosRes.photos[0].length > 0) {
-      const fileId = photosRes.photos[0][0].file_id; // አነስተኛ መጠን ያለው አቫታር
+      const fileId = photosRes.photos[0][0].file_id; 
       const fileRes = await telegram("getFile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -525,7 +527,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 3. User Start Message
+  // 3. User Start Message (Force Join ፍተሻው ሳይዛባ)
   if (msg && msg.text) {
     const userId = msg.from.id;
     const text = msg.text.trim();
@@ -561,7 +563,7 @@ app.post("/telegram-webhook", async (req, res) => {
     }
   }
 
-  // 4. Callback Query
+  // 4. Callback Query (✅ ተቀላቅያለሁ ሲጫን የሚሰራው)
   const callback = req.body.callback_query;
   if (!callback) return;
 
@@ -569,10 +571,18 @@ app.post("/telegram-webhook", async (req, res) => {
     if (callback.data === "check_join") {
       const isMember = await checkMembership(callback.from.id);
       if (isMember) {
-        await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id }) });
+        await telegram("answerCallbackQuery", { 
+          method: "POST", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify({ callback_query_id: callback.id }) 
+        });
         await sendWelcomeBanner(callback.from.id);
       } else {
-        await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "⚠️ እባክዎ መጀመሪያ ቻናሉን ይቀላቀሉ!", show_alert: true }) });
+        await telegram("answerCallbackQuery", { 
+          method: "POST", 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify({ callback_query_id: callback.id, text: "⚠️ እባክዎ መጀመሪያ ቻናሉን ይቀላቀሉ!", show_alert: true }) 
+        });
       }
       return;
     }
@@ -584,13 +594,21 @@ app.post("/telegram-webhook", async (req, res) => {
     const order = await Order.findOne({ orderId });
 
     if (!order || order.status !== "pending") {
-      await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "Order processed." }) });
+      await telegram("answerCallbackQuery", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ callback_query_id: callback.id, text: "Order processed." }) 
+      });
       return;
     }
 
     if (action === "receipt") {
       pendingReceiptOrder = orderId;
-      await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id }) });
+      await telegram("answerCallbackQuery", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ callback_query_id: callback.id }) 
+      });
       await telegram("sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -611,7 +629,11 @@ app.post("/telegram-webhook", async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: order.userId, text: `✅ ትዕዛዝዎ ጸድቋል! ${order.total.toLocaleString()} ETB ተከፍሏል።`, parse_mode: "HTML" })
       });
-      await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "Quick Approved!" }) });
+      await telegram("answerCallbackQuery", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ callback_query_id: callback.id, text: "Quick Approved!" }) 
+      });
       return;
     }
 
@@ -623,7 +645,11 @@ app.post("/telegram-webhook", async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: order.userId, text: `❌ ትዕዛዝዎ ውድቅ ተደርጓል። ለተጨማሪ መረጃ አድሚን ያነጋግሩ (@Aropc)።`, parse_mode: "HTML" })
       });
-      await telegram("answerCallbackQuery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: callback.id, text: "Declined" }) });
+      await telegram("answerCallbackQuery", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ callback_query_id: callback.id, text: "Declined" }) 
+      });
       return;
     }
   } catch (err) {
